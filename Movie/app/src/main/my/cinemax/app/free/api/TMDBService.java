@@ -258,6 +258,31 @@ public class TMDBService {
     }
 
     /**
+     * Discover TV shows with filters
+     */
+    public void discoverTVShows(String genres, String sortBy, int page, MovieListCallback callback) {
+        tmdbRest.discoverTvShows(genres, sortBy, page).enqueue(new Callback<TMDBTvShowResponse>() {
+            @Override
+            public void onResponse(Call<TMDBTvShowResponse> call, Response<TMDBTvShowResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Poster> tvShows = new ArrayList<>();
+                    for (TMDBTvShow tvShow : response.body().getResults()) {
+                        tvShows.add(TMDBDataConverter.convertTMDBTvShowToPoster(tvShow));
+                    }
+                    callback.onSuccess(tvShows);
+                } else {
+                    callback.onError("Failed to discover TV shows");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<TMDBTvShowResponse> call, Throwable t) {
+                callback.onError("Network error: " + t.getMessage());
+            }
+        });
+    }
+
+    /**
      * Get popular TV shows
      */
     public void getPopularTvShows(int page, MovieListCallback callback) {

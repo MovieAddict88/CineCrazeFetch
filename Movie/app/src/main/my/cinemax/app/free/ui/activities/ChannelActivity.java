@@ -47,8 +47,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-import com.congle7997.google_iap.BillingSubs;
-import com.congle7997.google_iap.CallBackBilling;
+// Removed billing imports - all features are now free
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
@@ -1259,13 +1258,8 @@ public class ChannelActivity extends AppCompatActivity {
                     dialog.dismiss();
                     break;
                 default:
-                    PrefManager prf1= new PrefManager(getApplicationContext());
-                    if (prf1.getString("LOGGED").toString().equals("TRUE")){
-                        Intent intent  =  new Intent(getApplicationContext(), PlansActivity.class);
-                        intent.putExtra("method",payment_methode_id);
-                        startActivity(intent);
-                        overridePendingTransition(R.anim.slide_up, R.anim.slide_down);
-                        dialog.dismiss();
+                    // Removed PlansActivity - all features are now free
+                    dialog.dismiss();
 
                     }else{
                         Intent intent= new Intent(ChannelActivity.this, LoginActivity.class);

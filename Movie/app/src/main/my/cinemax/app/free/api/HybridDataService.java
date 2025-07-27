@@ -193,6 +193,25 @@ public class HybridDataService {
         getPopularMovies(page, callback);
     }
 
+    public static void discoverTVShows(String genres, String sortBy, int page, MovieListCallback callback) {
+        // For TV shows, use TMDB API directly since we have fewer streaming sources for TV
+        TMDBService.getInstance().discoverTVShows(genres, sortBy, page, new TMDBService.MovieListCallback() {
+            @Override
+            public void onSuccess(List<Poster> tvShows) {
+                // Add placeholder streaming sources to TV shows
+                for (Poster tvShow : tvShows) {
+                    addPlaceholderSourcesToPoster(tvShow);
+                }
+                callback.onSuccess(tvShows);
+            }
+
+            @Override
+            public void onError(String error) {
+                callback.onError(error);
+            }
+        });
+    }
+
     private static void enhanceMoviesWithTMDBMetadata(List<Poster> movies, Runnable onComplete) {
         if (movies == null || movies.isEmpty()) {
             onComplete.run();
