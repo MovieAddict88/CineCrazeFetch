@@ -247,6 +247,20 @@ public class FallbackDataService {
             poster.setDuration("120 min");
             poster.setYear("2024");
             
+            // Add a default streaming source for TMDB movies
+            List<my.cinemax.app.free.entity.Source> sources = new ArrayList<>();
+            my.cinemax.app.free.entity.Source source = new my.cinemax.app.free.entity.Source();
+            source.setTitle("HD Stream");
+            source.setUrl("https://vidsrc.me/embed/movie?imdb=" + movieObj.optString("imdb_id", ""));
+            source.setType("stream");
+            source.setQuality("720p");
+            source.setSize("0");
+            source.setKind("stream");
+            source.setPremium("0");
+            source.setExternal(false);
+            sources.add(source);
+            poster.setSources(sources);
+            
             return poster;
         } catch (JSONException e) {
             Log.e(TAG, "Error parsing movie object", e);

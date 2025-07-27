@@ -392,21 +392,27 @@ public class HybridDataService {
                             Poster poster = parseMovieEntry(entry);
                             if (poster != null) {
                                 posters.add(poster);
-                                Log.d(TAG, "Added movie: " + poster.getTitle());
+                                Log.d(TAG, "Added movie: " + poster.getTitle() + " with " + poster.getSources().size() + " sources");
+                            } else {
+                                Log.w(TAG, "Skipped movie entry: " + entry.optString("Title", "Unknown"));
                             }
                         } else if ("TV Series".equals(mainCategory)) {
                             // Parse TV Series as shows with streaming sources
                             Poster poster = parseTVSeriesEntry(entry);
                             if (poster != null) {
                                 posters.add(poster);
-                                Log.d(TAG, "Added TV series: " + poster.getTitle());
+                                Log.d(TAG, "Added TV series: " + poster.getTitle() + " with " + poster.getSources().size() + " sources");
+                            } else {
+                                Log.w(TAG, "Skipped TV series entry: " + entry.optString("Title", "Unknown"));
                             }
                         } else if ("Live TV".equals(mainCategory)) {
                             // Parse Live TV as channels
                             my.cinemax.app.free.entity.Channel channel = parseLiveTVEntry(entry);
                             if (channel != null) {
                                 channels.add(channel);
-                                Log.d(TAG, "Added live channel: " + channel.getTitle());
+                                Log.d(TAG, "Added live channel: " + channel.getTitle() + " with " + channel.getSources().size() + " sources");
+                            } else {
+                                Log.w(TAG, "Skipped live channel entry: " + entry.optString("Title", "Unknown"));
                             }
                         }
                     }
@@ -450,6 +456,12 @@ public class HybridDataService {
             }
         }
         poster.setSources(sources);
+
+        // Only return movie if it has at least one valid streaming source
+        if (sources.isEmpty()) {
+            Log.w(TAG, "Skipping movie '" + poster.getTitle() + "' - no valid streaming sources");
+            return null;
+        }
 
         return poster;
     }
@@ -495,6 +507,12 @@ public class HybridDataService {
         }
         poster.setSources(sources);
 
+        // Only return TV series if it has at least one valid streaming source
+        if (sources.isEmpty()) {
+            Log.w(TAG, "Skipping TV series '" + poster.getTitle() + "' - no valid streaming sources");
+            return null;
+        }
+
         return poster;
     }
 
@@ -521,6 +539,12 @@ public class HybridDataService {
         }
         channel.setSources(sources);
 
+        // Only return channel if it has at least one valid streaming source
+        if (sources.isEmpty()) {
+            Log.w(TAG, "Skipping live channel '" + channel.getTitle() + "' - no valid streaming sources");
+            return null;
+        }
+
         return channel;
     }
 
@@ -528,8 +552,16 @@ public class HybridDataService {
         Source source = new Source();
 
         String quality = serverObj.optString("name", "HD");
+        String url = serverObj.optString("url", "");
+        
+        // Validate URL - only accept proper HTTP/HTTPS URLs
+        if (!isValidStreamingUrl(url)) {
+            Log.w(TAG, "Skipping invalid URL: " + url + " for quality: " + quality);
+            return null; // Return null for invalid URLs
+        }
+        
         source.setTitle(quality);
-        source.setUrl(serverObj.optString("url", ""));
+        source.setUrl(url);
         source.setType("stream");
         source.setQuality(quality);
         source.setSize("0");
@@ -538,6 +570,39 @@ public class HybridDataService {
         source.setExternal(false);
 
         return source;
+    }
+    
+    /**
+     * Validates if a URL is a proper streaming URL
+     */
+    private static boolean isValidStreamingUrl(String url) {
+        if (url == null || url.trim().isEmpty()) {
+            return false;
+        }
+        
+        // Remove whitespace
+        url = url.trim();
+        
+        // Must start with http or https
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+            return false;
+        }
+        
+        // Must be longer than just "http://" or "https://"
+        if (url.length() < 10) {
+            return false;
+        }
+        
+        // Reject obviously invalid URLs
+        String[] invalidPatterns = {"nd", "nfnf", "fn", "nfjf", "test", "placeholder"};
+        String urlLower = url.toLowerCase();
+        for (String pattern : invalidPatterns) {
+            if (urlLower.contains(pattern) && url.length() < 20) {
+                return false;
+            }
+        }
+        
+        return true;
     }
 
     private static List<Poster> parseMoviesFromJson(String jsonData) throws JSONException {
