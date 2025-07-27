@@ -17,7 +17,7 @@ import android.widget.RelativeLayout;
 
 import my.cinemax.app.free.Provider.PrefManager;
 import my.cinemax.app.free.R;
-import my.cinemax.app.free.api.JsonDataService;
+import my.cinemax.app.free.api.HybridDataService;
 import my.cinemax.app.free.entity.Data;
 import my.cinemax.app.free.entity.Genre;
 import my.cinemax.app.free.ui.Adapters.HomeAdapter;
@@ -75,12 +75,12 @@ public class HomeFragment extends Fragment {
         showLoadingView();
         
         // Add logging to debug
-        android.util.Log.d("HomeFragment", "Starting to load JSON data...");
+        android.util.Log.d("HomeFragment", "Starting to load hybrid data...");
         
-        JsonDataService.getHomeData(new JsonDataService.HomeDataCallback() {
+        HybridDataService.getHomeData(new HybridDataService.HomeDataCallback() {
             @Override
             public void onSuccess(Data data) {
-                android.util.Log.d("HomeFragment", "JSON data loaded successfully");
+                android.util.Log.d("HomeFragment", "Hybrid data loaded successfully");
                 dataList.clear();
                 dataList.add(new Data().setViewType(0)); // Header view
                 
@@ -92,7 +92,7 @@ public class HomeFragment extends Fragment {
                 }
                 
                 // Get genres and add genre sections
-                JsonDataService.getMovieGenres(new JsonDataService.GenreListCallback() {
+                HybridDataService.getMovieGenres(new HybridDataService.GenreListCallback() {
                     @Override
                     public void onSuccess(List<Genre> genres) {
                         for (Genre genre : genres) {
@@ -135,7 +135,7 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onError(String error) {
-                android.util.Log.e("HomeFragment", "JSON error: " + error);
+                android.util.Log.e("HomeFragment", "Hybrid error: " + error);
                 showErrorView();
             }
         });

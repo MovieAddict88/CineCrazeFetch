@@ -24,7 +24,7 @@ import android.widget.RelativeLayout;
 
 import my.cinemax.app.free.Provider.PrefManager;
 import my.cinemax.app.free.R;
-import my.cinemax.app.free.api.JsonDataService;
+import my.cinemax.app.free.api.HybridDataService;
 import my.cinemax.app.free.entity.Genre;
 import my.cinemax.app.free.entity.Poster;
 import my.cinemax.app.free.ui.Adapters.PosterAdapter;
@@ -114,7 +114,7 @@ public class MoviesFragment extends Fragment {
     }
 
     private void getGenreList() {
-        TMDBService.getInstance().getMovieGenres(new TMDBService.GenreListCallback() {
+        HybridDataService.getMovieGenres(new HybridDataService.GenreListCallback() {
             @Override
             public void onSuccess(List<Genre> genres) {
                 if (genres.size() > 0) {
@@ -389,7 +389,7 @@ public class MoviesFragment extends Fragment {
         // Convert genre ID to string for TMDB API
         String genreIds = genreSelected == 0 ? "" : String.valueOf(genreSelected);
 
-        TMDBService.getInstance().discoverMovies(genreIds, sortBy, page + 1, new TMDBService.MovieListCallback() {
+        HybridDataService.discoverMovies(genreIds, sortBy, page + 1, new HybridDataService.MovieListCallback() {
             @Override
             public void onSuccess(List<Poster> movies) {
                 if (movies.size() > 0) {
