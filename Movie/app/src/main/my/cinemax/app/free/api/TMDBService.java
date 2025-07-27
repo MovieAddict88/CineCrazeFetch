@@ -106,33 +106,27 @@ public class TMDBService {
                                 data.setPosters(allPosters);
                                 callback.onSuccess(data);
                             } else {
-                                android.util.Log.w("TMDBService", "TV shows failed, trying fallback...");
-                                // Try fallback data
-                                FallbackDataService.getHomeData(callback);
+                                android.util.Log.w("TMDBService", "TV shows failed");
+                                callback.onError("Failed to get TV shows");
                             }
                         }
 
                         @Override
                         public void onFailure(Call<TMDBTvShowResponse> call, Throwable t) {
                             android.util.Log.e("TMDBService", "Popular TV shows error: " + t.getMessage());
-                            android.util.Log.w("TMDBService", "Trying fallback data...");
-                            // Try fallback data
-                            FallbackDataService.getHomeData(callback);
+                            callback.onError("Network error: " + t.getMessage());
                         }
                     });
                 } else {
-                    android.util.Log.w("TMDBService", "Movies failed, trying fallback...");
-                    // Try fallback data
-                    FallbackDataService.getHomeData(callback);
+                    android.util.Log.w("TMDBService", "Movies failed");
+                    callback.onError("Failed to get movies");
                 }
             }
 
             @Override
             public void onFailure(Call<TMDBMovieResponse> call, Throwable t) {
                 android.util.Log.e("TMDBService", "Popular movies error: " + t.getMessage());
-                android.util.Log.w("TMDBService", "Trying fallback data...");
-                // Try fallback data
-                FallbackDataService.getHomeData(callback);
+                callback.onError("Network error: " + t.getMessage());
             }
         });
     }
@@ -151,8 +145,8 @@ public class TMDBService {
                     }
                     callback.onSuccess(movies);
                 } else {
-                    android.util.Log.w("TMDBService", "Popular movies failed, trying fallback...");
-                    FallbackDataService.getPopularMovies(page, callback);
+                    android.util.Log.w("TMDBService", "Popular movies failed");
+                    callback.onError("Failed to get popular movies");
                 }
             }
 
@@ -371,16 +365,15 @@ public class TMDBService {
                     }
                     callback.onSuccess(genres);
                 } else {
-                    android.util.Log.w("TMDBService", "Genres failed, trying fallback...");
-                    FallbackDataService.getMovieGenres(callback);
+                    android.util.Log.w("TMDBService", "Genres failed");
+                    callback.onError("Failed to get genres");
                 }
             }
             
             @Override
             public void onFailure(Call<my.cinemax.app.free.entity.TMDBGenreResponse> call, Throwable t) {
                 android.util.Log.e("TMDBService", "Genres error: " + t.getMessage());
-                android.util.Log.w("TMDBService", "Trying fallback data...");
-                FallbackDataService.getMovieGenres(callback);
+                callback.onError("Network error: " + t.getMessage());
             }
         });
     }

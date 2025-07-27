@@ -357,7 +357,7 @@ public class HybridDataService {
             }
             
             if (movieObj.has("vote_average")) {
-                poster.setRating(movieObj.getDouble("vote_average").floatValue());
+                poster.setRating((float) movieObj.getDouble("vote_average"));
             }
             
             // Parse streaming sources from JSON

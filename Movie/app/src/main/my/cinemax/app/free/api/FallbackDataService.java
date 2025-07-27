@@ -228,18 +228,18 @@ public class FallbackDataService {
             if (movieObj.has("backdrop_path")) {
                 String backdropPath = movieObj.getString("backdrop_path");
                 if (backdropPath.startsWith("http")) {
-                    poster.setImage2(backdropPath);
+                    poster.setCover(backdropPath);
                 } else {
-                    poster.setImage2("https://image.tmdb.org/t/p/w500" + backdropPath);
+                    poster.setCover("https://image.tmdb.org/t/p/w500" + backdropPath);
                 }
             }
             
             if (movieObj.has("release_date")) {
-                poster.setDate(movieObj.getString("release_date"));
+                poster.setYear(movieObj.getString("release_date"));
             }
             
             if (movieObj.has("vote_average")) {
-                poster.setRating(movieObj.getDouble("vote_average"));
+                poster.setRating((float) movieObj.getDouble("vote_average"));
             }
             
             // Set default values for required fields
