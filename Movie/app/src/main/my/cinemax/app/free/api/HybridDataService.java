@@ -54,69 +54,98 @@ public class HybridDataService {
     }
 
     public static void getHomeData(HomeDataCallback callback) {
-        Log.d(TAG, "Starting hybrid data fetch...");
+        Log.d(TAG, "Starting hybrid data fetch - JSON first, TMDB for enhancement...");
         
-        // Try TMDB first for more reliable data
-        TMDBService.getInstance().getHomeData(new TMDBService.HomeDataCallback() {
-            @Override
-            public void onSuccess(Data tmdbData) {
-                Log.d(TAG, "TMDB data loaded successfully, adding basic streaming sources");
-                // Add basic streaming sources to TMDB movies
-                if (tmdbData.getPosters() != null) {
-                    for (Poster movie : tmdbData.getPosters()) {
-                        if (movie.getSources() == null || movie.getSources().isEmpty()) {
-                            List<Source> sources = new ArrayList<>();
-                            Source source = new Source();
-                            source.setTitle("HD Stream");
-                            source.setUrl("https://example.com/stream/" + movie.getId());
-                            source.setType("stream");
-                            source.setQuality("720p");
-                            source.setSize("0");
-                            source.setKind("stream");
-                            source.setPremium("0");
-                            source.setExternal(false);
-                            sources.add(source);
-                            movie.setSources(sources);
-                        }
+        // Use GitHub JSON as primary source (contains actual streaming URLs)
+        executor.execute(() -> {
+            try {
+                String jsonData = fetchJsonFromUrl(JSON_URL);
+                if (jsonData != null) {
+                    Log.d(TAG, "Successfully fetched JSON data, length: " + jsonData.length());
+                    Data data = parseHomeDataFromJson(jsonData);
+                    
+                    Log.d(TAG, "Parsed data: " + (data.getPosters() != null ? data.getPosters().size() : 0) + " posters, " + (data.getChannels() != null ? data.getChannels().size() : 0) + " channels");
+                    
+                    // Enhance movies with TMDB metadata (for missing posters, descriptions, etc.)
+                    if (data.getPosters() != null && data.getPosters().size() > 0) {
+                        enhanceMoviesWithTMDBMetadata(data.getPosters(), new Runnable() {
+                            @Override
+                            public void run() {
+                                Log.d(TAG, "Enhanced " + data.getPosters().size() + " movies with TMDB metadata");
+                                callback.onSuccess(data);
+                            }
+                        });
+                    } else {
+                        // If no movies found, add some TMDB movies with placeholder sources
+                        addTMDBMoviesAsFallback(data, callback);
                     }
+                } else {
+                    Log.e(TAG, "Failed to fetch JSON data, falling back to TMDB only");
+                    // Complete fallback to TMDB if JSON fails
+                    TMDBService.getInstance().getHomeData(new TMDBService.HomeDataCallback() {
+                        @Override
+                        public void onSuccess(Data tmdbData) {
+                            addPlaceholderSourcesToTMDBMovies(tmdbData);
+                            callback.onSuccess(tmdbData);
+                        }
+
+                        @Override
+                        public void onError(String error) {
+                            callback.onError("All data sources failed: " + error);
+                        }
+                    });
                 }
-                callback.onSuccess(tmdbData);
+            } catch (Exception e) {
+                Log.e(TAG, "Error fetching hybrid data", e);
+                callback.onError("Error: " + e.getMessage());
+            }
+        });
+    }
+    
+    private static void addTMDBMoviesAsFallback(Data data, HomeDataCallback callback) {
+        TMDBService.getInstance().getPopularMovies(1, new TMDBService.MovieListCallback() {
+            @Override
+            public void onSuccess(List<Poster> tmdbMovies) {
+                if (tmdbMovies != null && !tmdbMovies.isEmpty()) {
+                    // Add placeholder sources to TMDB movies
+                    for (Poster movie : tmdbMovies) {
+                        addPlaceholderSources(movie);
+                    }
+                    data.setPosters(tmdbMovies.subList(0, Math.min(10, tmdbMovies.size())));
+                    Log.d(TAG, "Added " + data.getPosters().size() + " TMDB movies as fallback");
+                }
+                callback.onSuccess(data);
             }
 
             @Override
             public void onError(String error) {
-                Log.w(TAG, "TMDB failed, trying GitHub JSON as backup: " + error);
-                // Fallback to GitHub JSON
-                executor.execute(() -> {
-                    try {
-                        String jsonData = fetchJsonFromUrl(JSON_URL);
-                        if (jsonData != null) {
-                            Log.d(TAG, "Successfully fetched JSON data, length: " + jsonData.length());
-                            Data data = parseHomeDataFromJson(jsonData);
-                            
-                            if (data.getPosters() != null && data.getPosters().size() > 0) {
-                                enhanceMoviesWithTMDBMetadata(data.getPosters(), new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Log.d(TAG, "Enhanced " + data.getPosters().size() + " movies with TMDB metadata");
-                                        callback.onSuccess(data);
-                                    }
-                                });
-                            } else {
-                                Log.w(TAG, "No movies found in JSON data, creating empty data");
-                                callback.onSuccess(new Data());
-                            }
-                        } else {
-                            Log.e(TAG, "Both TMDB and GitHub JSON failed");
-                            callback.onError("All data sources failed");
-                        }
-                    } catch (Exception e) {
-                        Log.e(TAG, "Error fetching hybrid data", e);
-                        callback.onError("Error: " + e.getMessage());
-                    }
-                });
+                Log.w(TAG, "TMDB fallback also failed: " + error);
+                callback.onSuccess(data); // Return with whatever we have
             }
         });
+    }
+    
+    private static void addPlaceholderSourcesToTMDBMovies(Data tmdbData) {
+        if (tmdbData.getPosters() != null) {
+            for (Poster movie : tmdbData.getPosters()) {
+                addPlaceholderSources(movie);
+            }
+        }
+    }
+    
+    private static void addPlaceholderSources(Poster movie) {
+        List<Source> sources = new ArrayList<>();
+        Source source = new Source();
+        source.setTitle("HD Stream");
+        source.setUrl("https://vidsrc.me/embed/movie?imdb=" + movie.getImdb());
+        source.setType("stream");
+        source.setQuality("720p");
+        source.setSize("0");
+        source.setKind("stream");
+        source.setPremium("0");
+        source.setExternal(false);
+        sources.add(source);
+        movie.setSources(sources);
     }
 
     public static void getPopularMovies(int page, MovieListCallback callback) {
@@ -313,8 +342,15 @@ public class HybridDataService {
                     for (int j = 0; j < entries.length(); j++) {
                         JSONObject entry = entries.getJSONObject(j);
                         
-                        if ("TV Series".equals(mainCategory)) {
-                            // Parse TV Series as movies/shows with streaming sources
+                        if ("Movies".equals(mainCategory)) {
+                            // Parse Movies as individual movies with streaming sources
+                            Poster poster = parseMovieEntry(entry);
+                            if (poster != null) {
+                                posters.add(poster);
+                                Log.d(TAG, "Added movie: " + poster.getTitle());
+                            }
+                        } else if ("TV Series".equals(mainCategory)) {
+                            // Parse TV Series as shows with streaming sources
                             Poster poster = parseTVSeriesEntry(entry);
                             if (poster != null) {
                                 posters.add(poster);
@@ -332,12 +368,45 @@ public class HybridDataService {
                 }
             }
             
-            Log.d(TAG, "Parsed " + posters.size() + " TV series and " + channels.size() + " live channels");
+            Log.d(TAG, "Parsed " + posters.size() + " movies/series and " + channels.size() + " live channels");
         }
 
         data.setPosters(posters);
         data.setChannels(channels);
         return data;
+    }
+
+    private static Poster parseMovieEntry(JSONObject entry) throws JSONException {
+        Poster poster = new Poster();
+
+        // Set basic movie information
+        poster.setTitle(entry.optString("Title", "Unknown Movie"));
+        poster.setDescription(entry.optString("Description", ""));
+        poster.setImage(entry.optString("Poster", ""));
+        poster.setCover(entry.optString("Thumbnail", ""));
+        poster.setRating((float) entry.optDouble("Rating", 0.0f));
+        poster.setYear(String.valueOf(entry.optInt("Year", 2024)));
+        poster.setDuration(entry.optString("Duration", "120 min"));
+        poster.setType("movie");
+        poster.setPlayas("movie");
+        poster.setDownloadas("movie");
+        poster.setComment(true);
+
+        // Parse streaming sources directly from movie entry
+        List<Source> sources = new ArrayList<>();
+        if (entry.has("Servers")) {
+            JSONArray serversArray = entry.getJSONArray("Servers");
+            for (int i = 0; i < serversArray.length(); i++) {
+                JSONObject serverObj = serversArray.getJSONObject(i);
+                Source source = parseSourceFromServer(serverObj);
+                if (source != null) {
+                    sources.add(source);
+                }
+            }
+        }
+        poster.setSources(sources);
+
+        return poster;
     }
 
     private static Poster parseTVSeriesEntry(JSONObject entry) throws JSONException {
@@ -391,9 +460,7 @@ public class HybridDataService {
         channel.setTitle(entry.optString("Title", "Unknown Channel"));
         channel.setDescription(entry.optString("Description", ""));
         channel.setImage(entry.optString("Poster", ""));
-        channel.setCover(entry.optString("Thumbnail", ""));
         channel.setRating((float) entry.optDouble("Rating", 0.0f));
-        channel.setType("live");
         
         // Parse streaming sources
         List<Source> sources = new ArrayList<>();
