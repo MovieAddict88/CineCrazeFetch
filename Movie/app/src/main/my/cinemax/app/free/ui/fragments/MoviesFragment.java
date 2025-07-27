@@ -284,9 +284,6 @@ public class MoviesFragment extends Fragment {
         });
     }
     public boolean checkSUBSCRIBED(){
-        if (!prefManager.getString("SUBSCRIBED").equals("TRUE") && !prefManager.getString("NEW_SUBSCRIBE_ENABLED").equals("TRUE")) {
-            return false;
-        }
         return true;
     }
     private void initView() {

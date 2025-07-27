@@ -229,7 +229,7 @@ public class TopActivity extends AppCompatActivity {
                 lines_beetween_ads=3*Integer.parseInt(prefManager.getString("ADMIN_NATIVE_LINES"));
             }
         }
-        if (checkSUBSCRIBED()) {
+        if (true) {
             native_ads_enabled=false;
         }
 
@@ -288,14 +288,10 @@ public class TopActivity extends AppCompatActivity {
     }
 
     public boolean checkSUBSCRIBED(){
-        PrefManager prefManager= new PrefManager(getApplicationContext());
-        if (!prefManager.getString("SUBSCRIBED").equals("TRUE") && !prefManager.getString("NEW_SUBSCRIBE_ENABLED").equals("TRUE")) {
-            return false;
-        }
         return true;
     }
     public void showAdsBanner() {
-        if (!checkSUBSCRIBED()) {
+        if (false) {
             PrefManager prefManager= new PrefManager(getApplicationContext());
             if (!prefManager.getString("ADMIN_BANNER_TYPE").equals("FALSE")){
                 showAdmobBanner();

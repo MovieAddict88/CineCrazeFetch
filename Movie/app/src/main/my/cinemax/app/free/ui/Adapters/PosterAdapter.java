@@ -167,7 +167,7 @@ public class PosterAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                     PrefManager prefManager= new PrefManager(activity);
 
-                    if(checkSUBSCRIBED()){
+                    if(true){
                         activity.startActivity(intent1, activityOptionsCompat.toBundle());
                     }else{
                         if( !prefManager.getString("ADMIN_INTERSTITIAL_TYPE").equals("FALSE")){
@@ -516,10 +516,6 @@ public class PosterAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     }
     public boolean checkSUBSCRIBED(){
-        PrefManager prefManager= new PrefManager(activity);
-        if (!prefManager.getString("SUBSCRIBED").equals("TRUE") && !prefManager.getString("NEW_SUBSCRIBE_ENABLED").equals("TRUE")) {
-            return false;
-        }
         return true;
     }
 }

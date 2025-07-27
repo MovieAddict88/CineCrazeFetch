@@ -19,8 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-import com.congle7997.google_iap.BillingSubs;
-import com.congle7997.google_iap.CallBackCheck;
+
+
 import com.greenfrvr.rubberloader.RubberLoaderView;
 import my.cinemax.app.free.Provider.PrefManager;
 import my.cinemax.app.free.R;
@@ -88,23 +88,7 @@ public class SplashActivity extends AppCompatActivity {
 
     }
 
-    public void check(){
-        List<String> listSkuStoreSubs = new ArrayList<>();
-        listSkuStoreSubs.add(Global.SUBSCRIPTION_ID);
-        new BillingSubs(SplashActivity.this, listSkuStoreSubs, new CallBackCheck() {
-            @Override
-            public void onPurchase() {
-                PrefManager prefManager= new PrefManager(getApplicationContext());
-                prefManager.setString("SUBSCRIBED","TRUE");
-            }
 
-            @Override
-            public void onNotPurchase() {
-                PrefManager prefManager= new PrefManager(getApplicationContext());
-                prefManager.setString("SUBSCRIBED","FALSE");
-            }
-        });
-    }
     private void checkAccount() {
 
         Integer version = -1;

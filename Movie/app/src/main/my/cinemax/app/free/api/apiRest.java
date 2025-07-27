@@ -10,7 +10,7 @@ import my.cinemax.app.free.entity.Country;
 import my.cinemax.app.free.entity.Data;
 import my.cinemax.app.free.entity.Genre;
 import my.cinemax.app.free.entity.Language;
-import my.cinemax.app.free.entity.Plan;
+
 import my.cinemax.app.free.entity.Poster;
 import my.cinemax.app.free.entity.Season;
 
@@ -197,26 +197,7 @@ public interface apiRest {
     @POST("channel/add/view/"+ Global.SECURE_KEY+"/"+ Global.ITEM_PURCHASE_CODE+"/")
     Call<Integer> addChannelView(@Field("id")  Integer id);
 
-    @GET("pack/all/" + Global.SECURE_KEY + "/" + Global.ITEM_PURCHASE_CODE + "/")
-    Call<List<Plan>> getPlans();
 
-    @FormUrlEncoded
-    @POST("subscription/paypal/" + Global.SECURE_KEY + "/" + Global.ITEM_PURCHASE_CODE + "/")
-    Call<ApiResponse> SubscriptionPayPal(@Field("user") Integer user,@Field("key")  String key, @Field("id") String id, @Field("plan") int plan);
-
-    @FormUrlEncoded
-    @POST("subscription/stripe/" + Global.SECURE_KEY + "/" + Global.ITEM_PURCHASE_CODE + "/")
-    Call<ApiResponse> SubscriptionStripe(@Field("user") Integer user,@Field("key")  String key, @Field("id") String id, @Field("plan") int plan);
-
-
-    @FormUrlEncoded
-    @POST("subscription/intent/" + Global.SECURE_KEY + "/" + Global.ITEM_PURCHASE_CODE + "/")
-    Call<ApiResponse> StripeIntent(@Field("user") Integer user,@Field("key")  String key, @Field("plan") int plan);
-
-
-    @Multipart
-    @POST("subscription/cash/" + Global.SECURE_KEY + "/" + Global.ITEM_PURCHASE_CODE + "/")
-    Call<ApiResponse> SubscriptionCash(@Part MultipartBody.Part file, @Part("user") Integer user,@Part("key")  String key, @Part("id") String id, @Part("infos") String infos, @Part("plan") int plan);
 
     @GET("mylist/{id}/{key}/" + Global.SECURE_KEY + "/" + Global.ITEM_PURCHASE_CODE + "/")
     Call<Data> myList(@Path("id") Integer id,@Path("key") String key_user);

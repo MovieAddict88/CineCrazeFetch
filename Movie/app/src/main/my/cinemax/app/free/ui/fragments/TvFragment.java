@@ -303,10 +303,6 @@ public class TvFragment extends Fragment {
         });
     }
     public boolean checkSUBSCRIBED(){
-        PrefManager prefManager= new PrefManager(getApplicationContext());
-        if (!prefManager.getString("SUBSCRIBED").equals("TRUE") && !prefManager.getString("NEW_SUBSCRIBE_ENABLED").equals("TRUE")) {
-            return false;
-        }
         return true;
     }
     private void initView() {

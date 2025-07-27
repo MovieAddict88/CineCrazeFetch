@@ -161,7 +161,7 @@ public class ChannelAdapter  extends  RecyclerView.Adapter<RecyclerView.ViewHold
                     in.putExtra("channel", channelList.get(holder.getAdapterPosition()));
                     Intent intent = in;
 
-                    if(checkSUBSCRIBED()){
+                    if(true){
                         activity.startActivity(intent, activityOptionsCompat.toBundle());
                     }else{
                         if( !prefManager.getString("ADMIN_INTERSTITIAL_TYPE").equals("FALSE")){
@@ -401,10 +401,6 @@ public class ChannelAdapter  extends  RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     public boolean checkSUBSCRIBED(){
-        PrefManager prefManager= new PrefManager(activity);
-        if (!prefManager.getString("SUBSCRIBED").equals("TRUE") && !prefManager.getString("NEW_SUBSCRIBE_ENABLED").equals("TRUE")) {
-            return false;
-        }
         return true;
     }
 

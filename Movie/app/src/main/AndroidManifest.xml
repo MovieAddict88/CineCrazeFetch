@@ -3,14 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="my.cinemax.app.free">
 
-    <uses-sdk tools:overrideLibrary="com.congle7997.google_iap"/>
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.EXPAND_STATUS_BAR" />
-    <uses-permission android:name="com.android.vending.BILLING" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
@@ -24,19 +22,7 @@
         android:theme="@style/Theme.AppCompat"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity
-            android:name="my.cinemax.app.free.ui.activities.StripeActivity"
-            android:theme="@style/Theme.ProfileDialog" />
 
-        <activity
-            android:name="my.cinemax.app.free.ui.activities.FinishActivity"
-            android:theme="@style/Theme.ProfileDialog" />
-        <activity
-            android:name="my.cinemax.app.free.ui.activities.PlansActivity"
-            android:theme="@style/Theme.ProfileDialog" />
-        <activity
-            android:name="my.cinemax.app.free.ui.activities.CashActivity"
-            android:theme="@style/Theme.ProfileDialog" />
         <activity
             android:name="my.cinemax.app.free.ui.activities.PasswordActivity"
             android:theme="@style/Theme.ProfileDialog" />
