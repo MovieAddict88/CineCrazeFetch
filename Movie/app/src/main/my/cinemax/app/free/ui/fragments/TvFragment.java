@@ -115,69 +115,53 @@ public class TvFragment extends Fragment {
         return view;
     }
     private void getCountiesList() {
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
-
-        Call<List<Country>> call = service.getCountiesList();
-        call.enqueue(new Callback<List<Country>>() {
-            @Override
-            public void onResponse(Call<List<Country>> call, Response<List<Country>> response) {
-                if (response.isSuccessful()){
-                    if (response.body().size()>0) {
-                        final String[] countryCodes = new String[response.body().size()+1];
-                        countryCodes[0] = "All countries";
-                        countriesList.add(new Country());
-
-                        for (int i = 0; i < response.body().size(); i++) {
-                            countryCodes[i+1] = response.body().get(i).getTitle();
-                            countriesList.add(response.body().get(i));
-                        }
-                        ArrayAdapter<String> filtresAdapter = new ArrayAdapter<String>(getActivity(),
-                                R.layout.spinner_layout,R.id.textView,countryCodes);
-
-                        filtresAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
-                        spinner_fragement_channel_countries_list.setAdapter(filtresAdapter);
-                        relative_layout_frament_channel_countries.setVisibility(View.VISIBLE);
-                    }else{
-                        relative_layout_frament_channel_countries.setVisibility(View.GONE);
-                    }
-                }
-            }
-            @Override
-            public void onFailure(Call<List<Country>> call, Throwable t) {
-            }
-        });
+        // For now, create a simple default countries list since GitHub JSON doesn't have country data
+        final String[] countryCodes = {"All countries", "Philippines", "Asia", "Global"};
+        countriesList.clear();
+        
+        Country allCountries = new Country();
+        allCountries.setId(0);
+        allCountries.setTitle("All countries");
+        countriesList.add(allCountries);
+        
+        for (int i = 1; i < countryCodes.length; i++) {
+            Country country = new Country();
+            country.setId(i);
+            country.setTitle(countryCodes[i]);
+            countriesList.add(country);
+        }
+        
+        ArrayAdapter<String> filtresAdapter = new ArrayAdapter<String>(getActivity(),
+                R.layout.spinner_layout, R.id.textView, countryCodes);
+        filtresAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+        spinner_fragement_channel_countries_list.setAdapter(filtresAdapter);
+        relative_layout_frament_channel_countries.setVisibility(View.VISIBLE);
     }
     private void getCategoriesList() {
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
-
-        Call<List<Category>> call = service.getCategoriesList();
-        call.enqueue(new Callback<List<Category>>() {
+        HybridDataService.getLiveTVCategories(new HybridDataService.CategoryListCallback() {
             @Override
-            public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
-                if (response.isSuccessful()){
-                    if (response.body().size()>0) {
-                        final String[] categoryCodes = new String[response.body().size()+1];
-                        categoryCodes[0] = "All categories";
-                        categoryList.add(new Category());
+            public void onSuccess(List<Category> categories) {
+                if (categories.size() > 0) {
+                    final String[] categoryCodes = new String[categories.size()];
+                    categoryList.clear();
 
-                        for (int i = 0; i < response.body().size(); i++) {
-                            categoryCodes[i+1] = response.body().get(i).getTitle();
-                            categoryList.add(response.body().get(i));
-                        }
-                        ArrayAdapter<String> filtresAdapter = new ArrayAdapter<String>(getActivity(),
-                                R.layout.spinner_layout,R.id.textView,categoryCodes);
-                        filtresAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
-                        spinner_fragement_channel_categories_list.setAdapter(filtresAdapter);
-                        relative_layout_frament_channel_categories.setVisibility(View.VISIBLE);
-                    }else{
-                        relative_layout_frament_channel_categories.setVisibility(View.GONE);
+                    for (int i = 0; i < categories.size(); i++) {
+                        categoryCodes[i] = categories.get(i).getTitle();
+                        categoryList.add(categories.get(i));
                     }
+                    ArrayAdapter<String> filtresAdapter = new ArrayAdapter<String>(getActivity(),
+                            R.layout.spinner_layout, R.id.textView, categoryCodes);
+                    filtresAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+                    spinner_fragement_channel_categories_list.setAdapter(filtresAdapter);
+                    relative_layout_frament_channel_categories.setVisibility(View.VISIBLE);
+                } else {
+                    relative_layout_frament_channel_categories.setVisibility(View.GONE);
                 }
             }
+
             @Override
-            public void onFailure(Call<List<Category>> call, Throwable t) {
+            public void onError(String error) {
+                relative_layout_frament_channel_categories.setVisibility(View.GONE);
             }
         });
     }
