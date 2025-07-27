@@ -22,6 +22,7 @@ import my.cinemax.app.free.Provider.PrefManager;
 import my.cinemax.app.free.R;
 import my.cinemax.app.free.api.apiClient;
 import my.cinemax.app.free.api.apiRest;
+import my.cinemax.app.free.api.JsonDataService;
 import my.cinemax.app.free.entity.Data;
 import my.cinemax.app.free.entity.Genre;
 import my.cinemax.app.free.ui.Adapters.HomeAdapter;
@@ -78,72 +79,75 @@ public class HomeFragment extends Fragment {
     private void loadData() {
 
         showLoadingView();
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
-        Call<Data> call = service.homeData();
-        call.enqueue(new Callback<Data>() {
+        JsonDataService jsonDataService = new JsonDataService(getContext());
+        jsonDataService.loadHomeData(new JsonDataService.DataCallback() {
             @Override
-            public void onResponse(Call<Data> call, Response<Data> response) {
-                apiClient.FormatData(getActivity(),response);
-                if (response.isSuccessful()){
-                    dataList.clear();
-                    dataList.add(new Data().setViewType(0));
-                    if (response.body().getSlides().size()>0){
-                        Data sliodeData =  new Data();
-                        sliodeData.setSlides(response.body().getSlides());
-                        dataList.add(sliodeData);
-                    }
-                    if (response.body().getChannels().size()>0){
-                       Data channelData = new Data();
-                       channelData.setChannels(response.body().getChannels());
-                        dataList.add(channelData);
-                    }
-                    if (response.body().getActors().size()>0){
-                        Data actorsData = new Data();
-                        actorsData.setActors(response.body().getActors());
-                        dataList.add(actorsData);
-                    }
-                    if (response.body().getGenres().size()>0){
-                        if (my_genre_list!=null){
-                            Data genreDataMyList = new Data();
-                            genreDataMyList.setGenre(my_genre_list);
-                            dataList.add(genreDataMyList);
+            public void onSuccess(Data data) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        dataList.clear();
+                        dataList.add(new Data().setViewType(0));
+                        if (data.getSlides() != null && data.getSlides().size() > 0) {
+                            Data slideData = new Data();
+                            slideData.setSlides(data.getSlides());
+                            dataList.add(slideData);
                         }
-                        for (int i = 0; i < response.body().getGenres().size(); i++) {
-                            Data genreData = new Data();
-                            genreData.setGenre(response.body().getGenres().get(i));
-                            dataList.add(genreData);
-                            if (native_ads_enabled){
-                                item++;
-                                if (item == lines_beetween_ads ){
-                                    item= 0;
-                                    if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("FACEBOOK")) {
-                                        dataList.add(new Data().setViewType(5));
-                                    }else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("ADMOB")){
-                                        dataList.add(new Data().setViewType(6));
-                                    } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("BOTH")){
-                                        if (type_ads == 0) {
+                        if (data.getChannels() != null && data.getChannels().size() > 0) {
+                            Data channelData = new Data();
+                            channelData.setChannels(data.getChannels());
+                            dataList.add(channelData);
+                        }
+                        if (data.getActors() != null && data.getActors().size() > 0) {
+                            Data actorsData = new Data();
+                            actorsData.setActors(data.getActors());
+                            dataList.add(actorsData);
+                        }
+                        if (data.getGenres() != null && data.getGenres().size() > 0) {
+                            if (my_genre_list != null) {
+                                Data genreDataMyList = new Data();
+                                genreDataMyList.setGenre(my_genre_list);
+                                dataList.add(genreDataMyList);
+                            }
+                            for (int i = 0; i < data.getGenres().size(); i++) {
+                                Data genreData = new Data();
+                                genreData.setGenre(data.getGenres().get(i));
+                                dataList.add(genreData);
+                                if (native_ads_enabled) {
+                                    item++;
+                                    if (item == lines_beetween_ads) {
+                                        item = 0;
+                                        if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("FACEBOOK")) {
                                             dataList.add(new Data().setViewType(5));
-                                            type_ads = 1;
-                                        }else if (type_ads == 1){
+                                        } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("ADMOB")) {
                                             dataList.add(new Data().setViewType(6));
-                                            type_ads = 0;
+                                        } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("BOTH")) {
+                                            if (type_ads == 0) {
+                                                dataList.add(new Data().setViewType(5));
+                                                type_ads = 1;
+                                            } else if (type_ads == 1) {
+                                                dataList.add(new Data().setViewType(6));
+                                                type_ads = 0;
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
+                        showListView();
+                        homeAdapter.notifyDataSetChanged();
                     }
-                    showListView();
-                    homeAdapter.notifyDataSetChanged();
-                }else{
-                    showErrorView();
-                }
+                });
             }
 
             @Override
-            public void onFailure(Call<Data> call, Throwable t) {
-                showErrorView();
+            public void onError(String error) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        showErrorView();
+                    }
+                });
             }
         });
     }
