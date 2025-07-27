@@ -31,7 +31,7 @@
                     <include layout="@layout/page_error" />
                 </LinearLayout>
                 <androidx.recyclerview.widget.RecyclerView
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:id="@+id/recycler_view_home_fragment"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

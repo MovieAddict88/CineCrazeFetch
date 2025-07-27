@@ -110,6 +110,36 @@ public class LoadActivity extends AppCompatActivity {
 
 
     private void checkAccount() {
+        // Skip API check since the API endpoints are not working
+        // Set default values and proceed directly
+        prf.setString("SUBSCRIBED", "TRUE");
+        prf.setString("NEW_SUBSCRIBE_ENABLED", "TRUE");
+        redirect();
+    }
+    
+    private void redirect() {
+        if (id != null && type != null) {
+            if (type.equals("poster"))
+                getPoster();
+            if (type.equals("channel"))
+                getChannel();
+        } else {
+            if (!prf.getString("first").equals("true")) {
+                Intent intent = new Intent(LoadActivity.this, IntroActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.enter, R.anim.exit);
+                finish();
+                prf.setString("first", "true");
+            } else {
+                Intent intent = new Intent(LoadActivity.this, HomeActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.enter, R.anim.exit);
+                finish();
+            }
+        }
+    }
+    
+    private void checkAccountOriginal() {
 
         Integer version = -1;
         try {

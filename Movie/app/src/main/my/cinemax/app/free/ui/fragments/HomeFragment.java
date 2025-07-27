@@ -128,14 +128,44 @@ public class HomeFragment extends Fragment {
 
                     @Override
                     public void onError(String error) {
-                        showErrorView();
+                        android.util.Log.w("HomeFragment", "Genre loading failed, showing basic data");
+                        showListView();
+                        homeAdapter.notifyDataSetChanged();
                     }
                 });
             }
 
             @Override
             public void onError(String error) {
-                android.util.Log.e("HomeFragment", "Hybrid error: " + error);
+                android.util.Log.e("HomeFragment", "Hybrid error: " + error + ", falling back to TMDB");
+                // Fallback to TMDB data when hybrid fails
+                loadTMDBData();
+            }
+        });
+    }
+    
+    private void loadTMDBData() {
+        android.util.Log.d("HomeFragment", "Loading TMDB fallback data...");
+        my.cinemax.app.free.api.TMDBService.getInstance().getHomeData(new my.cinemax.app.free.api.TMDBService.HomeDataCallback() {
+            @Override
+            public void onSuccess(Data data) {
+                android.util.Log.d("HomeFragment", "TMDB data loaded successfully");
+                dataList.clear();
+                dataList.add(new Data().setViewType(0)); // Header view
+                
+                if (data.getPosters() != null && data.getPosters().size() > 0) {
+                    Data moviesData = new Data();
+                    moviesData.setPosters(data.getPosters());
+                    dataList.add(moviesData);
+                }
+                
+                showListView();
+                homeAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onError(String error) {
+                android.util.Log.e("HomeFragment", "TMDB fallback failed: " + error);
                 showErrorView();
             }
         });
@@ -173,12 +203,24 @@ public class HomeFragment extends Fragment {
     private void initViews() {
 
         boolean tabletSize = getResources().getBoolean(R.bool.isTablet);
-        if (!prefManager.getString("ADMIN_NATIVE_TYPE").equals("FALSE")){
+        
+        // Safely handle preference values with defaults
+        String nativeType = prefManager.getString("ADMIN_NATIVE_TYPE");
+        if (nativeType == null || nativeType.isEmpty()) {
+            nativeType = "FALSE";
+        }
+        
+        if (!nativeType.equals("FALSE")){
             native_ads_enabled=true;
-            if (tabletSize) {
-                lines_beetween_ads=Integer.parseInt(prefManager.getString("ADMIN_NATIVE_LINES"));
-            }else{
-                lines_beetween_ads=Integer.parseInt(prefManager.getString("ADMIN_NATIVE_LINES"));
+            String nativeLines = prefManager.getString("ADMIN_NATIVE_LINES");
+            if (nativeLines == null || nativeLines.isEmpty()) {
+                lines_beetween_ads = 6; // default value
+            } else {
+                try {
+                    lines_beetween_ads = Integer.parseInt(nativeLines);
+                } catch (NumberFormatException e) {
+                    lines_beetween_ads = 6; // default value
+                }
             }
         }
         if (checkSUBSCRIBED()) {

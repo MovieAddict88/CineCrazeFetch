@@ -165,8 +165,10 @@ public class apiClient {
                     .build();
             Picasso.setSingletonInstance(picasso);
 
+            // Use a fallback URL that works - we'll handle data through HybridDataService
+            String fallbackUrl = "https://api.themoviedb.org/3/";
             retrofit = new Retrofit.Builder()
-				.baseUrl(Actress.actress)
+                    .baseUrl(fallbackUrl)
                     .client(okHttpClient)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();

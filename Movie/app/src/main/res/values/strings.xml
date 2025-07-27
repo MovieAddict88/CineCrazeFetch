@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CineMax</string>
+    <string name="publisher_id">pub-3940256099942544</string>
+    <string name="unity_ads_app_id">1234567</string>
+    <string name="app_lovin_id">YOUR_APPLOVIN_SDK_KEY</string>
+    <string name="facebook_app_id">YOUR_FACEBOOK_APP_ID</string>
+    <string name="fb_login_protocol_scheme">fbYOUR_FACEBOOK_APP_ID</string>
+    
+    <!-- Error messages -->
+    <string name="error_short_value">This field is too short</string>
+    <string name="error_server">Server error occurred</string>
+    <string name="error_mail_valide">Please enter a valid email address</string>
+    <string name="password_confirm_message">Passwords do not match</string>
+    <string name="accept_privacy_policy_error">Please accept the privacy policy</string>
+    
+    <!-- Operations -->
+    <string name="operation_progress">Please wait...</string>
+    <string name="operation_canceller">Operation cancelled</string>
+    
+    <!-- Downloads -->
+    <string name="file_has_been_downloaded">File has been downloaded successfully</string>
+    <string name="Downloaded">Downloaded</string>
+    <string name="download_foler">CineMax Downloads</string>
+    
+    <!-- Messages -->
+    <string name="message_logout">Logged out successfully</string>
+    <string name="message_sended">Message sent successfully</string>
+    <string name="rating_done">Rating submitted successfully</string>
+    <string name="comment_hidden">Comment hidden</string>
+    <string name="infos_updated_successfully">Information updated successfully</string>
+    <string name="account_disabled">Account is disabled</string>
+    
+    <!-- UI Labels -->
+    <string name="please_login">Please login</string>
+    <string name="now_time">Just now</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+    <string name="label_cache">Cache: </string>
+    
+    <!-- Content -->
+    <string name="use_content_for_free">Enjoy free content!</string>
+    <string name="no_source_available">No source available for this content</string>
+    <string name="rate_this_movie">Rate this movie</string>
+    <string name="rate_this_serie_tv">Rate this TV series</string>
+    <string name="rate_this_channel">Rate this channel</string>
+    <string name="get_this_movie_here">Get this movie here</string>
+    <string name="get_this_serie_here">Get this series here</string>
+    <string name="get_this_channel_here">Get this channel here</string>
+    
+    <!-- Policies -->
+    <string name="subscription_policy">Subscription Policy</string>
+    <string name="policy_privacy">Privacy Policy</string>
+    <string name="select_payment_method">Please select a payment method</string>
+    
+    <!-- Updates -->
+    <string name="update_now">Update Now</string>
+    <string name="skip">Skip</string>
+    
+    <!-- Settings -->
+    <string name="action_settings">Settings</string>
+</resources>

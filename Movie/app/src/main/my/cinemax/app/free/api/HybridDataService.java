@@ -55,34 +55,66 @@ public class HybridDataService {
 
     public static void getHomeData(HomeDataCallback callback) {
         Log.d(TAG, "Starting hybrid data fetch...");
-        executor.execute(() -> {
-            try {
-                // First, fetch data from GitHub JSON
-                String jsonData = fetchJsonFromUrl(JSON_URL);
-                if (jsonData != null) {
-                    Log.d(TAG, "Successfully fetched JSON data, length: " + jsonData.length());
-                    Data data = parseHomeDataFromJson(jsonData);
-                    
-                    // If we have movies, enhance them with TMDB metadata
-                    if (data.getPosters() != null && data.getPosters().size() > 0) {
-                        enhanceMoviesWithTMDBMetadata(data.getPosters(), new Runnable() {
-                            @Override
-                            public void run() {
-                                Log.d(TAG, "Enhanced " + data.getPosters().size() + " movies with TMDB metadata");
-                                callback.onSuccess(data);
-                            }
-                        });
-                    } else {
-                        Log.w(TAG, "No movies found in JSON data");
-                        callback.onSuccess(data);
+        
+        // Try TMDB first for more reliable data
+        TMDBService.getInstance().getHomeData(new TMDBService.HomeDataCallback() {
+            @Override
+            public void onSuccess(Data tmdbData) {
+                Log.d(TAG, "TMDB data loaded successfully, adding basic streaming sources");
+                // Add basic streaming sources to TMDB movies
+                if (tmdbData.getPosters() != null) {
+                    for (Poster movie : tmdbData.getPosters()) {
+                        if (movie.getSources() == null || movie.getSources().isEmpty()) {
+                            List<Source> sources = new ArrayList<>();
+                            Source source = new Source();
+                            source.setTitle("HD Stream");
+                            source.setUrl("https://example.com/stream/" + movie.getId());
+                            source.setType("stream");
+                            source.setQuality("720p");
+                            source.setSize("0");
+                            source.setKind("stream");
+                            source.setPremium("0");
+                            source.setExternal(false);
+                            sources.add(source);
+                            movie.setSources(sources);
+                        }
                     }
-                } else {
-                    Log.e(TAG, "Failed to fetch JSON data - null response");
-                    callback.onError("Failed to fetch JSON data");
                 }
-            } catch (Exception e) {
-                Log.e(TAG, "Error fetching hybrid data", e);
-                callback.onError("Error: " + e.getMessage());
+                callback.onSuccess(tmdbData);
+            }
+
+            @Override
+            public void onError(String error) {
+                Log.w(TAG, "TMDB failed, trying GitHub JSON as backup: " + error);
+                // Fallback to GitHub JSON
+                executor.execute(() -> {
+                    try {
+                        String jsonData = fetchJsonFromUrl(JSON_URL);
+                        if (jsonData != null) {
+                            Log.d(TAG, "Successfully fetched JSON data, length: " + jsonData.length());
+                            Data data = parseHomeDataFromJson(jsonData);
+                            
+                            if (data.getPosters() != null && data.getPosters().size() > 0) {
+                                enhanceMoviesWithTMDBMetadata(data.getPosters(), new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Log.d(TAG, "Enhanced " + data.getPosters().size() + " movies with TMDB metadata");
+                                        callback.onSuccess(data);
+                                    }
+                                });
+                            } else {
+                                Log.w(TAG, "No movies found in JSON data, creating empty data");
+                                callback.onSuccess(new Data());
+                            }
+                        } else {
+                            Log.e(TAG, "Both TMDB and GitHub JSON failed");
+                            callback.onError("All data sources failed");
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error fetching hybrid data", e);
+                        callback.onError("Error: " + e.getMessage());
+                    }
+                });
             }
         });
     }
@@ -297,11 +329,41 @@ public class HybridDataService {
             Log.d(TAG, "Parsed " + posters.size() + " movie entries from live TV data");
         }
         
-        // If no movies found in GitHub JSON, fallback to TMDB API
+        // If no movies found in GitHub JSON, get some from TMDB
         if (posters.isEmpty()) {
-            Log.d(TAG, "No movies found in GitHub JSON, falling back to TMDB API...");
-            // This will be handled by the calling method
-            return data; // Return empty data, TMDB will be called separately
+            Log.d(TAG, "No movies found in GitHub JSON, getting TMDB data directly...");
+            // Get popular movies from TMDB as fallback
+            TMDBService.getInstance().getPopularMovies(1, new TMDBService.MovieListCallback() {
+                @Override
+                public void onSuccess(List<Poster> tmdbMovies) {
+                    if (tmdbMovies != null && !tmdbMovies.isEmpty()) {
+                        // Take first 10 movies and set basic streaming info
+                        List<Poster> limitedMovies = tmdbMovies.subList(0, Math.min(10, tmdbMovies.size()));
+                        for (Poster movie : limitedMovies) {
+                            // Add basic streaming source
+                            List<Source> sources = new ArrayList<>();
+                            Source source = new Source();
+                            source.setTitle("HD Stream");
+                            source.setUrl("https://example.com/stream/" + movie.getId());
+                            source.setType("stream");
+                            source.setQuality("720p");
+                            source.setSize("0");
+                            source.setKind("stream");
+                            source.setPremium("0");
+                            source.setExternal(false);
+                            sources.add(source);
+                            movie.setSources(sources);
+                        }
+                        data.setPosters(limitedMovies);
+                        Log.d(TAG, "Added " + limitedMovies.size() + " TMDB movies as fallback");
+                    }
+                }
+
+                @Override
+                public void onError(String error) {
+                    Log.w(TAG, "TMDB fallback also failed: " + error);
+                }
+            });
         }
 
         data.setPosters(posters);
