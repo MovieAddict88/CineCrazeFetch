@@ -55,6 +55,49 @@
           ]
         }
       ]
+    },
+    {
+      "MainCategory": "TV Series",
+      "SubCategories": [
+        "Action",
+        "Comedy",
+        "Drama",
+        "Anime"
+      ],
+      "Entries": [
+        {
+          "Title": "Sample TV Series",
+          "SubCategory": "Action",
+          "Country": "🇺🇸 USA",
+          "Description": "A sample TV series for testing",
+          "Poster": "https://via.placeholder.com/300x450",
+          "Thumbnail": "https://via.placeholder.com/300x450",
+          "Rating": 4.3,
+          "Year": 2024,
+          "Seasons": [
+            {
+              "Season": 1,
+              "SeasonPoster": "https://via.placeholder.com/300x450",
+              "Episodes": [
+                {
+                  "Episode": 1,
+                  "Title": "Pilot",
+                  "Duration": "45 min",
+                  "Description": "The first episode",
+                  "Thumbnail": "https://via.placeholder.com/300x200",
+                  "Servers": [
+                    {
+                      "name": "720p",
+                      "url": "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_5mb.mp4",
+                      "subtitle": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ]
 }

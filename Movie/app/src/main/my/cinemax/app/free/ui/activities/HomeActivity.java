@@ -214,9 +214,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         viewPager.setOffscreenPageLimit(100);
         adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new HomeFragment());
-        adapter.addFragment(new MoviesFragment());
-        adapter.addFragment(new SeriesFragment());
         adapter.addFragment(new TvFragment());
+        adapter.addFragment(new SeriesFragment());
+        adapter.addFragment(new MoviesFragment());
         adapter.addFragment(new DownloadsFragment());
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(0);

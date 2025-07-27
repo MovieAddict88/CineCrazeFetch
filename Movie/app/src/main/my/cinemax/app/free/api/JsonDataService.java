@@ -159,11 +159,11 @@ public class JsonDataService {
                         slides.add(slide);
                     }
                 } else {
-                    // Map to Poster (Movies/Series)
+                    // Map to Poster (Movies/TV Series)
                     Poster poster = mapToPoster(entry, mainCategory);
                     posters.add(poster);
                     
-                    // Add first few movies as slides for the carousel
+                    // Add first few movies/series as slides for the carousel
                     if (slides.size() < 5) {
                         Slide slide = new Slide();
                         slide.setId(slides.size() + 1);
@@ -241,7 +241,8 @@ public class JsonDataService {
                       String.valueOf(entry.get("Year").getAsInt()) : "2024");
         poster.setDuration(entry.has("Duration") ? 
                           entry.get("Duration").getAsString() : "");
-        poster.setType(category.contains("Movie") ? "movie" : "serie");
+        poster.setType(category.contains("Movies") ? "movie" : 
+                      (category.contains("TV Series") ? "serie" : "serie"));
         poster.setClassification(category);
         poster.setComment(true);
         

@@ -63,17 +63,16 @@
                 app:bt_title="Home" />
 
             <com.gauravk.bubblenavigation.BubbleToggleView
-                android:id="@+id/l_item_search"
+                android:id="@+id/l_item_profileist"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:bt_iconHeight="20dp"
                 app:bt_iconWidth="20dp"
-
-                app:bt_colorActive="@color/red"
-                app:bt_colorInactive="@color/red"
-                app:bt_shape="@drawable/bg_background_red"
-                app:bt_icon="@drawable/ic_movie"
-                app:bt_title="Movies" />
+                app:bt_colorInactive="@color/pruple"
+                app:bt_colorActive="@color/pruple"
+                app:bt_shape="@drawable/bg_background_pruple"
+                app:bt_icon="@drawable/ic_television_box"
+                app:bt_title="LiveTV" />
 
             <com.gauravk.bubblenavigation.BubbleToggleView
                 android:id="@+id/l_item_profile_list"
@@ -87,16 +86,17 @@
                 app:bt_icon="@drawable/ic_tv_show"
                 app:bt_title="Series" />
             <com.gauravk.bubblenavigation.BubbleToggleView
-                android:id="@+id/l_item_profileist"
+                android:id="@+id/l_item_search"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:bt_iconHeight="20dp"
                 app:bt_iconWidth="20dp"
-                app:bt_colorInactive="@color/pruple"
-                app:bt_colorActive="@color/pruple"
-                app:bt_shape="@drawable/bg_background_pruple"
-                app:bt_icon="@drawable/ic_television_box"
-                app:bt_title="LiveTV" />
+
+                app:bt_colorActive="@color/red"
+                app:bt_colorInactive="@color/red"
+                app:bt_shape="@drawable/bg_background_red"
+                app:bt_icon="@drawable/ic_movie"
+                app:bt_title="Movies" />
 
             <com.gauravk.bubblenavigation.BubbleToggleView
                 android:id="@+id/l_ite_profi"
