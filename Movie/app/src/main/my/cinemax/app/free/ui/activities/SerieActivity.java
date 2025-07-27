@@ -661,6 +661,7 @@ public class SerieActivity extends AppCompatActivity implements PlaylistDownload
             intent.putExtra("url",playableList.get(position).getUrl());
             intent.putExtra("type",playableList.get(position).getType());
             intent.putExtra("kind","episode");
+            intent.putExtra("isLive",false);
             intent.putExtra("image",poster.getImage());
             intent.putExtra("title",poster.getTitle());
             intent.putExtra("subtitle",seasonArrayList.get(spinner_activity_serie_season_list.getSelectedItemPosition()).getTitle()+" : "+selectedEpisode.getTitle());
@@ -733,6 +734,7 @@ public class SerieActivity extends AppCompatActivity implements PlaylistDownload
             intent.putExtra("url",poster.getTrailer().getUrl());
             intent.putExtra("type",poster.getTrailer().getType());
             intent.putExtra("image",poster.getImage());
+            intent.putExtra("isLive",false);
             intent.putExtra("title",poster.getTitle());
             intent.putExtra("subtitle",poster.getTitle() + " Trailer");
             startActivity(intent);

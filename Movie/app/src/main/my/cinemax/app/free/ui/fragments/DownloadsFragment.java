@@ -195,6 +195,7 @@ public class DownloadsFragment extends Fragment  implements DownloadedAdapter.Do
                 intent1.putExtra("url",getIpAccess()+getPortFromEditText());
                 intent1.putExtra("type",type);
                 intent1.putExtra("kind",downloadItem.getType());
+                intent1.putExtra("isLive",false);
                 intent1.putExtra("image",downloadItem.getImage());
                 intent1.putExtra("title",downloadItem.getTitle());
                 intent1.putExtra("subtitle",downloadItem.getTitle());
@@ -212,6 +213,7 @@ public class DownloadsFragment extends Fragment  implements DownloadedAdapter.Do
             intent.putExtra("url",downloadItem.getPath());
             intent.putExtra("type",type);
             intent.putExtra("kind",downloadItem.getType());
+            intent.putExtra("isLive",false);
             intent.putExtra("image",downloadItem.getImage());
             intent.putExtra("title",downloadItem.getTitle());
             intent.putExtra("subtitle",downloadItem.getTitle());

@@ -598,6 +598,7 @@ public class MovieActivity extends AppCompatActivity {
             intent.putExtra("type",playSources.get(position).getType());
             intent.putExtra("image",poster.getImage());
             intent.putExtra("kind","movie");
+            intent.putExtra("isLive",false);
             intent.putExtra("title",poster.getTitle());
             intent.putExtra("subtitle",poster.getTitle() + "("+poster.getYear()+")");
             startActivity(intent);
@@ -627,6 +628,7 @@ public class MovieActivity extends AppCompatActivity {
             intent.putExtra("url",poster.getTrailer().getUrl());
             intent.putExtra("type",poster.getTrailer().getType());
             intent.putExtra("image",poster.getImage());
+            intent.putExtra("isLive",false);
             intent.putExtra("title",poster.getTitle());
             intent.putExtra("subtitle",poster.getTitle() + " Trailer");
             startActivity(intent);

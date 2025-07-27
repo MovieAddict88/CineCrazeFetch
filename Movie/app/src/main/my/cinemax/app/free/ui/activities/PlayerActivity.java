@@ -145,15 +145,28 @@ public class PlayerActivity extends AppCompatActivity {
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         mScaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
         mCastContext = CastContext.getSharedInstance(this);
-        Bundle bundle = getIntent().getExtras() ;
-        vodeoId = bundle.getInt("id");
-        videoUrl = bundle.getString("url");
-        videoKind = bundle.getString("kind");
-        isLive = bundle.getBoolean("isLive");
-        videoType = bundle.getString("type");
-        videoTitle = bundle.getString("title");
-        videoSubTile = bundle.getString("subtitle");
-        videoImage = bundle.getString("image");
+        Bundle bundle = getIntent().getExtras();
+        if (bundle == null) {
+            Log.e("PlayerActivity", "No bundle data received");
+            finish();
+            return;
+        }
+        
+        vodeoId = bundle.getInt("id", 0);
+        videoUrl = bundle.getString("url", "");
+        videoKind = bundle.getString("kind", "");
+        isLive = bundle.getBoolean("isLive", false);
+        videoType = bundle.getString("type", "mp4");
+        videoTitle = bundle.getString("title", "");
+        videoSubTile = bundle.getString("subtitle", "");
+        videoImage = bundle.getString("image", "");
+        
+        // Validate required parameters
+        if (videoUrl == null || videoUrl.isEmpty()) {
+            Log.e("PlayerActivity", "No video URL provided");
+            finish();
+            return;
+        }
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         if (savedInstanceState == null) {

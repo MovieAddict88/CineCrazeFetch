@@ -101,18 +101,32 @@ public class CustomPlayerViewModel extends BaseObservable implements ExoPlayer.E
 
     public void onStart(SimpleExoPlayerView simpleExoPlayerView, Bundle bundle) {
         mSimpleExoPlayerView = simpleExoPlayerView;
-        mUrl = bundle.getString("videoUrl");
-        isLive = bundle.getBoolean("isLive");
-        videoType = bundle.getString("videoType");
-        videoTitle = bundle.getString("videoTitle");
-        videoSubTile = bundle.getString("videoSubTile");
-        videoImage = bundle.getString("videoImage");
-        initPlayer();
-        mSimpleExoPlayerView.setPlayer(mExoPlayer);
-
-        preparePlayer(null,0);
-        updateCastSessionAndSessionManager();
-
+        
+        if (bundle == null) {
+            Log.e("CustomPlayerViewModel", "No bundle data provided");
+            return;
+        }
+        
+        mUrl = bundle.getString("videoUrl", "");
+        isLive = bundle.getBoolean("isLive", false);
+        videoType = bundle.getString("videoType", "mp4");
+        videoTitle = bundle.getString("videoTitle", "");
+        videoSubTile = bundle.getString("videoSubTile", "");
+        videoImage = bundle.getString("videoImage", "");
+        
+        if (mUrl == null || mUrl.isEmpty()) {
+            Log.e("CustomPlayerViewModel", "No video URL provided");
+            return;
+        }
+        
+        try {
+            initPlayer();
+            mSimpleExoPlayerView.setPlayer(mExoPlayer);
+            preparePlayer(null, 0);
+            updateCastSessionAndSessionManager();
+        } catch (Exception e) {
+            Log.e("CustomPlayerViewModel", "Error initializing player", e);
+        }
     }
 
     public void setPayerPausePlay(RelativeLayout payer_pause_play) {
