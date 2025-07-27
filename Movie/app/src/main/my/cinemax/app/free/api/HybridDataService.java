@@ -308,62 +308,52 @@ public class HybridDataService {
         return data;
     }
 
-    private static Poster parsePosterFromLiveTVEntry(JSONObject entry) {
-        try {
-            Poster poster = new Poster();
-            
-            // Set basic movie information
-            poster.setTitle(entry.optString("Title", "Unknown Movie"));
-            poster.setDescription(entry.optString("Description", ""));
-            poster.setImage(entry.optString("Poster", ""));
-            poster.setCover(entry.optString("Thumbnail", ""));
-            poster.setRating(entry.optFloat("Rating", 0.0f));
-            poster.setYear(entry.optString("Year", "2024"));
-            poster.setDuration(entry.optString("Duration", "120 min"));
-            poster.setType("movie");
-            poster.setPlayas("1");
-            poster.setDownloadas("1");
-            poster.setComment(true);
-            
-            // Parse streaming sources if available
-            if (entry.has("Servers")) {
-                List<Source> sources = new ArrayList<>();
-                JSONArray serversArray = entry.getJSONArray("Servers");
-                for (int i = 0; i < serversArray.length(); i++) {
-                    JSONObject serverObj = serversArray.getJSONObject(i);
-                    Source source = parseSourceFromServer(serverObj);
-                    if (source != null) {
-                        sources.add(source);
-                    }
+    private static Poster parsePosterFromLiveTVEntry(JSONObject entry) throws JSONException {
+        Poster poster = new Poster();
+
+        // Set basic movie information
+        poster.setTitle(entry.optString("Title", "Unknown Movie"));
+        poster.setDescription(entry.optString("Description", ""));
+        poster.setImage(entry.optString("Poster", ""));
+        poster.setCover(entry.optString("Thumbnail", ""));
+        poster.setRating((float) entry.optDouble("Rating", 0.0f));
+        poster.setYear(entry.optString("Year", "2024"));
+        poster.setDuration(entry.optString("Duration", "120 min"));
+        poster.setType("movie");
+        poster.setPlayas("1");
+        poster.setDownloadas("1");
+        poster.setComment(true);
+
+        // Parse streaming sources if available
+        if (entry.has("Servers")) {
+            List<Source> sources = new ArrayList<>();
+            JSONArray serversArray = entry.getJSONArray("Servers");
+            for (int i = 0; i < serversArray.length(); i++) {
+                JSONObject serverObj = serversArray.getJSONObject(i);
+                Source source = parseSourceFromServer(serverObj);
+                if (source != null) {
+                    sources.add(source);
                 }
-                poster.setSources(sources);
             }
-            
-            return poster;
-        } catch (JSONException e) {
-            Log.e(TAG, "Error parsing live TV entry", e);
-            return null;
+            poster.setSources(sources);
         }
+
+        return poster;
     }
 
     private static Source parseSourceFromServer(JSONObject serverObj) {
-        try {
-            Source source = new Source();
-            
-            source.setTitle(serverObj.optString("name", "Unknown Quality"));
-            source.setUrl(serverObj.optString("url", ""));
-            source.setType("stream");
-            source.setQuality(serverObj.optString("name", "720p"));
-            source.setSize("0");
-            source.setKind("stream");
-            source.setPremium("0");
-            source.setExternal(false);
-            
-            return source;
-        } catch (JSONException e) {
-            Log.e(TAG, "Error parsing server object", e);
-            return null;
-        }
+        Source source = new Source();
+
+        source.setTitle(serverObj.optString("name", "Unknown Quality"));
+        source.setUrl(serverObj.optString("url", ""));
+        source.setType("stream");
+        source.setQuality(serverObj.optString("name", "720p"));
+        source.setSize("0");
+        source.setKind("stream");
+        source.setPremium("0");
+        source.setExternal(false);
+
+        return source;
     }
 
     private static List<Poster> parseMoviesFromJson(String jsonData) throws JSONException {
@@ -396,123 +386,113 @@ public class HybridDataService {
         return genres;
     }
 
-    private static Poster parsePosterFromJson(JSONObject movieObj) {
-        try {
-            Poster poster = new Poster();
-            
-            if (movieObj.has("id")) {
-                poster.setId(movieObj.getInt("id"));
-            }
-            
-            if (movieObj.has("title")) {
-                String title = movieObj.getString("title");
-                poster.setTitle(title);
-                Log.d(TAG, "Parsed movie: " + title);
-            }
-            
-            if (movieObj.has("overview")) {
-                poster.setDescription(movieObj.getString("overview"));
-            }
-            
-            if (movieObj.has("poster_path")) {
-                String posterPath = movieObj.getString("poster_path");
-                if (posterPath.startsWith("http")) {
-                    poster.setImage(posterPath);
-                } else {
-                    poster.setImage("https://image.tmdb.org/t/p/w500" + posterPath);
-                }
-            }
-            
-            if (movieObj.has("backdrop_path")) {
-                String backdropPath = movieObj.getString("backdrop_path");
-                if (backdropPath.startsWith("http")) {
-                    poster.setCover(backdropPath);
-                } else {
-                    poster.setCover("https://image.tmdb.org/t/p/w500" + backdropPath);
-                }
-            }
-            
-            if (movieObj.has("release_date")) {
-                poster.setYear(movieObj.getString("release_date"));
-            }
-            
-            if (movieObj.has("vote_average")) {
-                poster.setRating((float) movieObj.getDouble("vote_average"));
-            }
-            
-            // Parse streaming sources from JSON
-            if (movieObj.has("sources")) {
-                List<Source> sources = new ArrayList<>();
-                JSONArray sourcesArray = movieObj.getJSONArray("sources");
-                for (int i = 0; i < sourcesArray.length(); i++) {
-                    JSONObject sourceObj = sourcesArray.getJSONObject(i);
-                    Source source = parseSourceFromJson(sourceObj);
-                    if (source != null) {
-                        sources.add(source);
-                    }
-                }
-                poster.setSources(sources);
-            }
-            
-            // Set default values for required fields
-            poster.setType("movie");
-            poster.setDuration("120 min");
-            poster.setYear("2024");
-            poster.setPlayas("1");
-            poster.setDownloadas("1");
-            poster.setComment(true);
-            
-            return poster;
-        } catch (JSONException e) {
-            Log.e(TAG, "Error parsing movie object", e);
-            return null;
+    private static Poster parsePosterFromJson(JSONObject movieObj) throws JSONException {
+        Poster poster = new Poster();
+
+        if (movieObj.has("id")) {
+            poster.setId(movieObj.getInt("id"));
         }
+
+        if (movieObj.has("title")) {
+            String title = movieObj.getString("title");
+            poster.setTitle(title);
+            Log.d(TAG, "Parsed movie: " + title);
+        }
+
+        if (movieObj.has("overview")) {
+            poster.setDescription(movieObj.getString("overview"));
+        }
+
+        if (movieObj.has("poster_path")) {
+            String posterPath = movieObj.getString("poster_path");
+            if (posterPath.startsWith("http")) {
+                poster.setImage(posterPath);
+            } else {
+                poster.setImage("https://image.tmdb.org/t/p/w500" + posterPath);
+            }
+        }
+
+        if (movieObj.has("backdrop_path")) {
+            String backdropPath = movieObj.getString("backdrop_path");
+            if (backdropPath.startsWith("http")) {
+                poster.setCover(backdropPath);
+            } else {
+                poster.setCover("https://image.tmdb.org/t/p/w500" + backdropPath);
+            }
+        }
+
+        if (movieObj.has("release_date")) {
+            poster.setYear(movieObj.getString("release_date"));
+        }
+
+        if (movieObj.has("vote_average")) {
+            poster.setRating((float) movieObj.getDouble("vote_average"));
+        }
+
+        // Parse streaming sources from JSON
+        if (movieObj.has("sources")) {
+            List<Source> sources = new ArrayList<>();
+            JSONArray sourcesArray = movieObj.getJSONArray("sources");
+            for (int i = 0; i < sourcesArray.length(); i++) {
+                JSONObject sourceObj = sourcesArray.getJSONObject(i);
+                Source source = parseSourceFromJson(sourceObj);
+                if (source != null) {
+                    sources.add(source);
+                }
+            }
+            poster.setSources(sources);
+        }
+
+        // Set default values for required fields
+        poster.setType("movie");
+        poster.setDuration("120 min");
+        poster.setYear("2024");
+        poster.setPlayas("1");
+        poster.setDownloadas("1");
+        poster.setComment(true);
+
+        return poster;
     }
 
-    private static Source parseSourceFromJson(JSONObject sourceObj) {
-        try {
-            Source source = new Source();
-            
-            if (sourceObj.has("id")) {
-                source.setId(sourceObj.getInt("id"));
-            }
-            
-            if (sourceObj.has("title")) {
-                source.setTitle(sourceObj.getString("title"));
-            }
-            
-            if (sourceObj.has("url")) {
-                source.setUrl(sourceObj.getString("url"));
-            }
-            
-            if (sourceObj.has("type")) {
-                source.setType(sourceObj.getString("type"));
-            }
-            
-            if (sourceObj.has("quality")) {
-                source.setQuality(sourceObj.getString("quality"));
-            }
-            
-            if (sourceObj.has("size")) {
-                source.setSize(sourceObj.getString("size"));
-            }
-            
-            if (sourceObj.has("kind")) {
-                source.setKind(sourceObj.getString("kind"));
-            }
-            
-            if (sourceObj.has("premium")) {
-                source.setPremium(sourceObj.getString("premium"));
-            }
-            
-            if (sourceObj.has("external")) {
-                source.setExternal(sourceObj.getBoolean("external"));
-            }
-            
-            return source;
-        } catch (JSONException e) {
-            Log.e(TAG, "Error parsing source object", e);
-            return null;
+    private static Source parseSourceFromJson(JSONObject sourceObj) throws JSONException {
+        Source source = new Source();
+
+        if (sourceObj.has("id")) {
+            source.setId(sourceObj.getInt("id"));
         }
+
+        if (sourceObj.has("title")) {
+            source.setTitle(sourceObj.getString("title"));
+        }
+
+        if (sourceObj.has("url")) {
+            source.setUrl(sourceObj.getString("url"));
+        }
+
+        if (sourceObj.has("type")) {
+            source.setType(sourceObj.getString("type"));
+        }
+
+        if (sourceObj.has("quality")) {
+            source.setQuality(sourceObj.getString("quality"));
+        }
+
+        if (sourceObj.has("size")) {
+            source.setSize(sourceObj.getString("size"));
+        }
+
+        if (sourceObj.has("kind")) {
+            source.setKind(sourceObj.getString("kind"));
+        }
+
+        if (sourceObj.has("premium")) {
+            source.setPremium(sourceObj.getString("premium"));
+        }
+
+        if (sourceObj.has("external")) {
+            source.setExternal(sourceObj.getBoolean("external"));
+        }
+
+        return source;
     }
 }
