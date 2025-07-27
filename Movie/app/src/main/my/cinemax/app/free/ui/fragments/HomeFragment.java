@@ -136,6 +136,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onError(String error) {
                 android.util.Log.e("HomeFragment", "TMDB error: " + error);
+                android.util.Log.w("HomeFragment", "Both TMDB and fallback failed, showing error view");
                 showErrorView();
             }
         });

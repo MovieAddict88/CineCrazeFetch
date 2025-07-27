@@ -87,6 +87,13 @@ public class SplashActivity extends AppCompatActivity {
 
 
     public void redirect(){
+        // Temporarily test fallback service
+        Intent intent = new Intent(SplashActivity.this, FallbackTestActivity.class);
+        startActivity(intent);
+        overridePendingTransition(R.anim.enter, R.anim.exit);
+        finish();
+        
+        /* Original redirect logic (commented out for testing)
         if (!prf.getString("first").equals("true")) {
             Intent intent = new Intent(SplashActivity.this,IntroActivity.class);
             startActivity(intent);
@@ -113,6 +120,7 @@ public class SplashActivity extends AppCompatActivity {
                 finish();
             }
         }
+        */
     }
 
 

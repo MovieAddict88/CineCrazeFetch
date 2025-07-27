@@ -81,6 +81,9 @@
         <activity
             android:name="my.cinemax.app.free.ui.activities.TestActivity"
             android:theme="@style/Theme.AppCompat" />
+        <activity
+            android:name="my.cinemax.app.free.ui.activities.FallbackTestActivity"
+            android:theme="@style/Theme.AppCompat" />
 
         <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
