@@ -22,7 +22,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -171,21 +173,8 @@ public class HybridDataService {
     }
 
     public static void getMovieGenres(GenreListCallback callback) {
-        // Try TMDB first for genres
-        TMDBService.getInstance().getMovieGenres(new TMDBService.GenreListCallback() {
-            @Override
-            public void onSuccess(List<Genre> genres) {
-                callback.onSuccess(genres);
-            }
-
-            @Override
-            public void onError(String error) {
-                Log.w(TAG, "TMDB genres failed, using default genres");
-                // Fallback to default genres
-                List<Genre> defaultGenres = createDefaultGenres();
-                callback.onSuccess(defaultGenres);
-            }
-        });
+        // Get genres from GitHub JSON data
+        getGenresFromJson(callback);
     }
 
     public static void discoverMovies(String genres, String sortBy, int page, MovieListCallback callback) {
@@ -689,7 +678,7 @@ public class HybridDataService {
                         String subCategory = entry.optString("SubCategory", "");
                         
                         // Filter by genre if specified
-                        if (genreFilter == null || genreFilter.isEmpty() || 
+                        if (genreFilter == null || genreFilter.isEmpty() || genreFilter.equals("0") ||
                             subCategory.toLowerCase().contains(genreFilter.toLowerCase())) {
                             
                             Poster poster = parseMovieEntry(entry);
@@ -735,7 +724,7 @@ public class HybridDataService {
                         String subCategory = entry.optString("SubCategory", "");
                         
                         // Filter by genre if specified
-                        if (genreFilter == null || genreFilter.isEmpty() || 
+                        if (genreFilter == null || genreFilter.isEmpty() || genreFilter.equals("0") ||
                             subCategory.toLowerCase().contains(genreFilter.toLowerCase())) {
                             
                             Poster poster = parseTVSeriesEntry(entry);
@@ -860,5 +849,139 @@ public class HybridDataService {
         }
         
         return new ArrayList<>();
+    }
+
+    public static void getGenresFromJson(GenreListCallback callback) {
+        executor.execute(() -> {
+            try {
+                String jsonData = fetchJsonFromUrl(JSON_URL);
+                if (jsonData != null) {
+                    List<Genre> genres = extractGenresFromJson(jsonData);
+                    callback.onSuccess(genres);
+                } else {
+                    callback.onError("Failed to fetch GitHub JSON data");
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error extracting genres from GitHub JSON", e);
+                callback.onError("Error: " + e.getMessage());
+            }
+        });
+    }
+
+    private static List<Genre> extractGenresFromJson(String jsonData) throws JSONException {
+        List<Genre> genres = new ArrayList<>();
+        Set<String> genreNames = new HashSet<>();
+        JSONObject jsonObject = new JSONObject(jsonData);
+
+        if (jsonObject.has("Categories")) {
+            JSONArray categoriesArray = jsonObject.getJSONArray("Categories");
+            
+            for (int i = 0; i < categoriesArray.length(); i++) {
+                JSONObject category = categoriesArray.getJSONObject(i);
+                String mainCategory = category.optString("MainCategory", "");
+                
+                if (("Movies".equals(mainCategory) || "TV Series".equals(mainCategory)) && category.has("Entries")) {
+                    JSONArray entries = category.getJSONArray("Entries");
+                    
+                    for (int j = 0; j < entries.length(); j++) {
+                        JSONObject entry = entries.getJSONObject(j);
+                        String subCategory = entry.optString("SubCategory", "");
+                        
+                        if (!subCategory.isEmpty() && !genreNames.contains(subCategory)) {
+                            genreNames.add(subCategory);
+                            Genre genre = new Genre();
+                            genre.setId(genreNames.size());
+                            genre.setTitle(subCategory);
+                            genres.add(genre);
+                        }
+                    }
+                }
+                
+                // Also extract from SubCategories array if present
+                if (category.has("SubCategories")) {
+                    JSONArray subCategoriesArray = category.getJSONArray("SubCategories");
+                    for (int k = 0; k < subCategoriesArray.length(); k++) {
+                        String subCategory = subCategoriesArray.getString(k);
+                        if (!subCategory.isEmpty() && !genreNames.contains(subCategory)) {
+                            genreNames.add(subCategory);
+                            Genre genre = new Genre();
+                            genre.setId(genreNames.size());
+                            genre.setTitle(subCategory);
+                            genres.add(genre);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Add a default "All" genre at the beginning
+        Genre allGenre = new Genre();
+        allGenre.setId(0);
+        allGenre.setTitle("All");
+        genres.add(0, allGenre);
+
+        return genres;
+    }
+
+    public static void getLiveTVCategories(CategoryListCallback callback) {
+        executor.execute(() -> {
+            try {
+                String jsonData = fetchJsonFromUrl(JSON_URL);
+                if (jsonData != null) {
+                    List<my.cinemax.app.free.entity.Category> categories = extractCategoriesFromJson(jsonData);
+                    callback.onSuccess(categories);
+                } else {
+                    callback.onError("Failed to fetch GitHub JSON data");
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error extracting categories from GitHub JSON", e);
+                callback.onError("Error: " + e.getMessage());
+            }
+        });
+    }
+
+    public interface CategoryListCallback {
+        void onSuccess(List<my.cinemax.app.free.entity.Category> categories);
+        void onError(String error);
+    }
+
+    private static List<my.cinemax.app.free.entity.Category> extractCategoriesFromJson(String jsonData) throws JSONException {
+        List<my.cinemax.app.free.entity.Category> categories = new ArrayList<>();
+        Set<String> categoryNames = new HashSet<>();
+        JSONObject jsonObject = new JSONObject(jsonData);
+
+        if (jsonObject.has("Categories")) {
+            JSONArray categoriesArray = jsonObject.getJSONArray("Categories");
+            
+            for (int i = 0; i < categoriesArray.length(); i++) {
+                JSONObject category = categoriesArray.getJSONObject(i);
+                String mainCategory = category.optString("MainCategory", "");
+                
+                if ("Live TV".equals(mainCategory) && category.has("Entries")) {
+                    JSONArray entries = category.getJSONArray("Entries");
+                    
+                    for (int j = 0; j < entries.length(); j++) {
+                        JSONObject entry = entries.getJSONObject(j);
+                        String subCategory = entry.optString("SubCategory", "");
+                        
+                        if (!subCategory.isEmpty() && !categoryNames.contains(subCategory)) {
+                            categoryNames.add(subCategory);
+                            my.cinemax.app.free.entity.Category cat = new my.cinemax.app.free.entity.Category();
+                            cat.setId(categoryNames.size());
+                            cat.setTitle(subCategory);
+                            categories.add(cat);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Add a default "All" category at the beginning
+        my.cinemax.app.free.entity.Category allCategory = new my.cinemax.app.free.entity.Category();
+        allCategory.setId(0);
+        allCategory.setTitle("All");
+        categories.add(0, allCategory);
+
+        return categories;
     }
 }

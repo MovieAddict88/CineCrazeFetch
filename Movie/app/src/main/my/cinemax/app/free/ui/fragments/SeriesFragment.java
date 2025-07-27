@@ -9,10 +9,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -71,7 +67,7 @@ public class SeriesFragment extends Fragment {
     private Integer position = 0;
     private Integer item = 0 ;
     private Button button_try_again;
-    private int genreSelected = 0;
+    private String genreSelected = "";
     private String orderSelected = "created";
 
     private boolean firstLoadGenre = true;
@@ -119,35 +115,30 @@ public class SeriesFragment extends Fragment {
     }
 
     private void getGenreList() {
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
-
-        Call<List<Genre>> call = service.getGenreList();
-        call.enqueue(new Callback<List<Genre>>() {
+        HybridDataService.getMovieGenres(new HybridDataService.GenreListCallback() {
             @Override
-            public void onResponse(Call<List<Genre>> call, Response<List<Genre>> response) {
-                if (response.isSuccessful()){
-                    if (response.body().size()>0) {
-                        final String[] countryCodes = new String[response.body().size()+1];
-                        countryCodes[0] = "All genres";
-                        genreList.add(new Genre());
+            public void onSuccess(List<Genre> genres) {
+                if (genres.size() > 0) {
+                    final String[] countryCodes = new String[genres.size()];
+                    genreList.clear();
 
-                        for (int i = 0; i < response.body().size(); i++) {
-                            countryCodes[i+1] = response.body().get(i).getTitle();
-                            genreList.add(response.body().get(i));
-                        }
-                        ArrayAdapter<String> filtresAdapter = new ArrayAdapter<String>(getActivity(),
-                                R.layout.spinner_layout,R.id.textView,countryCodes);
-                        filtresAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
-                        spinner_fragement_series_genre_list.setAdapter(filtresAdapter);
-                        relative_layout_frament_series_genres.setVisibility(View.VISIBLE);
-                    }else{
-                        relative_layout_frament_series_genres.setVisibility(View.GONE);
+                    for (int i = 0; i < genres.size(); i++) {
+                        countryCodes[i] = genres.get(i).getTitle();
+                        genreList.add(genres.get(i));
                     }
+                    ArrayAdapter<String> filtresAdapter = new ArrayAdapter<String>(getActivity(),
+                            R.layout.spinner_layout, R.id.textView, countryCodes);
+                    filtresAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+                    spinner_fragement_series_genre_list.setAdapter(filtresAdapter);
+                    relative_layout_frament_series_genres.setVisibility(View.VISIBLE);
+                } else {
+                    relative_layout_frament_series_genres.setVisibility(View.GONE);
                 }
             }
+
             @Override
-            public void onFailure(Call<List<Genre>> call, Throwable t) {
+            public void onError(String error) {
+                relative_layout_frament_series_genres.setVisibility(View.GONE);
             }
         });
     }
@@ -166,10 +157,9 @@ public class SeriesFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (!firstLoadGenre) {
                     if (id==0){
-                        genreSelected  =0;
-
+                        genreSelected = "";
                     }else{
-                        genreSelected  = genreList.get((int) id).getId();
+                        genreSelected = genreList.get((int) id).getTitle();
                     }
                     item = 0;
                     page = 0;
@@ -396,10 +386,10 @@ public class SeriesFragment extends Fragment {
                 break;
         }
 
-        // Convert genre ID to string for TMDB API
-        String genreIds = genreSelected == 0 ? "" : String.valueOf(genreSelected);
+        // Use genre name for filtering
+        String genreFilter = genreSelected;
 
-        HybridDataService.discoverTVShows(genreIds, sortBy, page + 1, new HybridDataService.MovieListCallback() {
+        HybridDataService.discoverTVShows(genreFilter, sortBy, page + 1, new HybridDataService.MovieListCallback() {
             @Override
             public void onSuccess(List<Poster> series) {
                 if (series.size() > 0) {

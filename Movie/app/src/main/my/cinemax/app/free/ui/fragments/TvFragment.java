@@ -9,10 +9,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -393,54 +389,46 @@ public class TvFragment extends Fragment {
             relative_layout_load_more_channel_fragment.setVisibility(View.VISIBLE);
         }
         swipe_refresh_layout_channel_fragment.setRefreshing(false);
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
-        Call<List<Channel>> call = service.getChannelsByFiltres(categorySelected,countrySelected,page);
-        call.enqueue(new Callback<List<Channel>>() {
+
+        HybridDataService.getChannelsByFilters(categorySelected, countrySelected, page + 1, new HybridDataService.ChannelListCallback() {
             @Override
-            public void onResponse(Call<List<Channel>> call, final Response<List<Channel>> response) {
-                if (response.isSuccessful()){
-                    if (response.body().size()>0){
-                        for (int i = 0; i < response.body().size(); i++) {
-                            channelList.add(response.body().get(i));
-                            if (native_ads_enabled){
-                                item++;
-                                if (item == lines_beetween_ads ){
-                                    item= 0;
-                                    if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("FACEBOOK")) {
+            public void onSuccess(List<Channel> channels) {
+                if (channels.size() > 0) {
+                    for (int i = 0; i < channels.size(); i++) {
+                        channelList.add(channels.get(i));
+                        if (native_ads_enabled) {
+                            item++;
+                            if (item == lines_beetween_ads) {
+                                item = 0;
+                                if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("FACEBOOK")) {
+                                    channelList.add(new Channel().setTypeView(3));
+                                } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("ADMOB")) {
+                                    channelList.add(new Channel().setTypeView(4));
+                                } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("BOTH")) {
+                                    if (type_ads == 0) {
                                         channelList.add(new Channel().setTypeView(3));
-                                    }else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("ADMOB")){
+                                        type_ads = 1;
+                                    } else if (type_ads == 1) {
                                         channelList.add(new Channel().setTypeView(4));
-                                    } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("BOTH")){
-                                        if (type_ads == 0) {
-                                            channelList.add(new Channel().setTypeView(3));
-                                            type_ads = 1;
-                                        }else if (type_ads == 1){
-                                            channelList.add(new Channel().setTypeView(4));
-                                            type_ads = 0;
-                                        }
+                                        type_ads = 0;
                                     }
                                 }
                             }
                         }
-                        linear_layout_page_error_channel_fragment.setVisibility(View.GONE);
-                        recycler_view_channel_fragment.setVisibility(View.VISIBLE);
-                        image_view_empty_list.setVisibility(View.GONE);
-
-                        adapter.notifyDataSetChanged();
-                        page++;
-                        loading=true;
-                    }else{
-                        if (page==0) {
-                            linear_layout_page_error_channel_fragment.setVisibility(View.GONE);
-                            recycler_view_channel_fragment.setVisibility(View.GONE);
-                            image_view_empty_list.setVisibility(View.VISIBLE);
-                        }
                     }
-                }else{
-                    linear_layout_page_error_channel_fragment.setVisibility(View.VISIBLE);
-                    recycler_view_channel_fragment.setVisibility(View.GONE);
+                    linear_layout_page_error_channel_fragment.setVisibility(View.GONE);
+                    recycler_view_channel_fragment.setVisibility(View.VISIBLE);
                     image_view_empty_list.setVisibility(View.GONE);
+
+                    adapter.notifyDataSetChanged();
+                    page++;
+                    loading = true;
+                } else {
+                    if (page == 0) {
+                        linear_layout_page_error_channel_fragment.setVisibility(View.GONE);
+                        recycler_view_channel_fragment.setVisibility(View.GONE);
+                        image_view_empty_list.setVisibility(View.VISIBLE);
+                    }
                 }
                 relative_layout_load_more_channel_fragment.setVisibility(View.GONE);
                 swipe_refresh_layout_channel_fragment.setRefreshing(false);
@@ -448,14 +436,13 @@ public class TvFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<List<Channel>> call, Throwable t) {
+            public void onError(String error) {
                 linear_layout_page_error_channel_fragment.setVisibility(View.VISIBLE);
                 recycler_view_channel_fragment.setVisibility(View.GONE);
                 image_view_empty_list.setVisibility(View.GONE);
                 relative_layout_load_more_channel_fragment.setVisibility(View.GONE);
-                swipe_refresh_layout_channel_fragment.setVisibility(View.GONE);
+                swipe_refresh_layout_channel_fragment.setRefreshing(false);
                 linear_layout_load_channel_fragment.setVisibility(View.GONE);
-
             }
         });
     }

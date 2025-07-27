@@ -67,7 +67,7 @@ public class MoviesFragment extends Fragment {
     private Integer position = 0;
     private Integer item = 0 ;
     private Button button_try_again;
-    private int genreSelected = 0;
+    private String genreSelected = "";
     private String orderSelected = "created";
 
     private boolean firstLoadGenre = true;
@@ -157,9 +157,9 @@ public class MoviesFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (!firstLoadGenre) {
                     if (id == 0) {
-                        genreSelected = 0;
+                        genreSelected = "";
                     } else {
-                        genreSelected = genreList.get((int) id).getId();
+                        genreSelected = genreList.get((int) id).getTitle();
                     }
                     item = 0;
                     page = 0;
@@ -386,10 +386,10 @@ public class MoviesFragment extends Fragment {
                 break;
         }
 
-        // Convert genre ID to string for TMDB API
-        String genreIds = genreSelected == 0 ? "" : String.valueOf(genreSelected);
+        // Use genre name for filtering
+        String genreFilter = genreSelected;
 
-        HybridDataService.discoverMovies(genreIds, sortBy, page + 1, new HybridDataService.MovieListCallback() {
+        HybridDataService.discoverMovies(genreFilter, sortBy, page + 1, new HybridDataService.MovieListCallback() {
             @Override
             public void onSuccess(List<Poster> movies) {
                 if (movies.size() > 0) {
