@@ -1,45 +1,25 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.activities.TestActivity">
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/result_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:text="Testing TMDB API..."
+        android:textSize="18sp"
+        android:gravity="center"
+        android:layout_marginBottom="16dp" />
 
-        <FrameLayout
-            android:id="@+id/fl_adplaceholder"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp" />
+    <Button
+        android:id="@+id/test_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Test Again"
+        android:onClick="testAgain" />
 
-        <CheckBox
-            android:id="@+id/cb_start_muted"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="Start video ads muted" />
-
-        <Button
-            android:id="@+id/btn_refresh"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="16dp"
-            android:layout_marginTop="16dp"
-            android:text="Refresh Ad" />
-
-        <TextView
-            android:text="Video status: "
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginRight="@dimen/activity_horizontal_margin"
-            android:id="@+id/tv_video_status"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
-
-
-    </LinearLayout>
-</ScrollView>
+</LinearLayout>

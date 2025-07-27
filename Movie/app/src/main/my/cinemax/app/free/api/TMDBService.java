@@ -29,7 +29,11 @@ public class TMDBService {
     private TMDBRest tmdbRest;
 
     private TMDBService() {
-        tmdbRest = TMDBClient.getClient().create(TMDBRest.class);
+        try {
+            tmdbRest = TMDBClient.getClient().create(TMDBRest.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static TMDBService getInstance() {
@@ -68,12 +72,15 @@ public class TMDBService {
      * Get home data with popular movies and TV shows
      */
     public void getHomeData(HomeDataCallback callback) {
+        android.util.Log.d("TMDBService", "Starting to fetch home data...");
         // Get popular movies
         tmdbRest.getPopularMovies(1).enqueue(new Callback<TMDBMovieResponse>() {
             @Override
             public void onResponse(Call<TMDBMovieResponse> call, Response<TMDBMovieResponse> response) {
+                android.util.Log.d("TMDBService", "Popular movies response: " + response.code());
                 if (response.isSuccessful() && response.body() != null) {
                     List<TMDBMovie> popularMovies = response.body().getResults();
+                    android.util.Log.d("TMDBService", "Got " + popularMovies.size() + " popular movies");
                     
                     // Get popular TV shows
                     tmdbRest.getPopularTvShows(1).enqueue(new Callback<TMDBTvShowResponse>() {
@@ -115,6 +122,7 @@ public class TMDBService {
 
             @Override
             public void onFailure(Call<TMDBMovieResponse> call, Throwable t) {
+                android.util.Log.e("TMDBService", "Popular movies error: " + t.getMessage());
                 callback.onError("Network error: " + t.getMessage());
             }
         });

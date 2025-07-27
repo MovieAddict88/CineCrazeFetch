@@ -74,9 +74,13 @@ public class HomeFragment extends Fragment {
     private void loadData() {
         showLoadingView();
         
+        // Add logging to debug
+        android.util.Log.d("HomeFragment", "Starting to load TMDB data...");
+        
         TMDBService.getInstance().getHomeData(new TMDBService.HomeDataCallback() {
             @Override
             public void onSuccess(Data data) {
+                android.util.Log.d("HomeFragment", "TMDB data loaded successfully");
                 dataList.clear();
                 dataList.add(new Data().setViewType(0)); // Header view
                 
@@ -131,6 +135,7 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onError(String error) {
+                android.util.Log.e("HomeFragment", "TMDB error: " + error);
                 showErrorView();
             }
         });

@@ -50,28 +50,37 @@ public class TMDBClient {
 
     public static Retrofit getClient() {
         if (retrofit == null) {
-            OkHttpClient okHttpClient = new OkHttpClient().newBuilder()
-                    .addInterceptor(provideHttpLoggingInterceptor())
-                    .addInterceptor(provideOfflineCacheInterceptor())
-                    .addNetworkInterceptor(provideCacheInterceptor())
-                    .addInterceptor(provideApiKeyInterceptor())
-                    .cache(provideCache())
-                    .connectTimeout(60, TimeUnit.SECONDS)
-                    .readTimeout(60, TimeUnit.SECONDS)
-                    .writeTimeout(60, TimeUnit.SECONDS)
-                    .build();
+            try {
+                OkHttpClient okHttpClient = new OkHttpClient().newBuilder()
+                        .addInterceptor(provideHttpLoggingInterceptor())
+                        .addInterceptor(provideOfflineCacheInterceptor())
+                        .addNetworkInterceptor(provideCacheInterceptor())
+                        .addInterceptor(provideApiKeyInterceptor())
+                        .cache(provideCache())
+                        .connectTimeout(60, TimeUnit.SECONDS)
+                        .readTimeout(60, TimeUnit.SECONDS)
+                        .writeTimeout(60, TimeUnit.SECONDS)
+                        .build();
 
-            OkHttp3Downloader okHttp3Downloader = new OkHttp3Downloader(okHttpClient);
-            Picasso picasso = new Picasso.Builder(MyApplication.getInstance())
-                    .downloader(okHttp3Downloader)
-                    .build();
-            Picasso.setSingletonInstance(picasso);
+                OkHttp3Downloader okHttp3Downloader = new OkHttp3Downloader(okHttpClient);
+                Picasso picasso = new Picasso.Builder(MyApplication.getInstance())
+                        .downloader(okHttp3Downloader)
+                        .build();
+                Picasso.setSingletonInstance(picasso);
 
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(TMDB_BASE_URL)
-                    .client(okHttpClient)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
+                retrofit = new Retrofit.Builder()
+                        .baseUrl(TMDB_BASE_URL)
+                        .client(okHttpClient)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Fallback to basic configuration
+                retrofit = new Retrofit.Builder()
+                        .baseUrl(TMDB_BASE_URL)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+            }
         }
         return retrofit;
     }

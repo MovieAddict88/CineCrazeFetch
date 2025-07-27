@@ -3,10 +3,7 @@ package my.cinemax.app.free.ui.activities;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import es.dmoral.toasty.Toasty;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
+// Removed unused retrofit imports
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,18 +16,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-import com.congle7997.google_iap.BillingSubs;
-import com.congle7997.google_iap.CallBackCheck;
+// Removed billing imports
 import com.greenfrvr.rubberloader.RubberLoaderView;
 import my.cinemax.app.free.Provider.PrefManager;
 import my.cinemax.app.free.R;
-import my.cinemax.app.free.api.apiClient;
-import my.cinemax.app.free.api.apiRest;
+// Removed old API imports
 import my.cinemax.app.free.config.Global;
 import my.cinemax.app.free.entity.ApiResponse;
 
-import java.util.ArrayList;
-import java.util.List;
+// Removed unused imports
 import java.util.Timer;
 import java.util.TimerTask;
 import my.cinemax.app.free.*;
@@ -45,7 +39,7 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
 
-        check();
+        // Removed check() - no longer needed
         prf= new PrefManager(getApplicationContext());
         ( (RubberLoaderView) findViewById(R.id.loader1)).startLoading();
         Timer myTimer = new Timer();
@@ -56,10 +50,8 @@ public class SplashActivity extends AppCompatActivity {
                 SplashActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-
-                        checkAccount();
-
-
+                        // Skip API check and go directly to main activity
+                        redirect();
                     }
                 });
             }
@@ -85,6 +77,8 @@ public class SplashActivity extends AppCompatActivity {
         prf.setString("APP_PAYPAL_CLIENT_ID","");
         prf.setString("APP_CASH_ENABLED","FALSE");
         prf.setString("APP_LOGIN_REQUIRED","FALSE");
+        prf.setString("SUBSCRIBED","TRUE"); // All features are now free
+        prf.setString("NEW_SUBSCRIBE_ENABLED","TRUE"); // All features are now free
 
     }
 
@@ -284,6 +278,13 @@ public class SplashActivity extends AppCompatActivity {
 
 
     public void redirect(){
+        // Temporarily launch TestActivity to verify TMDB API
+        Intent intent = new Intent(SplashActivity.this, TestActivity.class);
+        startActivity(intent);
+        overridePendingTransition(R.anim.enter, R.anim.exit);
+        finish();
+        
+        /* Original redirect logic (commented out for testing)
         if (!prf.getString("first").equals("true")) {
             Intent intent = new Intent(SplashActivity.this,IntroActivity.class);
             startActivity(intent);
@@ -310,7 +311,7 @@ public class SplashActivity extends AppCompatActivity {
                 finish();
             }
         }
-
+        */
     }
 
 
