@@ -27,8 +27,7 @@ import android.widget.RelativeLayout;
 
 import my.cinemax.app.free.Provider.PrefManager;
 import my.cinemax.app.free.R;
-import my.cinemax.app.free.api.apiClient;
-import my.cinemax.app.free.api.apiRest;
+import my.cinemax.app.free.api.HybridDataService;
 import my.cinemax.app.free.entity.Category;
 import my.cinemax.app.free.entity.Channel;
 import my.cinemax.app.free.entity.Country;

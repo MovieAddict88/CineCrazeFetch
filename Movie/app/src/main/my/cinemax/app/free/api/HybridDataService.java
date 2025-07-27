@@ -189,13 +189,43 @@ public class HybridDataService {
     }
 
     public static void discoverMovies(String genres, String sortBy, int page, MovieListCallback callback) {
-        // Get movies from GitHub JSON and filter by genre
-        getMoviesByGenre(genres, sortBy, page, callback);
+        executor.execute(() -> {
+            try {
+                String jsonData = fetchJsonFromUrl(JSON_URL);
+                if (jsonData != null) {
+                    List<Poster> movies = parseMoviesFromJson(jsonData, genres, sortBy, page);
+                    // Enhance with TMDB metadata only for missing information
+                    enhanceMoviesWithTMDBMetadata(movies, () -> {
+                        callback.onSuccess(movies);
+                    });
+                } else {
+                    callback.onError("Failed to fetch GitHub JSON data");
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error fetching movies from GitHub JSON", e);
+                callback.onError("Error: " + e.getMessage());
+            }
+        });
     }
 
     public static void discoverTVShows(String genres, String sortBy, int page, MovieListCallback callback) {
-        // Get TV series from GitHub JSON and filter by genre
-        getTVSeriesByGenre(genres, sortBy, page, callback);
+        executor.execute(() -> {
+            try {
+                String jsonData = fetchJsonFromUrl(JSON_URL);
+                if (jsonData != null) {
+                    List<Poster> tvSeries = parseTVSeriesFromJson(jsonData, genres, sortBy, page);
+                    // Enhance with TMDB metadata only for missing information
+                    enhanceMoviesWithTMDBMetadata(tvSeries, () -> {
+                        callback.onSuccess(tvSeries);
+                    });
+                } else {
+                    callback.onError("Failed to fetch GitHub JSON data");
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error fetching TV series from GitHub JSON", e);
+                callback.onError("Error: " + e.getMessage());
+            }
+        });
     }
 
     private static void enhanceMoviesWithTMDBMetadata(List<Poster> movies, Runnable onComplete) {
@@ -638,5 +668,197 @@ public class HybridDataService {
         }
 
         return source;
+    }
+
+    private static List<Poster> parseMoviesFromJson(String jsonData, String genreFilter, String sortBy, int page) throws JSONException {
+        List<Poster> movies = new ArrayList<>();
+        JSONObject jsonObject = new JSONObject(jsonData);
+
+        if (jsonObject.has("Categories")) {
+            JSONArray categoriesArray = jsonObject.getJSONArray("Categories");
+            
+            for (int i = 0; i < categoriesArray.length(); i++) {
+                JSONObject category = categoriesArray.getJSONObject(i);
+                String mainCategory = category.optString("MainCategory", "");
+                
+                if ("Movies".equals(mainCategory) && category.has("Entries")) {
+                    JSONArray entries = category.getJSONArray("Entries");
+                    
+                    for (int j = 0; j < entries.length(); j++) {
+                        JSONObject entry = entries.getJSONObject(j);
+                        String subCategory = entry.optString("SubCategory", "");
+                        
+                        // Filter by genre if specified
+                        if (genreFilter == null || genreFilter.isEmpty() || 
+                            subCategory.toLowerCase().contains(genreFilter.toLowerCase())) {
+                            
+                            Poster poster = parseMovieEntry(entry);
+                            if (poster != null && poster.getSources() != null && !poster.getSources().isEmpty()) {
+                                movies.add(poster);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Apply sorting
+        sortMovies(movies, sortBy);
+        
+        // Apply pagination
+        int startIndex = (page - 1) * 20;
+        int endIndex = Math.min(startIndex + 20, movies.size());
+        
+        if (startIndex < movies.size()) {
+            return movies.subList(startIndex, endIndex);
+        }
+        
+        return new ArrayList<>();
+    }
+
+    private static List<Poster> parseTVSeriesFromJson(String jsonData, String genreFilter, String sortBy, int page) throws JSONException {
+        List<Poster> tvSeries = new ArrayList<>();
+        JSONObject jsonObject = new JSONObject(jsonData);
+
+        if (jsonObject.has("Categories")) {
+            JSONArray categoriesArray = jsonObject.getJSONArray("Categories");
+            
+            for (int i = 0; i < categoriesArray.length(); i++) {
+                JSONObject category = categoriesArray.getJSONObject(i);
+                String mainCategory = category.optString("MainCategory", "");
+                
+                if ("TV Series".equals(mainCategory) && category.has("Entries")) {
+                    JSONArray entries = category.getJSONArray("Entries");
+                    
+                    for (int j = 0; j < entries.length(); j++) {
+                        JSONObject entry = entries.getJSONObject(j);
+                        String subCategory = entry.optString("SubCategory", "");
+                        
+                        // Filter by genre if specified
+                        if (genreFilter == null || genreFilter.isEmpty() || 
+                            subCategory.toLowerCase().contains(genreFilter.toLowerCase())) {
+                            
+                            Poster poster = parseTVSeriesEntry(entry);
+                            if (poster != null && poster.getSources() != null && !poster.getSources().isEmpty()) {
+                                tvSeries.add(poster);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Apply sorting
+        sortMovies(tvSeries, sortBy);
+        
+        // Apply pagination
+        int startIndex = (page - 1) * 20;
+        int endIndex = Math.min(startIndex + 20, tvSeries.size());
+        
+        if (startIndex < tvSeries.size()) {
+            return tvSeries.subList(startIndex, endIndex);
+        }
+        
+        return new ArrayList<>();
+    }
+
+    private static void sortMovies(List<Poster> movies, String sortBy) {
+        if (movies == null || movies.isEmpty()) return;
+        
+        switch (sortBy) {
+            case "title":
+            case "name.asc":
+            case "title.asc":
+                movies.sort((a, b) -> {
+                    String titleA = a.getTitle() != null ? a.getTitle() : "";
+                    String titleB = b.getTitle() != null ? b.getTitle() : "";
+                    return titleA.compareToIgnoreCase(titleB);
+                });
+                break;
+            case "year":
+            case "release_date.desc":
+            case "first_air_date.desc":
+                movies.sort((a, b) -> {
+                    String yearA = a.getYear() != null ? a.getYear() : "0";
+                    String yearB = b.getYear() != null ? b.getYear() : "0";
+                    return yearB.compareTo(yearA); // Descending
+                });
+                break;
+            case "rating":
+            case "vote_average.desc":
+                movies.sort((a, b) -> {
+                    Float ratingA = a.getRating() != null ? a.getRating() : 0f;
+                    Float ratingB = b.getRating() != null ? b.getRating() : 0f;
+                    return ratingB.compareTo(ratingA); // Descending
+                });
+                break;
+            case "created":
+            case "popularity.desc":
+            default:
+                // Keep original order (most recent first in JSON)
+                break;
+        }
+    }
+
+    public static void getChannelsByFilters(int categoryId, int countryId, int page, ChannelListCallback callback) {
+        executor.execute(() -> {
+            try {
+                String jsonData = fetchJsonFromUrl(JSON_URL);
+                if (jsonData != null) {
+                    List<my.cinemax.app.free.entity.Channel> channels = parseChannelsFromJson(jsonData, categoryId, countryId, page);
+                    callback.onSuccess(channels);
+                } else {
+                    callback.onError("Failed to fetch GitHub JSON data");
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error fetching channels from GitHub JSON", e);
+                callback.onError("Error: " + e.getMessage());
+            }
+        });
+    }
+
+    public interface ChannelListCallback {
+        void onSuccess(List<my.cinemax.app.free.entity.Channel> channels);
+        void onError(String error);
+    }
+
+    private static List<my.cinemax.app.free.entity.Channel> parseChannelsFromJson(String jsonData, int categoryFilter, int countryFilter, int page) throws JSONException {
+        List<my.cinemax.app.free.entity.Channel> channels = new ArrayList<>();
+        JSONObject jsonObject = new JSONObject(jsonData);
+
+        if (jsonObject.has("Categories")) {
+            JSONArray categoriesArray = jsonObject.getJSONArray("Categories");
+            
+            for (int i = 0; i < categoriesArray.length(); i++) {
+                JSONObject category = categoriesArray.getJSONObject(i);
+                String mainCategory = category.optString("MainCategory", "");
+                
+                if ("Live TV".equals(mainCategory) && category.has("Entries")) {
+                    JSONArray entries = category.getJSONArray("Entries");
+                    
+                    for (int j = 0; j < entries.length(); j++) {
+                        JSONObject entry = entries.getJSONObject(j);
+                        String subCategory = entry.optString("SubCategory", "");
+                        
+                        // Simple filtering - for now just include all channels
+                        // TODO: Implement proper category and country filtering
+                        my.cinemax.app.free.entity.Channel channel = parseLiveTVEntry(entry);
+                        if (channel != null && channel.getSources() != null && !channel.getSources().isEmpty()) {
+                            channels.add(channel);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Apply pagination
+        int startIndex = (page - 1) * 20;
+        int endIndex = Math.min(startIndex + 20, channels.size());
+        
+        if (startIndex < channels.size()) {
+            return channels.subList(startIndex, endIndex);
+        }
+        
+        return new ArrayList<>();
     }
 }
