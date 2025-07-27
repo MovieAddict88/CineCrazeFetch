@@ -375,76 +375,105 @@ public class MoviesFragment extends Fragment {
         spinner_fragement_movies_orders_list.setAdapter(ordersAdapter);
     }
     private void loadMovies() {
-        if (page==0){
+        if (page == 0) {
             linear_layout_load_movies_fragment.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             relative_layout_load_more_movies_fragment.setVisibility(View.VISIBLE);
         }
         swipe_refresh_layout_movies_fragment.setRefreshing(false);
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
-        Call<List<Poster>> call = service.getMoviesByFiltres(genreSelected,orderSelected,page);
-        call.enqueue(new Callback<List<Poster>>() {
+        
+        // Use JsonDataService and filter for Movies only
+        JsonDataService jsonDataService = new JsonDataService(getContext());
+        jsonDataService.loadHomeData(new JsonDataService.DataCallback() {
             @Override
-            public void onResponse(Call<List<Poster>> call, final Response<List<Poster>> response) {
-                if (response.isSuccessful()){
-                    if (response.body().size()>0){
-                        for (int i = 0; i < response.body().size(); i++) {
-                            movieList.add(response.body().get(i));
-
-                            if (native_ads_enabled){
-                                item++;
-                                if (item == lines_beetween_ads ){
-                                    item= 0;
-                                    if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("FACEBOOK")) {
-                                        movieList.add(new Poster().setTypeView(4));
-                                    }else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("ADMOB")){
-                                        movieList.add(new Poster().setTypeView(5));
-                                    } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("BOTH")){
-                                        if (type_ads == 0) {
-                                            movieList.add(new Poster().setTypeView(4));
-                                            type_ads = 1;
-                                        }else if (type_ads == 1){
-                                            movieList.add(new Poster().setTypeView(5));
-                                            type_ads = 0;
+            public void onSuccess(Data data) {
+                if (getActivity() == null) return; // Fragment might be destroyed
+                
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (data.getPosters() != null && data.getPosters().size() > 0) {
+                            // Clear existing list if this is first page
+                            if (page == 0) {
+                                movieList.clear();
+                            }
+                            
+                            // Filter and add only Movies (type == "movie")
+                            for (int i = 0; i < data.getPosters().size(); i++) {
+                                Poster poster = data.getPosters().get(i);
+                                if (poster.getType() != null && poster.getType().equals("movie")) {
+                                    movieList.add(poster);
+                                    
+                                    // Add ads if enabled
+                                    if (native_ads_enabled) {
+                                        item++;
+                                        if (item == lines_beetween_ads) {
+                                            item = 0;
+                                            if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("FACEBOOK")) {
+                                                movieList.add(new Poster().setTypeView(4));
+                                            } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("ADMOB")) {
+                                                movieList.add(new Poster().setTypeView(5));
+                                            } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("BOTH")) {
+                                                if (type_ads == 0) {
+                                                    movieList.add(new Poster().setTypeView(4));
+                                                    type_ads = 1;
+                                                } else if (type_ads == 1) {
+                                                    movieList.add(new Poster().setTypeView(5));
+                                                    type_ads = 0;
+                                                }
+                                            }
                                         }
                                     }
                                 }
                             }
+                            
+                            if (movieList.size() > 0) {
+                                linear_layout_page_error_movies_fragment.setVisibility(View.GONE);
+                                recycler_view_movies_fragment.setVisibility(View.VISIBLE);
+                                image_view_empty_list.setVisibility(View.GONE);
+                                
+                                if (adapter != null) {
+                                    adapter.notifyDataSetChanged();
+                                }
+                                page++;
+                                loading = true;
+                            } else {
+                                if (page == 0) {
+                                    linear_layout_page_error_movies_fragment.setVisibility(View.GONE);
+                                    recycler_view_movies_fragment.setVisibility(View.GONE);
+                                    image_view_empty_list.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        } else {
+                            if (page == 0) {
+                                linear_layout_page_error_movies_fragment.setVisibility(View.GONE);
+                                recycler_view_movies_fragment.setVisibility(View.GONE);
+                                image_view_empty_list.setVisibility(View.VISIBLE);
+                            }
                         }
-                        linear_layout_page_error_movies_fragment.setVisibility(View.GONE);
-                        recycler_view_movies_fragment.setVisibility(View.VISIBLE);
-                        image_view_empty_list.setVisibility(View.GONE);
-
-                        adapter.notifyDataSetChanged();
-                        page++;
-                        loading=true;
-                    }else{
-                        if (page==0) {
-                            linear_layout_page_error_movies_fragment.setVisibility(View.GONE);
-                            recycler_view_movies_fragment.setVisibility(View.GONE);
-                            image_view_empty_list.setVisibility(View.VISIBLE);
-                        }
+                        
+                        relative_layout_load_more_movies_fragment.setVisibility(View.GONE);
+                        swipe_refresh_layout_movies_fragment.setRefreshing(false);
+                        linear_layout_load_movies_fragment.setVisibility(View.GONE);
                     }
-                }else{
-                    linear_layout_page_error_movies_fragment.setVisibility(View.VISIBLE);
-                    recycler_view_movies_fragment.setVisibility(View.GONE);
-                    image_view_empty_list.setVisibility(View.GONE);
-                }
-                relative_layout_load_more_movies_fragment.setVisibility(View.GONE);
-                swipe_refresh_layout_movies_fragment.setRefreshing(false);
-                linear_layout_load_movies_fragment.setVisibility(View.GONE);
+                });
             }
-
+            
             @Override
-            public void onFailure(Call<List<Poster>> call, Throwable t) {
-                linear_layout_page_error_movies_fragment.setVisibility(View.VISIBLE);
-                recycler_view_movies_fragment.setVisibility(View.GONE);
-                image_view_empty_list.setVisibility(View.GONE);
-                relative_layout_load_more_movies_fragment.setVisibility(View.GONE);
-                swipe_refresh_layout_movies_fragment.setVisibility(View.GONE);
-                linear_layout_load_movies_fragment.setVisibility(View.GONE);
-
+            public void onError(String error) {
+                if (getActivity() == null) return; // Fragment might be destroyed
+                
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        linear_layout_page_error_movies_fragment.setVisibility(View.VISIBLE);
+                        recycler_view_movies_fragment.setVisibility(View.GONE);
+                        image_view_empty_list.setVisibility(View.GONE);
+                        relative_layout_load_more_movies_fragment.setVisibility(View.GONE);
+                        swipe_refresh_layout_movies_fragment.setRefreshing(false);
+                        linear_layout_load_movies_fragment.setVisibility(View.GONE);
+                    }
+                });
             }
         });
     }
