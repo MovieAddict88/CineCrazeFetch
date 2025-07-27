@@ -29,9 +29,11 @@ import my.cinemax.app.free.Provider.PrefManager;
 import my.cinemax.app.free.R;
 import my.cinemax.app.free.api.apiClient;
 import my.cinemax.app.free.api.apiRest;
+import my.cinemax.app.free.api.JsonDataService;
 import my.cinemax.app.free.entity.Category;
 import my.cinemax.app.free.entity.Channel;
 import my.cinemax.app.free.entity.Country;
+import my.cinemax.app.free.entity.Data;
 import my.cinemax.app.free.ui.Adapters.ChannelAdapter;
 
 import java.util.ArrayList;
@@ -388,75 +390,94 @@ public class TvFragment extends Fragment {
 
     }
     private void loadChannels() {
-        if (page==0){
+        if (page == 0) {
             linear_layout_load_channel_fragment.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             relative_layout_load_more_channel_fragment.setVisibility(View.VISIBLE);
         }
         swipe_refresh_layout_channel_fragment.setRefreshing(false);
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
-        Call<List<Channel>> call = service.getChannelsByFiltres(categorySelected,countrySelected,page);
-        call.enqueue(new Callback<List<Channel>>() {
+        
+        // Use JsonDataService instead of API calls
+        JsonDataService jsonDataService = new JsonDataService(getContext());
+        jsonDataService.loadHomeData(new JsonDataService.DataCallback() {
             @Override
-            public void onResponse(Call<List<Channel>> call, final Response<List<Channel>> response) {
-                if (response.isSuccessful()){
-                    if (response.body().size()>0){
-                        for (int i = 0; i < response.body().size(); i++) {
-                            channelList.add(response.body().get(i));
-                            if (native_ads_enabled){
-                                item++;
-                                if (item == lines_beetween_ads ){
-                                    item= 0;
-                                    if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("FACEBOOK")) {
-                                        channelList.add(new Channel().setTypeView(3));
-                                    }else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("ADMOB")){
-                                        channelList.add(new Channel().setTypeView(4));
-                                    } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("BOTH")){
-                                        if (type_ads == 0) {
+            public void onSuccess(Data data) {
+                if (getActivity() == null) return; // Fragment might be destroyed
+                
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (data.getChannels() != null && data.getChannels().size() > 0) {
+                            // Clear existing list if this is first page
+                            if (page == 0) {
+                                channelList.clear();
+                            }
+                            
+                            // Add channels from JsonDataService
+                            for (int i = 0; i < data.getChannels().size(); i++) {
+                                channelList.add(data.getChannels().get(i));
+                                
+                                // Add ads if enabled
+                                if (native_ads_enabled) {
+                                    item++;
+                                    if (item == lines_beetween_ads) {
+                                        item = 0;
+                                        if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("FACEBOOK")) {
                                             channelList.add(new Channel().setTypeView(3));
-                                            type_ads = 1;
-                                        }else if (type_ads == 1){
+                                        } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("ADMOB")) {
                                             channelList.add(new Channel().setTypeView(4));
-                                            type_ads = 0;
+                                        } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("BOTH")) {
+                                            if (type_ads == 0) {
+                                                channelList.add(new Channel().setTypeView(3));
+                                                type_ads = 1;
+                                            } else if (type_ads == 1) {
+                                                channelList.add(new Channel().setTypeView(4));
+                                                type_ads = 0;
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
-                        linear_layout_page_error_channel_fragment.setVisibility(View.GONE);
-                        recycler_view_channel_fragment.setVisibility(View.VISIBLE);
-                        image_view_empty_list.setVisibility(View.GONE);
-
-                        adapter.notifyDataSetChanged();
-                        page++;
-                        loading=true;
-                    }else{
-                        if (page==0) {
+                            
                             linear_layout_page_error_channel_fragment.setVisibility(View.GONE);
-                            recycler_view_channel_fragment.setVisibility(View.GONE);
-                            image_view_empty_list.setVisibility(View.VISIBLE);
+                            recycler_view_channel_fragment.setVisibility(View.VISIBLE);
+                            image_view_empty_list.setVisibility(View.GONE);
+                            
+                            if (adapter != null) {
+                                adapter.notifyDataSetChanged();
+                            }
+                            page++;
+                            loading = true;
+                        } else {
+                            if (page == 0) {
+                                linear_layout_page_error_channel_fragment.setVisibility(View.GONE);
+                                recycler_view_channel_fragment.setVisibility(View.GONE);
+                                image_view_empty_list.setVisibility(View.VISIBLE);
+                            }
                         }
+                        
+                        relative_layout_load_more_channel_fragment.setVisibility(View.GONE);
+                        swipe_refresh_layout_channel_fragment.setRefreshing(false);
+                        linear_layout_load_channel_fragment.setVisibility(View.GONE);
                     }
-                }else{
-                    linear_layout_page_error_channel_fragment.setVisibility(View.VISIBLE);
-                    recycler_view_channel_fragment.setVisibility(View.GONE);
-                    image_view_empty_list.setVisibility(View.GONE);
-                }
-                relative_layout_load_more_channel_fragment.setVisibility(View.GONE);
-                swipe_refresh_layout_channel_fragment.setRefreshing(false);
-                linear_layout_load_channel_fragment.setVisibility(View.GONE);
+                });
             }
-
+            
             @Override
-            public void onFailure(Call<List<Channel>> call, Throwable t) {
-                linear_layout_page_error_channel_fragment.setVisibility(View.VISIBLE);
-                recycler_view_channel_fragment.setVisibility(View.GONE);
-                image_view_empty_list.setVisibility(View.GONE);
-                relative_layout_load_more_channel_fragment.setVisibility(View.GONE);
-                swipe_refresh_layout_channel_fragment.setVisibility(View.GONE);
-                linear_layout_load_channel_fragment.setVisibility(View.GONE);
-
+            public void onError(String error) {
+                if (getActivity() == null) return; // Fragment might be destroyed
+                
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        linear_layout_page_error_channel_fragment.setVisibility(View.VISIBLE);
+                        recycler_view_channel_fragment.setVisibility(View.GONE);
+                        image_view_empty_list.setVisibility(View.GONE);
+                        relative_layout_load_more_channel_fragment.setVisibility(View.GONE);
+                        swipe_refresh_layout_channel_fragment.setRefreshing(View.GONE);
+                        linear_layout_load_channel_fragment.setVisibility(View.GONE);
+                    }
+                });
             }
         });
     }

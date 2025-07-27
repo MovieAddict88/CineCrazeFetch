@@ -29,6 +29,8 @@ import my.cinemax.app.free.Provider.PrefManager;
 import my.cinemax.app.free.R;
 import my.cinemax.app.free.api.apiClient;
 import my.cinemax.app.free.api.apiRest;
+import my.cinemax.app.free.api.JsonDataService;
+import my.cinemax.app.free.entity.Data;
 import my.cinemax.app.free.entity.Genre;
 import my.cinemax.app.free.entity.Poster;
 import my.cinemax.app.free.ui.Adapters.PosterAdapter;
