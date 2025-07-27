@@ -47,6 +47,35 @@ android {
             signingConfig signingConfigs.release
         }
     }
+
+    Properties properties = new Properties()
+    if (project.rootProject.file('local.properties').exists()) {
+        properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    }
+
+    defaultConfig {
+        buildConfigField "String", "TMDB_API_KEY", "\"${properties.getProperty('tmdb_api_key')}\""
+        buildConfigField "String", "SECURE_KEY", "\"4F5A9C3D9A86FA54EACEDDD635185\""
+        buildConfigField "String", "ITEM_PURCHASE_CODE", "\"d506abfd-9fe2-4b71-b979-feff21bcad13\""
+        buildConfigField "String", "ADMOB_PUBLISHER_ID", "\"pub-3940256099942544\""
+        buildConfigField "String", "ADMOB_REWARDED_ID", "\"ca-app-pub-3940256099942544/5224354917\""
+        buildConfigField "String", "ADMOB_INTERSTITIAL_ID", "\"ca-app-pub-3940256099942544/1033173712\""
+        buildConfigField "String", "FACEBOOK_INTERSTITIAL_ID", "\"YOUR_FACEBOOK_INTERSTITIAL_ID\""
+        buildConfigField "String", "INTERSTITIAL_TYPE", "\"ADMOB\""
+        buildConfigField "int", "INTERSTITIAL_CLICKS", "3"
+        buildConfigField "String", "ADMOB_BANNER_ID", "\"ca-app-pub-3940256099942544/6300978111\""
+        buildConfigField "String", "FACEBOOK_BANNER_ID", "\"YOUR_FACEBOOK_BANNER_ID\""
+        buildConfigField "String", "BANNER_TYPE", "\"ADMOB\""
+        buildConfigField "String", "FACEBOOK_NATIVE_ID", "\"YOUR_FACEBOOK_NATIVE_ID\""
+        buildConfigField "String", "ADMOB_NATIVE_ID", "\"ca-app-pub-3940256099942544/2247696110\""
+        buildConfigField "String", "NATIVE_LINES", "\"6\""
+        buildConfigField "String", "NATIVE_TYPE", "\"ADMOB\""
+        buildConfigField "String", "STRIPE_ENABLED", "\"FALSE\""
+        buildConfigField "String", "PAYPAL_ENABLED", "\"FALSE\""
+        buildConfigField "String", "PAYPAL_CLIENT_ID", "\"\""
+        buildConfigField "String", "CASH_ENABLED", "\"FALSE\""
+        buildConfigField "String", "LOGIN_REQUIRED", "\"FALSE\""
+    }
     
    packagingOptions {
         exclude "lib/mips/libRSSupport.so"
