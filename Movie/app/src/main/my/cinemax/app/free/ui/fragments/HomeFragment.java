@@ -17,7 +17,7 @@ import android.widget.RelativeLayout;
 
 import my.cinemax.app.free.Provider.PrefManager;
 import my.cinemax.app.free.R;
-import my.cinemax.app.free.api.TMDBService;
+import my.cinemax.app.free.api.JsonDataService;
 import my.cinemax.app.free.entity.Data;
 import my.cinemax.app.free.entity.Genre;
 import my.cinemax.app.free.ui.Adapters.HomeAdapter;
@@ -75,12 +75,12 @@ public class HomeFragment extends Fragment {
         showLoadingView();
         
         // Add logging to debug
-        android.util.Log.d("HomeFragment", "Starting to load TMDB data...");
+        android.util.Log.d("HomeFragment", "Starting to load JSON data...");
         
-        TMDBService.getInstance().getHomeData(new TMDBService.HomeDataCallback() {
+        JsonDataService.getHomeData(new JsonDataService.HomeDataCallback() {
             @Override
             public void onSuccess(Data data) {
-                android.util.Log.d("HomeFragment", "TMDB data loaded successfully");
+                android.util.Log.d("HomeFragment", "JSON data loaded successfully");
                 dataList.clear();
                 dataList.add(new Data().setViewType(0)); // Header view
                 
@@ -92,7 +92,7 @@ public class HomeFragment extends Fragment {
                 }
                 
                 // Get genres and add genre sections
-                TMDBService.getInstance().getMovieGenres(new TMDBService.GenreListCallback() {
+                JsonDataService.getMovieGenres(new JsonDataService.GenreListCallback() {
                     @Override
                     public void onSuccess(List<Genre> genres) {
                         for (Genre genre : genres) {
@@ -135,8 +135,7 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onError(String error) {
-                android.util.Log.e("HomeFragment", "TMDB error: " + error);
-                android.util.Log.w("HomeFragment", "Both TMDB and fallback failed, showing error view");
+                android.util.Log.e("HomeFragment", "JSON error: " + error);
                 showErrorView();
             }
         });
