@@ -189,27 +189,13 @@ public class HybridDataService {
     }
 
     public static void discoverMovies(String genres, String sortBy, int page, MovieListCallback callback) {
-        // For hybrid approach, we'll get all movies and filter client-side
-        getPopularMovies(page, callback);
+        // Get movies from GitHub JSON and filter by genre
+        getMoviesByGenre(genres, sortBy, page, callback);
     }
 
     public static void discoverTVShows(String genres, String sortBy, int page, MovieListCallback callback) {
-        // For TV shows, use TMDB API directly since we have fewer streaming sources for TV
-        TMDBService.getInstance().discoverTVShows(genres, sortBy, page, new TMDBService.MovieListCallback() {
-            @Override
-            public void onSuccess(List<Poster> tvShows) {
-                // Add placeholder streaming sources to TV shows
-                for (Poster tvShow : tvShows) {
-                    addPlaceholderSourcesToPoster(tvShow);
-                }
-                callback.onSuccess(tvShows);
-            }
-
-            @Override
-            public void onError(String error) {
-                callback.onError(error);
-            }
-        });
+        // Get TV series from GitHub JSON and filter by genre
+        getTVSeriesByGenre(genres, sortBy, page, callback);
     }
 
     private static void enhanceMoviesWithTMDBMetadata(List<Poster> movies, Runnable onComplete) {
