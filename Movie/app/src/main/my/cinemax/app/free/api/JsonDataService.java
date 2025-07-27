@@ -119,14 +119,15 @@ public class JsonDataService {
     }
     
     private Data parseJsonToData(String jsonString) {
-        JsonObject root = JsonParser.parseString(jsonString).getAsJsonObject();
-        JsonArray categories = root.getAsJsonArray("Categories");
-        
-        Data data = new Data();
-        List<Channel> channels = new ArrayList<>();
-        List<Poster> posters = new ArrayList<>();
-        List<Slide> slides = new ArrayList<>();
-        List<Genre> genres = new ArrayList<>();
+        try {
+            JsonObject root = JsonParser.parseString(jsonString).getAsJsonObject();
+            JsonArray categories = root.getAsJsonArray("Categories");
+            
+            Data data = new Data();
+            List<Channel> channels = new ArrayList<>();
+            List<Poster> posters = new ArrayList<>();
+            List<Slide> slides = new ArrayList<>();
+            List<Genre> genres = new ArrayList<>();
         
         // Process categories
         for (JsonElement categoryElement : categories) {
@@ -142,50 +143,70 @@ public class JsonDataService {
             JsonArray entries = category.getAsJsonArray("Entries");
             
             for (JsonElement entryElement : entries) {
-                JsonObject entry = entryElement.getAsJsonObject();
-                
-                if (mainCategory.equals("Live TV")) {
-                    // Map to Channel
-                    Channel channel = mapToChannel(entry, mainCategory);
-                    channels.add(channel);
+                try {
+                    JsonObject entry = entryElement.getAsJsonObject();
                     
-                    // Add first few channels as slides for the carousel
-                    if (slides.size() < 5) {
-                        Slide slide = new Slide();
-                        slide.setId(slides.size() + 1);
-                        slide.setTitle(channel.getTitle());
-                        slide.setImage(channel.getImage());
-                        slide.setChannel(channel);
-                        slides.add(slide);
+                    if (mainCategory.equals("Live TV")) {
+                        // Map to Channel
+                        Channel channel = mapToChannel(entry, mainCategory);
+                        if (channel != null) {
+                            channels.add(channel);
+                            
+                            // Add first few channels as slides for the carousel
+                            if (slides.size() < 5) {
+                                Slide slide = new Slide();
+                                slide.setId(slides.size() + 1);
+                                slide.setTitle(channel.getTitle());
+                                slide.setImage(channel.getImage());
+                                slide.setChannel(channel);
+                                slides.add(slide);
+                            }
+                        }
+                    } else {
+                        // Map to Poster (Movies/TV Series)
+                        Poster poster = mapToPoster(entry, mainCategory);
+                        if (poster != null) {
+                            posters.add(poster);
+                            
+                            // Add first few movies/series as slides for the carousel
+                            if (slides.size() < 5) {
+                                Slide slide = new Slide();
+                                slide.setId(slides.size() + 1);
+                                slide.setTitle(poster.getTitle());
+                                slide.setImage(poster.getImage());
+                                slide.setPoster(poster);
+                                slides.add(slide);
+                            }
+                        }
                     }
-                } else {
-                    // Map to Poster (Movies/TV Series)
-                    Poster poster = mapToPoster(entry, mainCategory);
-                    posters.add(poster);
-                    
-                    // Add first few movies/series as slides for the carousel
-                    if (slides.size() < 5) {
-                        Slide slide = new Slide();
-                        slide.setId(slides.size() + 1);
-                        slide.setTitle(poster.getTitle());
-                        slide.setImage(poster.getImage());
-                        slide.setPoster(poster);
-                        slides.add(slide);
-                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Error parsing entry: " + entryElement.toString(), e);
+                    // Continue with next entry
                 }
             }
         }
         
-        data.setChannels(channels);
-        data.setPosters(posters);
-        data.setSlides(slides);
-        data.setGenres(genres);
-        
-        return data;
+            data.setChannels(channels);
+            data.setPosters(posters);
+            data.setSlides(slides);
+            data.setGenres(genres);
+            
+            return data;
+        } catch (Exception e) {
+            Log.e(TAG, "Error parsing JSON data", e);
+            // Return empty data object to prevent crashes
+            Data data = new Data();
+            data.setChannels(new ArrayList<>());
+            data.setPosters(new ArrayList<>());
+            data.setSlides(new ArrayList<>());
+            data.setGenres(new ArrayList<>());
+            return data;
+        }
     }
     
     private Channel mapToChannel(JsonObject entry, String category) {
-        Channel channel = new Channel();
+        try {
+            Channel channel = new Channel();
         
         channel.setId(entry.has("id") ? entry.get("id").getAsInt() : 
                      entry.get("Title").getAsString().hashCode());
@@ -217,13 +238,18 @@ public class JsonDataService {
                 sources.add(source);
             }
         }
-        channel.setSources(sources);
-        
-        return channel;
+            channel.setSources(sources);
+            
+            return channel;
+        } catch (Exception e) {
+            Log.e(TAG, "Error mapping channel: " + entry.toString(), e);
+            return null;
+        }
     }
     
     private Poster mapToPoster(JsonObject entry, String category) {
-        Poster poster = new Poster();
+        try {
+            Poster poster = new Poster();
         
         poster.setId(entry.has("id") ? entry.get("id").getAsInt() : 
                     entry.get("Title").getAsString().hashCode());
@@ -246,9 +272,11 @@ public class JsonDataService {
         poster.setClassification(category);
         poster.setComment(true);
         
-        // Map servers to sources
+        // Map servers to sources (handle both Movies and TV Series)
         List<Source> sources = new ArrayList<>();
+        
         if (entry.has("Servers")) {
+            // Handle Movies with direct Servers
             JsonArray servers = entry.getAsJsonArray("Servers");
             for (JsonElement serverElement : servers) {
                 JsonObject server = serverElement.getAsJsonObject();
@@ -261,6 +289,33 @@ public class JsonDataService {
                 source.setExternal(false);
                 sources.add(source);
             }
+        } else if (entry.has("Seasons")) {
+            // Handle TV Series with Seasons/Episodes
+            JsonArray seasons = entry.getAsJsonArray("Seasons");
+            if (seasons.size() > 0) {
+                // Get the first episode of the first season as the main source
+                JsonObject firstSeason = seasons.get(0).getAsJsonObject();
+                if (firstSeason.has("Episodes")) {
+                    JsonArray episodes = firstSeason.getAsJsonArray("Episodes");
+                    if (episodes.size() > 0) {
+                        JsonObject firstEpisode = episodes.get(0).getAsJsonObject();
+                        if (firstEpisode.has("Servers")) {
+                            JsonArray servers = firstEpisode.getAsJsonArray("Servers");
+                            for (JsonElement serverElement : servers) {
+                                JsonObject server = serverElement.getAsJsonObject();
+                                Source source = new Source();
+                                source.setId(sources.size() + 1);
+                                source.setTitle(server.get("name").getAsString());
+                                source.setQuality(server.get("name").getAsString());
+                                source.setUrl(server.get("url").getAsString());
+                                source.setType("mp4");
+                                source.setExternal(false);
+                                sources.add(source);
+                            }
+                        }
+                    }
+                }
+            }
         }
         poster.setSources(sources);
         
@@ -270,8 +325,12 @@ public class JsonDataService {
         genre.setId(1);
         genre.setTitle(category);
         genres.add(genre);
-        poster.setGenres(genres);
-        
-        return poster;
+            poster.setGenres(genres);
+            
+            return poster;
+        } catch (Exception e) {
+            Log.e(TAG, "Error mapping poster: " + entry.toString(), e);
+            return null;
+        }
     }
 }
