@@ -47,8 +47,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-import com.congle7997.google_iap.BillingSubs;
-import com.congle7997.google_iap.CallBackBilling;
+
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
@@ -192,31 +191,12 @@ public class ChannelActivity extends AppCompatActivity {
         initBuy();
     }
 
-    BillingSubs billingSubs;
     public void initBuy(){
-        List<String> listSkuStoreSubs = new ArrayList<>();
-        listSkuStoreSubs.add(Global.SUBSCRIPTION_ID);
-        billingSubs = new BillingSubs(this, listSkuStoreSubs, new CallBackBilling() {
-            @Override
-            public void onPurchase() {
-                PrefManager prefManager= new PrefManager(getApplicationContext());
-                prefManager.setString("SUBSCRIBED","TRUE");
-                Toasty.success(ChannelActivity.this, "you have successfully subscribed ", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onNotPurchase() {
-                Toasty.warning(ChannelActivity.this, "Operation has been cancelled  ", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onNotLogin() {
-            }
-        });
+        // In-app purchase functionality removed due to missing dependencies
     }
 
     public void subscribe(){
-        billingSubs.purchase(Global.SUBSCRIPTION_ID);
+        // In-app purchase functionality removed due to missing dependencies
     }
     public void loadRewardedVideoAd() {
         PrefManager   prefManager= new PrefManager(getApplicationContext());

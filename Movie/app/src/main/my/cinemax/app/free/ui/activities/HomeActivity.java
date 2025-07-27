@@ -42,8 +42,7 @@ import android.widget.Toast;
 
 
 import com.applovin.sdk.AppLovinPrivacySettings;
-import com.congle7997.google_iap.BillingSubs;
-import com.congle7997.google_iap.CallBackBilling;
+
 import com.gauravk.bubblenavigation.BubbleNavigationConstraintView;
 import com.gauravk.bubblenavigation.listener.BubbleNavigationChangeListener;
 import com.google.ads.consent.ConsentForm;
@@ -130,31 +129,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         initBuy();
     }
 
-    BillingSubs billingSubs;
     public void initBuy(){
-        List<String> listSkuStoreSubs = new ArrayList<>();
-        listSkuStoreSubs.add(Global.SUBSCRIPTION_ID);
-        billingSubs = new BillingSubs(this, listSkuStoreSubs, new CallBackBilling() {
-            @Override
-            public void onPurchase() {
-                PrefManager prefManager= new PrefManager(getApplicationContext());
-                prefManager.setString("SUBSCRIBED","TRUE");
-                Toasty.success(HomeActivity.this, "you have successfully subscribed ", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onNotPurchase() {
-                Toasty.warning(HomeActivity.this, "Operation has been cancelled  ", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onNotLogin() {
-            }
-        });
+        // In-app purchase functionality removed due to missing dependencies
     }
 
     public void subscribe(){
-        billingSubs.purchase(Global.SUBSCRIPTION_ID);
+        // In-app purchase functionality removed due to missing dependencies
     }
 
 

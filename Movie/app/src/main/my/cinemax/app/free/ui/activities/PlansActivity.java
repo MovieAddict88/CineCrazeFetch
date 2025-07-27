@@ -1,13 +1,10 @@
 package my.cinemax.app.free.ui.activities;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -18,11 +15,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.paypal.android.sdk.payments.PayPalConfiguration;
-import com.paypal.android.sdk.payments.PayPalPayment;
-import com.paypal.android.sdk.payments.PayPalService;
-import com.paypal.android.sdk.payments.PaymentActivity;
-import com.paypal.android.sdk.payments.PaymentConfirmation;
 import my.cinemax.app.free.Provider.PrefManager;
 import my.cinemax.app.free.R;
 import my.cinemax.app.free.api.apiClient;
@@ -30,10 +22,6 @@ import my.cinemax.app.free.api.apiRest;
 import my.cinemax.app.free.entity.ApiResponse;
 import my.cinemax.app.free.entity.Plan;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,9 +45,7 @@ public class PlansActivity extends AppCompatActivity {
     private Integer selected_pos = -1;
 
 
-    private static final int PAYPAL_REQUEST_CODE = 7777;
 
-    private static PayPalConfiguration config ;
 
     private String method = "null";
     private ProgressDialog dialog_progress;
@@ -72,9 +58,6 @@ public class PlansActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras() ;
         PrefManager prf= new PrefManager(PlansActivity.this.getApplicationContext());
         this.method =  bundle.getString("method");
-        config =  new PayPalConfiguration()
-                .environment(PayPalConfiguration.ENVIRONMENT_PRODUCTION)
-                .clientId(prf.getString("APP_PAYPAL_CLIENT_ID"));
         initView();
         initAction();
         loadPlans();
@@ -90,10 +73,10 @@ public class PlansActivity extends AppCompatActivity {
             this.planAdapter = new PlanAdapter();
             switch (method){
                 case "pp":
-                    text_view_activity_plans_method.setText("PayPal");
+                    text_view_activity_plans_method.setText("PayPal (Disabled)");
                     break;
                 case "cc":
-                    text_view_activity_plans_method.setText("Credit card");
+                    text_view_activity_plans_method.setText("Credit card (Disabled)");
                     break;
                 case "cash":
                     text_view_activity_plans_method.setText("Cash");
@@ -110,15 +93,10 @@ public class PlansActivity extends AppCompatActivity {
             }else{
                 switch (method){
                     case "pp":
-                        PayPalPayNow();
+                        Toasty.error(PlansActivity.this, "PayPal payment is currently disabled", Toast.LENGTH_SHORT).show();
                         break;
                     case "cc":
-                        Intent intent = new Intent(PlansActivity.this,StripeActivity.class);
-                        intent.putExtra("plan",selected_id);
-                        intent.putExtra("name",planList.get(selected_pos).getTitle());
-                        intent.putExtra("price",planList.get(selected_pos).getPrice());
-                        startActivity(intent);
-                        finish();
+                        Toasty.error(PlansActivity.this, "Credit card payment is currently disabled", Toast.LENGTH_SHORT).show();
                         break;
                     case "cash":
                         Intent intent1 = new Intent(PlansActivity.this,CashActivity.class);
@@ -234,96 +212,7 @@ public class PlansActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PAYPAL_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                PaymentConfirmation confirmation = data.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
-                if (confirmation != null) {
-                    try {
-                        String paymentDetails = confirmation.toJSONObject().toString(4);
-                        JSONObject transaction = new JSONObject(paymentDetails);
-                        JSONObject respone = new JSONObject(transaction.get("response").toString());
 
-                        submitPayPal(respone.get("id").toString());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            } else if (resultCode == Activity.RESULT_CANCELED)
-                Toasty.error(this, "Cancel", Toast.LENGTH_SHORT).show();
-        } else if (resultCode == PaymentActivity.RESULT_EXTRAS_INVALID) {
-            Toasty.error(this, "Invalid", Toast.LENGTH_SHORT).show();
-        }
-    }
-    private void PayPalPayNow() {
-        PrefManager prf= new PrefManager(PlansActivity.this.getApplicationContext());
-        if (prf.getString("LOGGED").toString().equals("TRUE")){
-            Integer id_user=  Integer.parseInt(prf.getString("ID_USER"));
-            String   key_user=  prf.getString("TOKEN_USER");
-            PayPalPayment payPalPayment = new PayPalPayment(new BigDecimal(String.valueOf(planList.get(selected_pos).getPrice())),new PrefManager(getApplicationContext()).getString("APP_CURRENCY").toUpperCase(),
-                    "Purchase Goods",PayPalPayment.PAYMENT_INTENT_SALE);
-            payPalPayment.custom("user:"+id_user+",pack:"+planList.get(selected_pos).getId());
-            Intent intent = new Intent(this, PaymentActivity.class);
-            intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION,config);
-            intent.putExtra(PaymentActivity.EXTRA_PAYMENT,payPalPayment);
-            startActivityForResult(intent,PAYPAL_REQUEST_CODE);
-        }else{
-            finish();
-            Intent intent = new Intent(PlansActivity.this,LoginActivity.class);
-            startActivity(intent);
-            overridePendingTransition(R.anim.slide_up, R.anim.slide_down);
-            finish();
-        }
-    }
-    private void submitPayPal(String trans_id){
-        dialog_progress= ProgressDialog.show(this, null,getResources().getString(R.string.operation_progress), true);
 
-        PrefManager prf= new PrefManager(PlansActivity.this.getApplicationContext());
-        if (prf.getString("LOGGED").toString().equals("TRUE")){
-            Integer id_user=  Integer.parseInt(prf.getString("ID_USER"));
-            String   key_user=  prf.getString("TOKEN_USER");
-            Retrofit retrofit = apiClient.getClient();
-                apiRest service = retrofit.create(apiRest.class);
-                Call<ApiResponse> call = service.SubscriptionPayPal(id_user,key_user,trans_id,selected_id);
-                call.enqueue(new Callback<ApiResponse>() {
-                    @Override
-                    public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
-                        if (response.isSuccessful()){
-                            if (response.body().getCode()==200){
-                                Intent intent = new Intent(PlansActivity.this, FinishActivity.class);
-                                intent.putExtra("title", response.body().getMessage());
-                                startActivity(intent);
-                                finish();
-                                prf.setString("NEW_SUBSCRIBE_ENABLED","TRUE");
-                            }else if (response.body().getCode()==201){
-                                Intent intent = new Intent(PlansActivity.this, FinishActivity.class);
-                                intent.putExtra("title", response.body().getMessage());
-                                startActivity(intent);
-                                finish();
-                            }else{
-                                Toasty.error(PlansActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        }else {
-                            Toasty.error(PlansActivity.this,getResources().getString(R.string.operation_canceller), Toast.LENGTH_SHORT).show();
-                        }
-                        dialog_progress.dismiss();
-                    }
-                    @Override
-                    public void onFailure(Call<ApiResponse> call, Throwable t) {
-                        Toasty.error(PlansActivity.this,getResources().getString(R.string.operation_canceller), Toast.LENGTH_SHORT).show();
-                        dialog_progress.dismiss();
-                    }
-                });
-        }else{
-            finish();
-            Intent intent = new Intent(PlansActivity.this,LoginActivity.class);
-            startActivity(intent);
-            overridePendingTransition(R.anim.slide_up, R.anim.slide_down);
-            dialog_progress.dismiss();
-
-        }
-    }
 
 }
