@@ -297,98 +297,107 @@ public class HybridDataService {
         JSONObject jsonObject = new JSONObject(jsonData);
         Data data = new Data();
         List<Poster> posters = new ArrayList<>();
+        List<my.cinemax.app.free.entity.Channel> channels = new ArrayList<>();
 
-        // First, try to parse the actual GitHub JSON structure
         if (jsonObject.has("Categories")) {
-            Log.d(TAG, "Found Categories in JSON, parsing live TV and streaming data...");
+            Log.d(TAG, "Found Categories in JSON, parsing streaming data...");
             JSONArray categoriesArray = jsonObject.getJSONArray("Categories");
             
-            // Look for movie-related entries
             for (int i = 0; i < categoriesArray.length(); i++) {
                 JSONObject category = categoriesArray.getJSONObject(i);
+                String mainCategory = category.optString("MainCategory", "");
+                
                 if (category.has("Entries")) {
                     JSONArray entries = category.getJSONArray("Entries");
+                    
                     for (int j = 0; j < entries.length(); j++) {
                         JSONObject entry = entries.getJSONObject(j);
                         
-                        // Check if this is a movie-related entry
-                        String subCategory = entry.optString("SubCategory", "");
-                        if (subCategory.equalsIgnoreCase("Movies") || 
-                            entry.optString("Title", "").toLowerCase().contains("movie")) {
-                            
-                            Poster poster = parsePosterFromLiveTVEntry(entry);
+                        if ("TV Series".equals(mainCategory)) {
+                            // Parse TV Series as movies/shows with streaming sources
+                            Poster poster = parseTVSeriesEntry(entry);
                             if (poster != null) {
                                 posters.add(poster);
-                                Log.d(TAG, "Added live TV movie entry: " + poster.getTitle());
+                                Log.d(TAG, "Added TV series: " + poster.getTitle());
+                            }
+                        } else if ("Live TV".equals(mainCategory)) {
+                            // Parse Live TV as channels
+                            my.cinemax.app.free.entity.Channel channel = parseLiveTVEntry(entry);
+                            if (channel != null) {
+                                channels.add(channel);
+                                Log.d(TAG, "Added live channel: " + channel.getTitle());
                             }
                         }
                     }
                 }
             }
             
-            Log.d(TAG, "Parsed " + posters.size() + " movie entries from live TV data");
-        }
-        
-        // If no movies found in GitHub JSON, get some from TMDB
-        if (posters.isEmpty()) {
-            Log.d(TAG, "No movies found in GitHub JSON, getting TMDB data directly...");
-            // Get popular movies from TMDB as fallback
-            TMDBService.getInstance().getPopularMovies(1, new TMDBService.MovieListCallback() {
-                @Override
-                public void onSuccess(List<Poster> tmdbMovies) {
-                    if (tmdbMovies != null && !tmdbMovies.isEmpty()) {
-                        // Take first 10 movies and set basic streaming info
-                        List<Poster> limitedMovies = tmdbMovies.subList(0, Math.min(10, tmdbMovies.size()));
-                        for (Poster movie : limitedMovies) {
-                            // Add basic streaming source
-                            List<Source> sources = new ArrayList<>();
-                            Source source = new Source();
-                            source.setTitle("HD Stream");
-                            source.setUrl("https://example.com/stream/" + movie.getId());
-                            source.setType("stream");
-                            source.setQuality("720p");
-                            source.setSize("0");
-                            source.setKind("stream");
-                            source.setPremium("0");
-                            source.setExternal(false);
-                            sources.add(source);
-                            movie.setSources(sources);
-                        }
-                        data.setPosters(limitedMovies);
-                        Log.d(TAG, "Added " + limitedMovies.size() + " TMDB movies as fallback");
-                    }
-                }
-
-                @Override
-                public void onError(String error) {
-                    Log.w(TAG, "TMDB fallback also failed: " + error);
-                }
-            });
+            Log.d(TAG, "Parsed " + posters.size() + " TV series and " + channels.size() + " live channels");
         }
 
         data.setPosters(posters);
+        data.setChannels(channels);
         return data;
     }
 
-    private static Poster parsePosterFromLiveTVEntry(JSONObject entry) throws JSONException {
+    private static Poster parseTVSeriesEntry(JSONObject entry) throws JSONException {
         Poster poster = new Poster();
 
-        // Set basic movie information
-        poster.setTitle(entry.optString("Title", "Unknown Movie"));
+        // Set basic series information
+        poster.setTitle(entry.optString("Title", "Unknown Series"));
         poster.setDescription(entry.optString("Description", ""));
         poster.setImage(entry.optString("Poster", ""));
         poster.setCover(entry.optString("Thumbnail", ""));
         poster.setRating((float) entry.optDouble("Rating", 0.0f));
-        poster.setYear(entry.optString("Year", "2024"));
-        poster.setDuration(entry.optString("Duration", "120 min"));
-        poster.setType("movie");
-        poster.setPlayas("1");
-        poster.setDownloadas("1");
+        poster.setYear(String.valueOf(entry.optInt("Year", 2024)));
+        poster.setType("serie");
+        poster.setPlayas("serie");
+        poster.setDownloadas("serie");
         poster.setComment(true);
 
-        // Parse streaming sources if available
+        // Parse streaming sources from first episode of first season
+        List<Source> sources = new ArrayList<>();
+        if (entry.has("Seasons")) {
+            JSONArray seasonsArray = entry.getJSONArray("Seasons");
+            if (seasonsArray.length() > 0) {
+                JSONObject firstSeason = seasonsArray.getJSONObject(0);
+                if (firstSeason.has("Episodes")) {
+                    JSONArray episodesArray = firstSeason.getJSONArray("Episodes");
+                    if (episodesArray.length() > 0) {
+                        JSONObject firstEpisode = episodesArray.getJSONObject(0);
+                        if (firstEpisode.has("Servers")) {
+                            JSONArray serversArray = firstEpisode.getJSONArray("Servers");
+                            for (int i = 0; i < serversArray.length(); i++) {
+                                JSONObject serverObj = serversArray.getJSONObject(i);
+                                Source source = parseSourceFromServer(serverObj);
+                                if (source != null) {
+                                    sources.add(source);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        poster.setSources(sources);
+
+        return poster;
+    }
+
+    private static my.cinemax.app.free.entity.Channel parseLiveTVEntry(JSONObject entry) throws JSONException {
+        my.cinemax.app.free.entity.Channel channel = new my.cinemax.app.free.entity.Channel();
+
+        // Set basic channel information
+        channel.setTitle(entry.optString("Title", "Unknown Channel"));
+        channel.setDescription(entry.optString("Description", ""));
+        channel.setImage(entry.optString("Poster", ""));
+        channel.setCover(entry.optString("Thumbnail", ""));
+        channel.setRating((float) entry.optDouble("Rating", 0.0f));
+        channel.setType("live");
+        
+        // Parse streaming sources
+        List<Source> sources = new ArrayList<>();
         if (entry.has("Servers")) {
-            List<Source> sources = new ArrayList<>();
             JSONArray serversArray = entry.getJSONArray("Servers");
             for (int i = 0; i < serversArray.length(); i++) {
                 JSONObject serverObj = serversArray.getJSONObject(i);
@@ -397,19 +406,20 @@ public class HybridDataService {
                     sources.add(source);
                 }
             }
-            poster.setSources(sources);
         }
+        channel.setSources(sources);
 
-        return poster;
+        return channel;
     }
 
     private static Source parseSourceFromServer(JSONObject serverObj) {
         Source source = new Source();
 
-        source.setTitle(serverObj.optString("name", "Unknown Quality"));
+        String quality = serverObj.optString("name", "HD");
+        source.setTitle(quality);
         source.setUrl(serverObj.optString("url", ""));
         source.setType("stream");
-        source.setQuality(serverObj.optString("name", "720p"));
+        source.setQuality(quality);
         source.setSize("0");
         source.setKind("stream");
         source.setPremium("0");
