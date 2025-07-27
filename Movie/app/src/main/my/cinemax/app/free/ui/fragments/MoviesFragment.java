@@ -9,10 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
+// Removed unused retrofit imports
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,8 +24,7 @@ import android.widget.RelativeLayout;
 
 import my.cinemax.app.free.Provider.PrefManager;
 import my.cinemax.app.free.R;
-import my.cinemax.app.free.api.apiClient;
-import my.cinemax.app.free.api.apiRest;
+import my.cinemax.app.free.api.TMDBService;
 import my.cinemax.app.free.entity.Genre;
 import my.cinemax.app.free.entity.Poster;
 import my.cinemax.app.free.ui.Adapters.PosterAdapter;
@@ -118,36 +114,31 @@ public class MoviesFragment extends Fragment {
     }
 
     private void getGenreList() {
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
-
-        Call<List<Genre>> call = service.getGenreList();
-        call.enqueue(new Callback<List<Genre>>() {
+        TMDBService.getInstance().getMovieGenres(new TMDBService.GenreListCallback() {
             @Override
-            public void onResponse(Call<List<Genre>> call, Response<List<Genre>> response) {
-                apiClient.FormatData(getActivity(),response);
-                if (response.isSuccessful()){
-                    if (response.body().size()>0) {
-                        final String[] countryCodes = new String[response.body().size()+1];
-                        countryCodes[0] = "All genres";
-                        genreList.add(new Genre());
+            public void onSuccess(List<Genre> genres) {
+                if (genres.size() > 0) {
+                    final String[] countryCodes = new String[genres.size() + 1];
+                    countryCodes[0] = "All genres";
+                    genreList.add(new Genre());
 
-                        for (int i = 0; i < response.body().size(); i++) {
-                            countryCodes[i+1] = response.body().get(i).getTitle();
-                            genreList.add(response.body().get(i));
-                        }
-                        ArrayAdapter<String> filtresAdapter = new ArrayAdapter<String>(getActivity(),
-                                R.layout.spinner_layout,R.id.textView,countryCodes);
-                        filtresAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
-                        spinner_fragement_movies_genre_list.setAdapter(filtresAdapter);
-                        relative_layout_frament_movies_genres.setVisibility(View.VISIBLE);
-                    }else{
-                        relative_layout_frament_movies_genres.setVisibility(View.GONE);
+                    for (int i = 0; i < genres.size(); i++) {
+                        countryCodes[i + 1] = genres.get(i).getName();
+                        genreList.add(genres.get(i));
                     }
+                    ArrayAdapter<String> filtresAdapter = new ArrayAdapter<String>(getActivity(),
+                            R.layout.spinner_layout, R.id.textView, countryCodes);
+                    filtresAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+                    spinner_fragement_movies_genre_list.setAdapter(filtresAdapter);
+                    relative_layout_frament_movies_genres.setVisibility(View.VISIBLE);
+                } else {
+                    relative_layout_frament_movies_genres.setVisibility(View.GONE);
                 }
             }
+
             @Override
-            public void onFailure(Call<List<Genre>> call, Throwable t) {
+            public void onError(String error) {
+                // Handle error silently
             }
         });
     }
@@ -282,10 +273,7 @@ public class MoviesFragment extends Fragment {
         });
     }
     public boolean checkSUBSCRIBED(){
-        if (!prefManager.getString("SUBSCRIBED").equals("TRUE") && !prefManager.getString("NEW_SUBSCRIBE_ENABLED").equals("TRUE")) {
-            return false;
-        }
-        return true;
+        return true; // All features are now free
     }
     private void initView() {
 
@@ -373,61 +361,74 @@ public class MoviesFragment extends Fragment {
         spinner_fragement_movies_orders_list.setAdapter(ordersAdapter);
     }
     private void loadMovies() {
-        if (page==0){
+        if (page == 0) {
             linear_layout_load_movies_fragment.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             relative_layout_load_more_movies_fragment.setVisibility(View.VISIBLE);
         }
         swipe_refresh_layout_movies_fragment.setRefreshing(false);
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
-        Call<List<Poster>> call = service.getMoviesByFiltres(genreSelected,orderSelected,page);
-        call.enqueue(new Callback<List<Poster>>() {
-            @Override
-            public void onResponse(Call<List<Poster>> call, final Response<List<Poster>> response) {
-                if (response.isSuccessful()){
-                    if (response.body().size()>0){
-                        for (int i = 0; i < response.body().size(); i++) {
-                            movieList.add(response.body().get(i));
 
-                            if (native_ads_enabled){
-                                item++;
-                                if (item == lines_beetween_ads ){
-                                    item= 0;
-                                    if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("FACEBOOK")) {
+        // Map order selection to TMDB sort options
+        String sortBy = "popularity.desc"; // default
+        switch (orderSelected) {
+            case "rating":
+                sortBy = "vote_average.desc";
+                break;
+            case "title":
+                sortBy = "title.asc";
+                break;
+            case "year":
+                sortBy = "release_date.desc";
+                break;
+            case "created":
+            default:
+                sortBy = "popularity.desc";
+                break;
+        }
+
+        // Convert genre ID to string for TMDB API
+        String genreIds = genreSelected == 0 ? "" : String.valueOf(genreSelected);
+
+        TMDBService.getInstance().discoverMovies(genreIds, sortBy, page + 1, new TMDBService.MovieListCallback() {
+            @Override
+            public void onSuccess(List<Poster> movies) {
+                if (movies.size() > 0) {
+                    for (int i = 0; i < movies.size(); i++) {
+                        movieList.add(movies.get(i));
+
+                        if (native_ads_enabled) {
+                            item++;
+                            if (item == lines_beetween_ads) {
+                                item = 0;
+                                if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("FACEBOOK")) {
+                                    movieList.add(new Poster().setTypeView(4));
+                                } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("ADMOB")) {
+                                    movieList.add(new Poster().setTypeView(5));
+                                } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("BOTH")) {
+                                    if (type_ads == 0) {
                                         movieList.add(new Poster().setTypeView(4));
-                                    }else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("ADMOB")){
+                                        type_ads = 1;
+                                    } else if (type_ads == 1) {
                                         movieList.add(new Poster().setTypeView(5));
-                                    } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("BOTH")){
-                                        if (type_ads == 0) {
-                                            movieList.add(new Poster().setTypeView(4));
-                                            type_ads = 1;
-                                        }else if (type_ads == 1){
-                                            movieList.add(new Poster().setTypeView(5));
-                                            type_ads = 0;
-                                        }
+                                        type_ads = 0;
                                     }
                                 }
                             }
                         }
-                        linear_layout_page_error_movies_fragment.setVisibility(View.GONE);
-                        recycler_view_movies_fragment.setVisibility(View.VISIBLE);
-                        image_view_empty_list.setVisibility(View.GONE);
-
-                        adapter.notifyDataSetChanged();
-                        page++;
-                        loading=true;
-                    }else{
-                        if (page==0) {
-                            linear_layout_page_error_movies_fragment.setVisibility(View.GONE);
-                            recycler_view_movies_fragment.setVisibility(View.GONE);
-                            image_view_empty_list.setVisibility(View.VISIBLE);
-                        }
                     }
-                }else{
-                    linear_layout_page_error_movies_fragment.setVisibility(View.VISIBLE);
-                    recycler_view_movies_fragment.setVisibility(View.GONE);
+                    linear_layout_page_error_movies_fragment.setVisibility(View.GONE);
+                    recycler_view_movies_fragment.setVisibility(View.VISIBLE);
                     image_view_empty_list.setVisibility(View.GONE);
+
+                    adapter.notifyDataSetChanged();
+                    page++;
+                    loading = true;
+                } else {
+                    if (page == 0) {
+                        linear_layout_page_error_movies_fragment.setVisibility(View.GONE);
+                        recycler_view_movies_fragment.setVisibility(View.GONE);
+                        image_view_empty_list.setVisibility(View.VISIBLE);
+                    }
                 }
                 relative_layout_load_more_movies_fragment.setVisibility(View.GONE);
                 swipe_refresh_layout_movies_fragment.setRefreshing(false);
@@ -435,14 +436,13 @@ public class MoviesFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<List<Poster>> call, Throwable t) {
+            public void onError(String error) {
                 linear_layout_page_error_movies_fragment.setVisibility(View.VISIBLE);
                 recycler_view_movies_fragment.setVisibility(View.GONE);
                 image_view_empty_list.setVisibility(View.GONE);
                 relative_layout_load_more_movies_fragment.setVisibility(View.GONE);
                 swipe_refresh_layout_movies_fragment.setVisibility(View.GONE);
                 linear_layout_load_movies_fragment.setVisibility(View.GONE);
-
             }
         });
     }

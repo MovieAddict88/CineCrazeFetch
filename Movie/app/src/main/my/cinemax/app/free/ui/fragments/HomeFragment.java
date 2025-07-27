@@ -6,10 +6,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
+// Removed unused retrofit imports
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,8 +17,7 @@ import android.widget.RelativeLayout;
 
 import my.cinemax.app.free.Provider.PrefManager;
 import my.cinemax.app.free.R;
-import my.cinemax.app.free.api.apiClient;
-import my.cinemax.app.free.api.apiRest;
+import my.cinemax.app.free.api.TMDBService;
 import my.cinemax.app.free.entity.Data;
 import my.cinemax.app.free.entity.Genre;
 import my.cinemax.app.free.ui.Adapters.HomeAdapter;
@@ -76,56 +72,44 @@ public class HomeFragment extends Fragment {
     }
 
     private void loadData() {
-
         showLoadingView();
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
-        Call<Data> call = service.homeData();
-        call.enqueue(new Callback<Data>() {
+        
+        TMDBService.getInstance().getHomeData(new TMDBService.HomeDataCallback() {
             @Override
-            public void onResponse(Call<Data> call, Response<Data> response) {
-                apiClient.FormatData(getActivity(),response);
-                if (response.isSuccessful()){
-                    dataList.clear();
-                    dataList.add(new Data().setViewType(0));
-                    if (response.body().getSlides().size()>0){
-                        Data sliodeData =  new Data();
-                        sliodeData.setSlides(response.body().getSlides());
-                        dataList.add(sliodeData);
-                    }
-                    if (response.body().getChannels().size()>0){
-                       Data channelData = new Data();
-                       channelData.setChannels(response.body().getChannels());
-                        dataList.add(channelData);
-                    }
-                    if (response.body().getActors().size()>0){
-                        Data actorsData = new Data();
-                        actorsData.setActors(response.body().getActors());
-                        dataList.add(actorsData);
-                    }
-                    if (response.body().getGenres().size()>0){
-                        if (my_genre_list!=null){
-                            Data genreDataMyList = new Data();
-                            genreDataMyList.setGenre(my_genre_list);
-                            dataList.add(genreDataMyList);
-                        }
-                        for (int i = 0; i < response.body().getGenres().size(); i++) {
+            public void onSuccess(Data data) {
+                dataList.clear();
+                dataList.add(new Data().setViewType(0)); // Header view
+                
+                // Add popular movies section
+                if (data.getPosters() != null && data.getPosters().size() > 0) {
+                    Data moviesData = new Data();
+                    moviesData.setPosters(data.getPosters());
+                    dataList.add(moviesData);
+                }
+                
+                // Get genres and add genre sections
+                TMDBService.getInstance().getMovieGenres(new TMDBService.GenreListCallback() {
+                    @Override
+                    public void onSuccess(List<Genre> genres) {
+                        for (Genre genre : genres) {
                             Data genreData = new Data();
-                            genreData.setGenre(response.body().getGenres().get(i));
+                            genreData.setGenre(genre);
                             dataList.add(genreData);
-                            if (native_ads_enabled){
+                            
+                            // Add ads if enabled
+                            if (native_ads_enabled) {
                                 item++;
-                                if (item == lines_beetween_ads ){
-                                    item= 0;
+                                if (item == lines_beetween_ads) {
+                                    item = 0;
                                     if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("FACEBOOK")) {
                                         dataList.add(new Data().setViewType(5));
-                                    }else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("ADMOB")){
+                                    } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("ADMOB")) {
                                         dataList.add(new Data().setViewType(6));
-                                    } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("BOTH")){
+                                    } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("BOTH")) {
                                         if (type_ads == 0) {
                                             dataList.add(new Data().setViewType(5));
                                             type_ads = 1;
-                                        }else if (type_ads == 1){
+                                        } else if (type_ads == 1) {
                                             dataList.add(new Data().setViewType(6));
                                             type_ads = 0;
                                         }
@@ -133,16 +117,20 @@ public class HomeFragment extends Fragment {
                                 }
                             }
                         }
+                        
+                        showListView();
+                        homeAdapter.notifyDataSetChanged();
                     }
-                    showListView();
-                    homeAdapter.notifyDataSetChanged();
-                }else{
-                    showErrorView();
-                }
+
+                    @Override
+                    public void onError(String error) {
+                        showErrorView();
+                    }
+                });
             }
 
             @Override
-            public void onFailure(Call<Data> call, Throwable t) {
+            public void onError(String error) {
                 showErrorView();
             }
         });
@@ -175,10 +163,7 @@ public class HomeFragment extends Fragment {
         });
     }
     public boolean checkSUBSCRIBED(){
-        if (!prefManager.getString("SUBSCRIBED").equals("TRUE") && !prefManager.getString("NEW_SUBSCRIBE_ENABLED").equals("TRUE")) {
-            return false;
-        }
-        return true;
+        return true; // All features are now free
     }
     private void initViews() {
 
