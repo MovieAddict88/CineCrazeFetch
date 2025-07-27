@@ -84,7 +84,7 @@ public class HomeFragment extends Fragment {
                     (data.getPosters() != null ? data.getPosters().size() : 0) + 
                     ", Channels: " + (data.getChannels() != null ? data.getChannels().size() : 0));
                 
-                hideLoadingView();
+                showListView();
                 dataList.clear();
                 dataList.add(new Data().setViewType(0)); // Header view
                 

@@ -80,9 +80,10 @@ public class HybridDataService {
                     Log.d(TAG, "Returning data without TMDB enhancement for debugging");
                     
                     // Execute callback on main thread
+                    final Data finalData = data;
                     android.os.Handler mainHandler = new android.os.Handler(android.os.Looper.getMainLooper());
                     mainHandler.post(() -> {
-                        callback.onSuccess(data);
+                        callback.onSuccess(finalData);
                     });
                 } else {
                     Log.e(TAG, "Failed to fetch JSON data, falling back to TMDB only");
