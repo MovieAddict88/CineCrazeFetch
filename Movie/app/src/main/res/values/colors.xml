@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#1976D2</color>
+    <color name="colorPrimaryDark">#1565C0</color>
+    <color name="colorAccent">#FFC107</color>
+    
+    <!-- Basic colors -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="gray">#757575</color>
+    <color name="dark_gray">#424242</color>
+    <color name="light_gray">#E0E0E0</color>
+    <color name="yellow">#FFC107</color>
+    
+    <!-- App specific colors -->
+    <color name="background_color">#121212</color>
+    <color name="card_background">#1E1E1E</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#B3B3B3</color>
+    
+    <!-- Status bar and navigation -->
+    <color name="status_bar">#000000</color>
+    <color name="navigation_bar">#000000</color>
+    
+    <!-- Transparent colors -->
+    <color name="transparent">#00000000</color>
+    <color name="black_overlay">#66000000</color>
+</resources>
