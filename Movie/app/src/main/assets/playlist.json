@@ -9,13 +9,43 @@
       ],
       "Entries": [
         {
-          "Title": "Sample TV Channel",
+          "Title": "Entertainment Channel",
           "SubCategory": "Entertainment",
           "Country": "🌐 International",
-          "Description": "A sample TV channel for testing",
+          "Description": "A sample entertainment TV channel",
           "Poster": "https://via.placeholder.com/300x200",
           "Thumbnail": "https://via.placeholder.com/300x200",
           "Rating": 4.5,
+          "Servers": [
+            {
+              "name": "HD",
+              "url": "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4"
+            }
+          ]
+        },
+        {
+          "Title": "Sports Central",
+          "SubCategory": "Sports",
+          "Country": "🇺🇸 USA",
+          "Description": "Sports news and live events",
+          "Poster": "https://via.placeholder.com/300x200",
+          "Thumbnail": "https://via.placeholder.com/300x200",
+          "Rating": 4.2,
+          "Servers": [
+            {
+              "name": "HD",
+              "url": "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4"
+            }
+          ]
+        },
+        {
+          "Title": "World News",
+          "SubCategory": "News",
+          "Country": "🌐 International",
+          "Description": "24/7 international news coverage",
+          "Poster": "https://via.placeholder.com/300x200",
+          "Thumbnail": "https://via.placeholder.com/300x200",
+          "Rating": 4.1,
           "Servers": [
             {
               "name": "HD",
@@ -30,17 +60,19 @@
       "SubCategories": [
         "Action",
         "Comedy",
-        "Drama"
+        "Drama",
+        "Horror",
+        "Sci-Fi"
       ],
       "Entries": [
         {
-          "Title": "Sample Movie",
+          "Title": "Action Hero",
           "SubCategory": "Action",
           "Country": "🇺🇸 USA",
-          "Description": "A sample action movie for testing",
+          "Description": "An explosive action thriller",
           "Poster": "https://via.placeholder.com/300x450",
           "Thumbnail": "https://via.placeholder.com/300x450",
-          "Rating": 4.2,
+          "Rating": 4.5,
           "Duration": "120 min",
           "Year": 2024,
           "Servers": [
@@ -51,6 +83,153 @@
             {
               "name": "480p",
               "url": "https://sample-videos.com/zip/10/mp4/SampleVideo_640x360_5mb.mp4"
+            }
+          ]
+        },
+        {
+          "Title": "Comedy Gold",
+          "SubCategory": "Comedy",
+          "Country": "🇺🇸 USA",
+          "Description": "A hilarious comedy adventure",
+          "Poster": "https://via.placeholder.com/300x450",
+          "Thumbnail": "https://via.placeholder.com/300x450",
+          "Rating": 4.0,
+          "Duration": "95 min",
+          "Year": 2023,
+          "Servers": [
+            {
+              "name": "720p",
+              "url": "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_5mb.mp4"
+            }
+          ]
+        },
+        {
+          "Title": "Drama Deep",
+          "SubCategory": "Drama",
+          "Country": "🇬🇧 UK",
+          "Description": "A touching dramatic story",
+          "Poster": "https://via.placeholder.com/300x450",
+          "Thumbnail": "https://via.placeholder.com/300x450",
+          "Rating": 4.8,
+          "Duration": "135 min",
+          "Year": 2024,
+          "Servers": [
+            {
+              "name": "1080p",
+              "url": "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_5mb.mp4"
+            }
+          ]
+        },
+        {
+          "Title": "Space Odyssey",
+          "SubCategory": "Sci-Fi",
+          "Country": "🇺🇸 USA",
+          "Description": "An epic science fiction adventure",
+          "Poster": "https://via.placeholder.com/300x450",
+          "Thumbnail": "https://via.placeholder.com/300x450",
+          "Rating": 4.6,
+          "Duration": "150 min",
+          "Year": 2024,
+          "Servers": [
+            {
+              "name": "4K",
+              "url": "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_5mb.mp4"
+            }
+          ]
+        },
+        {
+          "Title": "Horror Nights",
+          "SubCategory": "Horror",
+          "Country": "🇺🇸 USA",
+          "Description": "A spine-chilling horror experience",
+          "Poster": "https://via.placeholder.com/300x450",
+          "Thumbnail": "https://via.placeholder.com/300x450",
+          "Rating": 3.9,
+          "Duration": "105 min",
+          "Year": 2023,
+          "Servers": [
+            {
+              "name": "720p",
+              "url": "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_5mb.mp4"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "MainCategory": "Series",
+      "SubCategories": [
+        "Drama",
+        "Comedy",
+        "Thriller",
+        "Documentary"
+      ],
+      "Entries": [
+        {
+          "Title": "Crime Investigation",
+          "SubCategory": "Drama",
+          "Country": "🇺🇸 USA",
+          "Description": "A gripping crime drama series",
+          "Poster": "https://via.placeholder.com/300x450",
+          "Thumbnail": "https://via.placeholder.com/300x450",
+          "Rating": 4.7,
+          "Duration": "45 min per episode",
+          "Year": 2024,
+          "Servers": [
+            {
+              "name": "Season 1",
+              "url": "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_5mb.mp4"
+            }
+          ]
+        },
+        {
+          "Title": "Laugh Track",
+          "SubCategory": "Comedy",
+          "Country": "🇺🇸 USA",
+          "Description": "A light-hearted comedy series",
+          "Poster": "https://via.placeholder.com/300x450",
+          "Thumbnail": "https://via.placeholder.com/300x450",
+          "Rating": 4.3,
+          "Duration": "30 min per episode",
+          "Year": 2023,
+          "Servers": [
+            {
+              "name": "Season 1",
+              "url": "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_5mb.mp4"
+            }
+          ]
+        },
+        {
+          "Title": "Mystery Solved",
+          "SubCategory": "Thriller",
+          "Country": "🇬🇧 UK",
+          "Description": "A psychological thriller series",
+          "Poster": "https://via.placeholder.com/300x450",
+          "Thumbnail": "https://via.placeholder.com/300x450",
+          "Rating": 4.5,
+          "Duration": "50 min per episode",
+          "Year": 2024,
+          "Servers": [
+            {
+              "name": "Season 1",
+              "url": "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_5mb.mp4"
+            }
+          ]
+        },
+        {
+          "Title": "Nature's Wonders",
+          "SubCategory": "Documentary",
+          "Country": "🌐 International",
+          "Description": "Exploring the beauty of nature",
+          "Poster": "https://via.placeholder.com/300x450",
+          "Thumbnail": "https://via.placeholder.com/300x450",
+          "Rating": 4.8,
+          "Duration": "60 min per episode",
+          "Year": 2024,
+          "Servers": [
+            {
+              "name": "Season 1",
+              "url": "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_5mb.mp4"
             }
           ]
         }
