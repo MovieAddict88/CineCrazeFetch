@@ -1795,7 +1795,8 @@ public class MovieActivity extends AppCompatActivity {
             }
             switch (payment_methode_id){
                 case "gp" :
-                    subscribe();
+                    // Removed subscription - all features are now free
+                    Toasty.success(getApplicationContext(), "All features are now free!", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                     break;
                 default:
