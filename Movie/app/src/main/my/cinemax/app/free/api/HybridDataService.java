@@ -266,24 +266,104 @@ public class HybridDataService {
         Data data = new Data();
         List<Poster> posters = new ArrayList<>();
 
-        // Parse movies from JSON
-        if (jsonObject.has("movies")) {
-            JSONArray moviesArray = jsonObject.getJSONArray("movies");
-            Log.d(TAG, "Found " + moviesArray.length() + " movies in JSON");
-            for (int i = 0; i < Math.min(moviesArray.length(), 20); i++) { // Limit to 20 movies
-                JSONObject movieObj = moviesArray.getJSONObject(i);
-                Poster poster = parsePosterFromJson(movieObj);
-                if (poster != null) {
-                    posters.add(poster);
+        // First, try to parse the actual GitHub JSON structure
+        if (jsonObject.has("Categories")) {
+            Log.d(TAG, "Found Categories in JSON, parsing live TV and streaming data...");
+            JSONArray categoriesArray = jsonObject.getJSONArray("Categories");
+            
+            // Look for movie-related entries
+            for (int i = 0; i < categoriesArray.length(); i++) {
+                JSONObject category = categoriesArray.getJSONObject(i);
+                if (category.has("Entries")) {
+                    JSONArray entries = category.getJSONArray("Entries");
+                    for (int j = 0; j < entries.length(); j++) {
+                        JSONObject entry = entries.getJSONObject(j);
+                        
+                        // Check if this is a movie-related entry
+                        String subCategory = entry.optString("SubCategory", "");
+                        if (subCategory.equalsIgnoreCase("Movies") || 
+                            entry.optString("Title", "").toLowerCase().contains("movie")) {
+                            
+                            Poster poster = parsePosterFromLiveTVEntry(entry);
+                            if (poster != null) {
+                                posters.add(poster);
+                                Log.d(TAG, "Added live TV movie entry: " + poster.getTitle());
+                            }
+                        }
+                    }
                 }
             }
-            Log.d(TAG, "Successfully parsed " + posters.size() + " posters");
-        } else {
-            Log.w(TAG, "No 'movies' key found in JSON");
+            
+            Log.d(TAG, "Parsed " + posters.size() + " movie entries from live TV data");
+        }
+        
+        // If no movies found in GitHub JSON, fallback to TMDB API
+        if (posters.isEmpty()) {
+            Log.d(TAG, "No movies found in GitHub JSON, falling back to TMDB API...");
+            // This will be handled by the calling method
+            return data; // Return empty data, TMDB will be called separately
         }
 
         data.setPosters(posters);
         return data;
+    }
+
+    private static Poster parsePosterFromLiveTVEntry(JSONObject entry) {
+        try {
+            Poster poster = new Poster();
+            
+            // Set basic movie information
+            poster.setTitle(entry.optString("Title", "Unknown Movie"));
+            poster.setDescription(entry.optString("Description", ""));
+            poster.setImage(entry.optString("Poster", ""));
+            poster.setCover(entry.optString("Thumbnail", ""));
+            poster.setRating(entry.optFloat("Rating", 0.0f));
+            poster.setYear(entry.optString("Year", "2024"));
+            poster.setDuration(entry.optString("Duration", "120 min"));
+            poster.setType("movie");
+            poster.setPlayas("1");
+            poster.setDownloadas("1");
+            poster.setComment(true);
+            
+            // Parse streaming sources if available
+            if (entry.has("Servers")) {
+                List<Source> sources = new ArrayList<>();
+                JSONArray serversArray = entry.getJSONArray("Servers");
+                for (int i = 0; i < serversArray.length(); i++) {
+                    JSONObject serverObj = serversArray.getJSONObject(i);
+                    Source source = parseSourceFromServer(serverObj);
+                    if (source != null) {
+                        sources.add(source);
+                    }
+                }
+                poster.setSources(sources);
+            }
+            
+            return poster;
+        } catch (JSONException e) {
+            Log.e(TAG, "Error parsing live TV entry", e);
+            return null;
+        }
+    }
+
+    private static Source parseSourceFromServer(JSONObject serverObj) {
+        try {
+            Source source = new Source();
+            
+            source.setTitle(serverObj.optString("name", "Unknown Quality"));
+            source.setUrl(serverObj.optString("url", ""));
+            source.setType("stream");
+            source.setQuality(serverObj.optString("name", "720p"));
+            source.setSize("0");
+            source.setKind("stream");
+            source.setPremium("0");
+            source.setExternal(false);
+            
+            return source;
+        } catch (JSONException e) {
+            Log.e(TAG, "Error parsing server object", e);
+            return null;
+        }
     }
 
     private static List<Poster> parseMoviesFromJson(String jsonData) throws JSONException {
