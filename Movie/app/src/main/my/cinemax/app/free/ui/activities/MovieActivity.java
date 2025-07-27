@@ -268,36 +268,10 @@ public class MovieActivity extends AppCompatActivity {
         showAdsBanner();
         loadRewardedVideoAd();
 
-
-        initBuy();
+        // Removed initBuy() - no longer needed
     }
 
-    BillingSubs billingSubs;
-    public void initBuy(){
-        List<String> listSkuStoreSubs = new ArrayList<>();
-        listSkuStoreSubs.add(Global.SUBSCRIPTION_ID);
-        billingSubs = new BillingSubs(this, listSkuStoreSubs, new CallBackBilling() {
-            @Override
-            public void onPurchase() {
-                PrefManager prefManager= new PrefManager(getApplicationContext());
-                prefManager.setString("SUBSCRIBED","TRUE");
-                Toasty.success(MovieActivity.this, "you have successfully subscribed ", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onNotPurchase() {
-                Toasty.warning(MovieActivity.this, "Operation has been cancelled  ", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onNotLogin() {
-            }
-        });
-    }
-
-    public void subscribe(){
-        billingSubs.purchase(Global.SUBSCRIPTION_ID);
-    }
+    // Removed billing subscription code - all features are now free
     public void loadRewardedVideoAd() {
         PrefManager   prefManager= new PrefManager(getApplicationContext());
 

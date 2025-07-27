@@ -123,7 +123,7 @@ public class MoviesFragment extends Fragment {
                     genreList.add(new Genre());
 
                     for (int i = 0; i < genres.size(); i++) {
-                        countryCodes[i + 1] = genres.get(i).getName();
+                        countryCodes[i + 1] = genres.get(i).getTitle();
                         genreList.add(genres.get(i));
                     }
                     ArrayAdapter<String> filtresAdapter = new ArrayAdapter<String>(getActivity(),

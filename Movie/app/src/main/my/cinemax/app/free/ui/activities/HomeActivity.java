@@ -317,7 +317,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             startActivity(intent);
             overridePendingTransition(R.anim.enter, R.anim.exit);
         }else if (id == R.id.buy_now){
-            showDialog();
+            // Removed subscription dialog - all features are now free
+            Toasty.info(getApplicationContext(), "All features are now free!", Toast.LENGTH_SHORT).show();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

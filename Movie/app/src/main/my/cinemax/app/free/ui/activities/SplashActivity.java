@@ -82,23 +82,7 @@ public class SplashActivity extends AppCompatActivity {
 
     }
 
-    public void check(){
-        List<String> listSkuStoreSubs = new ArrayList<>();
-        listSkuStoreSubs.add(Global.SUBSCRIPTION_ID);
-        new BillingSubs(SplashActivity.this, listSkuStoreSubs, new CallBackCheck() {
-            @Override
-            public void onPurchase() {
-                PrefManager prefManager= new PrefManager(getApplicationContext());
-                prefManager.setString("SUBSCRIBED","TRUE");
-            }
-
-            @Override
-            public void onNotPurchase() {
-                PrefManager prefManager= new PrefManager(getApplicationContext());
-                prefManager.setString("SUBSCRIBED","FALSE");
-            }
-        });
-    }
+    // Removed check() method - no longer needed
     private void checkAccount() {
 
         Integer version = -1;
@@ -278,13 +262,6 @@ public class SplashActivity extends AppCompatActivity {
 
 
     public void redirect(){
-        // Temporarily launch TestActivity to verify TMDB API
-        Intent intent = new Intent(SplashActivity.this, TestActivity.class);
-        startActivity(intent);
-        overridePendingTransition(R.anim.enter, R.anim.exit);
-        finish();
-        
-        /* Original redirect logic (commented out for testing)
         if (!prf.getString("first").equals("true")) {
             Intent intent = new Intent(SplashActivity.this,IntroActivity.class);
             startActivity(intent);
@@ -311,7 +288,6 @@ public class SplashActivity extends AppCompatActivity {
                 finish();
             }
         }
-        */
     }
 
 

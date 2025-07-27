@@ -100,7 +100,7 @@ public class TMDBDataConverter {
             for (TMDBGenre tmdbGenre : tmdbMovieDetail.getGenres()) {
                 Genre genre = new Genre();
                 genre.setId(tmdbGenre.getId());
-                genre.setName(tmdbGenre.getName());
+                genre.setTitle(tmdbGenre.getName());
                 genres.add(genre);
             }
             poster.setGenres(genres);
@@ -135,7 +135,7 @@ public class TMDBDataConverter {
             for (TMDBGenre tmdbGenre : tmdbTvShowDetail.getGenres()) {
                 Genre genre = new Genre();
                 genre.setId(tmdbGenre.getId());
-                genre.setName(tmdbGenre.getName());
+                genre.setTitle(tmdbGenre.getName());
                 genres.add(genre);
             }
             poster.setGenres(genres);
@@ -150,7 +150,7 @@ public class TMDBDataConverter {
             for (TMDBVideo tmdbVideo : tmdbVideos) {
                 if ("YouTube".equals(tmdbVideo.getSite()) && "Trailer".equals(tmdbVideo.getType())) {
                     Source source = new Source();
-                    source.setId(tmdbVideo.getId());
+                    source.setId(Integer.valueOf(tmdbVideo.getId()));
                     source.setTitle(tmdbVideo.getName());
                     source.setType("youtube");
                     source.setUrl("https://www.youtube.com/watch?v=" + tmdbVideo.getKey());
@@ -165,7 +165,7 @@ public class TMDBDataConverter {
     public static Genre convertTMDBGenreToGenre(TMDBGenre tmdbGenre) {
         Genre genre = new Genre();
         genre.setId(tmdbGenre.getId());
-        genre.setName(tmdbGenre.getName());
+        genre.setTitle(tmdbGenre.getName());
         return genre;
     }
 

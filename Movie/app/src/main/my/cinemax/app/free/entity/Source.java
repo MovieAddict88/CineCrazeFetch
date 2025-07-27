@@ -8,6 +8,10 @@ import com.google.gson.annotations.SerializedName;
 
 public class Source implements Parcelable {
 
+    public Source() {
+        // Default constructor
+    }
+
     @SerializedName("id")
     @Expose
     private Integer id;
