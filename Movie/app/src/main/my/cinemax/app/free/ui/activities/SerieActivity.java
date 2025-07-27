@@ -1987,13 +1987,6 @@ public class SerieActivity extends AppCompatActivity implements PlaylistDownload
                 default:
                     // Removed PlansActivity - all features are now free
                     dialog.dismiss();
-
-                    }else{
-                        Intent intent= new Intent(SerieActivity.this, LoginActivity.class);
-                        startActivity(intent);
-                        overridePendingTransition(R.anim.slide_up, R.anim.slide_down);
-                    }
-                    dialog.dismiss();
                     break;
             }
         });

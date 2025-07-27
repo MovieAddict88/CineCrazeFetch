@@ -1260,13 +1260,6 @@ public class ChannelActivity extends AppCompatActivity {
                 default:
                     // Removed PlansActivity - all features are now free
                     dialog.dismiss();
-
-                    }else{
-                        Intent intent= new Intent(ChannelActivity.this, LoginActivity.class);
-                        startActivity(intent);
-                        overridePendingTransition(R.anim.slide_up, R.anim.slide_down);
-                    }
-                    dialog.dismiss();
                     break;
             }
         });

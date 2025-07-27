@@ -1801,13 +1801,6 @@ public class MovieActivity extends AppCompatActivity {
                 default:
                     // Removed PlansActivity - all features are now free
                     dialog.dismiss();
-
-                    }else{
-                        Intent intent= new Intent(MovieActivity.this, LoginActivity.class);
-                        startActivity(intent);
-                        overridePendingTransition(R.anim.slide_up, R.anim.slide_down);
-                    }
-                    dialog.dismiss();
                     break;
             }
         });
