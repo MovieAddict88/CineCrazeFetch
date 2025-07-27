@@ -2,17 +2,15 @@
 
 buildscript {
     repositories {
-        jcenter()
         google()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
         maven { url 'https://maven.aliyun.com/repository/public/' }
         maven { url 'https://maven.aliyun.com/repository/google/' }
         maven { url 'https://maven.aliyun.com/repository/gradle-plugin/' }
-        //maven { url 'https://dl.bintray.com/ppartisan/maven/' }
         maven { url "https://clojars.org/repo/" }
-        maven { url "https://jitpack.io" }
-        google()
         mavenLocal()
-        mavenCentral()
+        jcenter()
     }
     dependencies {
         classpath "com.android.tools.build:gradle:7.0.2"
@@ -25,22 +23,16 @@ buildscript {
 
 allprojects {
     repositories {
-        mavenCentral()
-        jcenter()
-        maven {  url "https://maven.google.com" }
-        maven {
-            url "https://jitpack.io"
-        }
         google()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
+        maven { url "https://maven.google.com" }
         maven { url 'https://maven.aliyun.com/repository/public/' }
         maven { url 'https://maven.aliyun.com/repository/google/' }
         maven { url 'https://maven.aliyun.com/repository/gradle-plugin/' }
-        //maven { url 'https://dl.bintray.com/ppartisan/maven/' }
         maven { url "https://clojars.org/repo/" }
-        maven { url "https://jitpack.io" }
-        google()
         mavenLocal()
-        mavenCentral()
+        jcenter()
     }
 }
 
