@@ -392,6 +392,7 @@ public class MoviesFragment extends Fragment {
         HybridDataService.discoverMovies(genreFilter, sortBy, page + 1, new HybridDataService.MovieListCallback() {
             @Override
             public void onSuccess(List<Poster> movies) {
+                android.util.Log.d("MoviesFragment", "Movies loaded: " + movies.size() + " items");
                 if (movies.size() > 0) {
                     for (int i = 0; i < movies.size(); i++) {
                         movieList.add(movies.get(i));
@@ -437,11 +438,12 @@ public class MoviesFragment extends Fragment {
 
             @Override
             public void onError(String error) {
+                android.util.Log.e("MoviesFragment", "Error loading movies: " + error);
                 linear_layout_page_error_movies_fragment.setVisibility(View.VISIBLE);
                 recycler_view_movies_fragment.setVisibility(View.GONE);
                 image_view_empty_list.setVisibility(View.GONE);
                 relative_layout_load_more_movies_fragment.setVisibility(View.GONE);
-                swipe_refresh_layout_movies_fragment.setVisibility(View.GONE);
+                swipe_refresh_layout_movies_fragment.setRefreshing(false);
                 linear_layout_load_movies_fragment.setVisibility(View.GONE);
             }
         });

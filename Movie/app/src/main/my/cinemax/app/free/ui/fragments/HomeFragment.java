@@ -80,7 +80,11 @@ public class HomeFragment extends Fragment {
         HybridDataService.getHomeData(new HybridDataService.HomeDataCallback() {
             @Override
             public void onSuccess(Data data) {
-                android.util.Log.d("HomeFragment", "Hybrid data loaded successfully");
+                android.util.Log.d("HomeFragment", "Hybrid data loaded successfully - Posters: " + 
+                    (data.getPosters() != null ? data.getPosters().size() : 0) + 
+                    ", Channels: " + (data.getChannels() != null ? data.getChannels().size() : 0));
+                
+                hideLoadingView();
                 dataList.clear();
                 dataList.add(new Data().setViewType(0)); // Header view
                 
