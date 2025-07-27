@@ -20,6 +20,7 @@ public class Global {
     public static final String Youtube_Key = "AIzaSyAephi0fVTEBXgphX7Z_WVSW8iPusDibtg"; // get it from this link  https://console.developers.google.com/apis/credentials
 
     public static final String ITEM_PURCHASE_CODE = "";
+    public static final String ADMOB_REWARDED_ID = "ca-app-pub-3940256099942544/5224354917";
 
     // Removed subscription ID - no longer needed
 
