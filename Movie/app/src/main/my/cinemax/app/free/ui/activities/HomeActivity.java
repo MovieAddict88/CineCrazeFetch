@@ -428,12 +428,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        Retrofit retrofit = apiClient.getClient();
-                        apiRest service = retrofit.create(apiRest.class);
                         String unique_id = Settings.Secure.getString(getApplicationContext().getContentResolver(),Settings.Secure.ANDROID_ID);
 
-                        Call<ApiResponse> call = service.addDevice(unique_id);
-                        call.enqueue(new Callback<ApiResponse>() {
+                        // Use smart API client to route device registration to mock
+                        my.cinemax.app.free.api.SmartApiClient.handleDeviceRegistration(unique_id, new Callback<ApiResponse>() {
                             @Override
                             public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
                                 if (response.isSuccessful())
@@ -597,10 +595,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View v) {
                 prf.setString("NOT_RATE_APP", "TRUE");
-                Retrofit retrofit = apiClient.getClient();
-                apiRest service = retrofit.create(apiRest.class);
-                Call<ApiResponse> call = service.addSupport("Application rating feedback",AppCompatRatingBar_dialog_rating_app.getRating()+" star(s) Rating".toString(),edit_text_feed_back.getText().toString());
-                call.enqueue(new Callback<ApiResponse>() {
+                // Use smart API client to route support request to mock
+                my.cinemax.app.free.api.SmartApiClient.handleSupportRequest("Application rating feedback", AppCompatRatingBar_dialog_rating_app.getRating()+" star(s) Rating".toString(), edit_text_feed_back.getText().toString(), new Callback<ApiResponse>() {
                     @Override
                     public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
                         if(response.isSuccessful()){
@@ -741,11 +737,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         viewPager.setCurrentItem(3);
     }
     private void getGenreList() {
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
-
-        Call<List<Genre>> call = service.getGenreList();
-        call.enqueue(new Callback<List<Genre>>() {
+        // Use smart API client to route to appropriate data source
+        my.cinemax.app.free.api.SmartApiClient.getGenreList(new Callback<List<Genre>>() {
             @Override
             public void onResponse(Call<List<Genre>> call, Response<List<Genre>> response) {
 

@@ -160,16 +160,35 @@ public class apiClient {
                     .build();
 
             OkHttp3Downloader okHttp3Downloader = new OkHttp3Downloader(okHttpClient);
-            Picasso picasso = new Picasso.Builder(MyApplication.getInstance())
-                    .downloader(okHttp3Downloader)
-                    .build();
-            Picasso.setSingletonInstance(picasso);
+            
+            // Only set Picasso singleton if it doesn't already exist
+            try {
+                Picasso.with(MyApplication.getInstance());
+            } catch (IllegalStateException e) {
+                // Picasso not initialized yet, create and set singleton
+                Picasso picasso = new Picasso.Builder(MyApplication.getInstance())
+                        .downloader(okHttp3Downloader)
+                        .build();
+                Picasso.setSingletonInstance(picasso);
+            }
 
-            retrofit = new Retrofit.Builder()
-				.baseUrl(Actress.actress)
-                    .client(okHttpClient)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
+            // Use a safe base URL that won't cause URL scheme errors
+            String baseUrl = Actress.actress;
+            try {
+                retrofit = new Retrofit.Builder()
+                        .baseUrl(baseUrl)
+                        .client(okHttpClient)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+            } catch (IllegalArgumentException e) {
+                // If the URL is invalid, use a fallback URL
+                Log.w("apiClient", "Invalid base URL, using fallback: " + e.getMessage());
+                retrofit = new Retrofit.Builder()
+                        .baseUrl("https://httpbin.org/")
+                        .client(okHttpClient)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+            }
         }
         return retrofit;
     }

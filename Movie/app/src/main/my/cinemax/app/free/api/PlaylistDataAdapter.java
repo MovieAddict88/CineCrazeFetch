@@ -3,6 +3,7 @@ package my.cinemax.app.free.api;
 import java.util.ArrayList;
 import java.util.List;
 
+import my.cinemax.app.free.entity.Actor;
 import my.cinemax.app.free.entity.Category;
 import my.cinemax.app.free.entity.Channel;
 import my.cinemax.app.free.entity.Data;
@@ -55,6 +56,10 @@ public class PlaylistDataAdapter {
         data.setPosters(allPosters);
         data.setChannels(allChannels);
         data.setSlides(slides);
+        
+        // Initialize other collections to empty lists to prevent null reference exceptions
+        data.setActors(new ArrayList<>());
+        data.setGenres(new ArrayList<>());
         
         return data;
     }

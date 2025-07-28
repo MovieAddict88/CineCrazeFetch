@@ -2,6 +2,9 @@ package my.cinemax.app.free.api;
 
 import my.cinemax.app.free.entity.ApiResponse;
 import my.cinemax.app.free.entity.ApiValue;
+import my.cinemax.app.free.entity.Genre;
+import my.cinemax.app.free.entity.Category;
+import my.cinemax.app.free.entity.Country;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -47,6 +50,102 @@ public class MockApiRest {
         // Create a dummy call for the callback
         Call<ApiResponse> dummyCall = createDummyCall();
         
+        callback.onResponse(dummyCall, retrofitResponse);
+    }
+    
+    public static void handleGenreList(Callback<List<Genre>> callback) {
+        // Create mock genres based on the playlist categories
+        List<Genre> genres = new ArrayList<>();
+        
+        Genre actionGenre = new Genre();
+        actionGenre.setId(1);
+        actionGenre.setName("Action");
+        genres.add(actionGenre);
+        
+        Genre animeGenre = new Genre();
+        animeGenre.setId(2);
+        animeGenre.setName("Anime");
+        genres.add(animeGenre);
+        
+        Genre entertainmentGenre = new Genre();
+        entertainmentGenre.setId(3);
+        entertainmentGenre.setName("Entertainment");
+        genres.add(entertainmentGenre);
+        
+        Response<List<Genre>> retrofitResponse = Response.success(genres);
+        Call<List<Genre>> dummyCall = createDummyCall();
+        callback.onResponse(dummyCall, retrofitResponse);
+    }
+    
+    public static void handleCategoriesList(Callback<List<Category>> callback) {
+        // Create mock categories
+        List<Category> categories = new ArrayList<>();
+        
+        Category liveTV = new Category();
+        liveTV.setId(1);
+        liveTV.setName("Live TV");
+        categories.add(liveTV);
+        
+        Category movies = new Category();
+        movies.setId(2);
+        movies.setName("Movies");
+        categories.add(movies);
+        
+        Category series = new Category();
+        series.setId(3);
+        series.setName("TV Series");
+        categories.add(series);
+        
+        Response<List<Category>> retrofitResponse = Response.success(categories);
+        Call<List<Category>> dummyCall = createDummyCall();
+        callback.onResponse(dummyCall, retrofitResponse);
+    }
+    
+    public static void handleCountriesList(Callback<List<Country>> callback) {
+        // Create mock countries
+        List<Country> countries = new ArrayList<>();
+        
+        Country philippines = new Country();
+        philippines.setId(1);
+        philippines.setName("Philippines");
+        countries.add(philippines);
+        
+        Country usa = new Country();
+        usa.setId(2);
+        usa.setName("USA");
+        countries.add(usa);
+        
+        Country japan = new Country();
+        japan.setId(3);
+        japan.setName("Japan");
+        countries.add(japan);
+        
+        Response<List<Country>> retrofitResponse = Response.success(countries);
+        Call<List<Country>> dummyCall = createDummyCall();
+        callback.onResponse(dummyCall, retrofitResponse);
+    }
+    
+    public static void handleDeviceRegistration(String token, Callback<ApiResponse> callback) {
+        // Create a mock successful response for device registration
+        ApiResponse response = new ApiResponse();
+        response.setCode(200);
+        response.setMessage("Device registered successfully");
+        response.setValues(new ArrayList<>());
+        
+        Response<ApiResponse> retrofitResponse = Response.success(response);
+        Call<ApiResponse> dummyCall = createDummyCall();
+        callback.onResponse(dummyCall, retrofitResponse);
+    }
+    
+    public static void handleSupportRequest(String email, String name, String message, Callback<ApiResponse> callback) {
+        // Create a mock successful response for support request
+        ApiResponse response = new ApiResponse();
+        response.setCode(200);
+        response.setMessage("Support request submitted successfully");
+        response.setValues(new ArrayList<>());
+        
+        Response<ApiResponse> retrofitResponse = Response.success(response);
+        Call<ApiResponse> dummyCall = createDummyCall();
         callback.onResponse(dummyCall, retrofitResponse);
     }
     
