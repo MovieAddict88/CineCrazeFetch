@@ -182,10 +182,28 @@ public class apiClient {
             try {
                 byte[] data = android.util.Base64.decode(retrofit_id, android.util.Base64.DEFAULT);
                 baseUrl = new String(data, "UTF-8");
+                
+                // Validate base URL format
+                if (baseUrl == null || baseUrl.trim().isEmpty()) {
+                    Log.w("apiClient", "Base URL is null or empty, using fallback");
+                    baseUrl = "https://httpbin.org/";
+                } else if (!baseUrl.startsWith("http://") && !baseUrl.startsWith("https://")) {
+                    Log.w("apiClient", "Base URL missing protocol scheme: " + baseUrl + ", adding https://");
+                    baseUrl = "https://" + baseUrl;
+                }
+                
+                // Ensure URL ends with /
+                if (!baseUrl.endsWith("/")) {
+                    baseUrl = baseUrl + "/";
+                }
+                
                 Log.d("apiClient", "Using base URL: " + baseUrl);
             } catch (UnsupportedEncodingException e) {
                 Log.e("apiClient", "Failed to decode base URL", e);
-                baseUrl = "https://httpbin.org/"; // fallback
+                baseUrl = "https://httpbin.org/";
+            } catch (Exception e) {
+                Log.e("apiClient", "Unexpected error decoding base URL", e);
+                baseUrl = "https://httpbin.org/";
             }
             
             try {
