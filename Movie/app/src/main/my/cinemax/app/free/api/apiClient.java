@@ -279,8 +279,9 @@ public class apiClient {
 
     private static boolean isPicassoInitialized() {
         try {
-            // Attempt to get the singleton instance
-            Picasso.get();
+            // Attempt to get the singleton instance using the context
+            // In Picasso 2.5.2, we use Picasso.with() instead of Picasso.get()
+            Picasso.with(MyApplication.getInstance());
             return true;
         } catch (IllegalStateException e) {
             // If it throws IllegalStateException, it means it's not initialized yet
