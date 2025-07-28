@@ -624,8 +624,11 @@ public class MovieActivity extends AppCompatActivity {
             loadRemoteMedia(0, true);
         } else {
             Intent intent = new Intent(MovieActivity.this,PlayerActivity.class);
+            intent.putExtra("id",poster.getId());
             intent.putExtra("url",poster.getTrailer().getUrl());
             intent.putExtra("type",poster.getTrailer().getType());
+            intent.putExtra("isLive",false); // Trailers are not live
+            intent.putExtra("kind","trailer");
             intent.putExtra("image",poster.getImage());
             intent.putExtra("title",poster.getTitle());
             intent.putExtra("subtitle",poster.getTitle() + " Trailer");

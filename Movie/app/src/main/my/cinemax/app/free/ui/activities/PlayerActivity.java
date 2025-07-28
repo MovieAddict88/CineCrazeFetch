@@ -145,15 +145,29 @@ public class PlayerActivity extends AppCompatActivity {
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         mScaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
         mCastContext = CastContext.getSharedInstance(this);
-        Bundle bundle = getIntent().getExtras() ;
-        vodeoId = bundle.getInt("id");
-        videoUrl = bundle.getString("url");
-        videoKind = bundle.getString("kind");
-        isLive = bundle.getBoolean("isLive");
-        videoType = bundle.getString("type");
-        videoTitle = bundle.getString("title");
-        videoSubTile = bundle.getString("subtitle");
-        videoImage = bundle.getString("image");
+        Bundle bundle = getIntent().getExtras();
+        
+        // Add null check for bundle to prevent crash
+        if (bundle == null) {
+            finish(); // Close activity if no bundle is provided
+            return;
+        }
+        
+        vodeoId = bundle.getInt("id", 0);
+        videoUrl = bundle.getString("url", "");
+        videoKind = bundle.getString("kind", "");
+        isLive = bundle.getBoolean("isLive", false); // Default to false if not provided
+        videoType = bundle.getString("type", "");
+        videoTitle = bundle.getString("title", "");
+        videoSubTile = bundle.getString("subtitle", "");
+        videoImage = bundle.getString("image", "");
+        
+        // Validate essential parameters
+        if (videoUrl == null || videoUrl.trim().isEmpty()) {
+            Log.e("PlayerActivity", "Video URL is null or empty");
+            finish();
+            return;
+        }
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         if (savedInstanceState == null) {
