@@ -62,7 +62,15 @@ public class DownloadedAdapter extends   RecyclerView.Adapter<RecyclerView.ViewH
             case 1:
                 DownloadedHolder downloadedHolder =  (DownloadedHolder) holder;
                 downloadedHolder.text_view_item_download_title.setText(downloadItemList.get(position).getTitle());
-                Picasso.get().load(downloadItemList.get(position).getImage()).into(downloadedHolder.image_view_item_download_image);
+                
+                // Check if image URL is valid before loading
+                String imageUrl = downloadItemList.get(position).getImage();
+                if (imageUrl != null && !imageUrl.trim().isEmpty()) {
+                    Picasso.get().load(imageUrl).into(downloadedHolder.image_view_item_download_image);
+                } else {
+                    // Set placeholder image if URL is null or empty
+                    downloadedHolder.image_view_item_download_image.setImageResource(R.drawable.placeholder);
+                }
                 downloadedHolder.text_view_item_download_duration.setText(downloadItemList.get(position).getDuration());
                 downloadedHolder.text_view_item_download_size.setText(downloadItemList.get(position).getSize());
                 Log.log(downloadItemList.get(position).getId()+"");

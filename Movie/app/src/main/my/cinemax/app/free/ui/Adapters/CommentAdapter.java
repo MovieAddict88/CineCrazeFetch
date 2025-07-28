@@ -58,7 +58,15 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentH
         }
 
         holder.text_view_name_item_comment.setText(commentList.get(position).getUser());
-        Picasso.get().load(commentList.get(position).getImage()).error(R.drawable.placeholder_profile).placeholder(R.drawable.placeholder_profile).into(holder.image_view_comment_iten);
+        
+        // Check if image URL is valid before loading
+        String imageUrl = commentList.get(position).getImage();
+        if (imageUrl != null && !imageUrl.trim().isEmpty()) {
+            Picasso.get().load(imageUrl).error(R.drawable.placeholder_profile).placeholder(R.drawable.placeholder_profile).into(holder.image_view_comment_iten);
+        } else {
+            // Set placeholder image if URL is null or empty
+            holder.image_view_comment_iten.setImageResource(R.drawable.placeholder_profile);
+        }
         if (!commentList.get(position).getEnabled()){
             holder.text_view_content_item_comment.setText(context.getResources().getString(R.string.comment_hidden));
             holder.text_view_content_item_comment.setTextColor(context.getResources().getColor(R.color.gray));

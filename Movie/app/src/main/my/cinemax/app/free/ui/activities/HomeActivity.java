@@ -369,7 +369,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         prf.remove("NEW_SUBSCRIBE_ENABLED");
         if (prf.getString("LOGGED").toString().equals("TRUE")){
             text_view_name_nave_header.setText(prf.getString("NAME_USER").toString());
-            Picasso.get().load(prf.getString("IMAGE_USER").toString()).placeholder(R.drawable.placeholder_profile).error(R.drawable.placeholder_profile).resize(200,200).centerCrop().into(circle_image_view_profile_nav_header);
+            
+            // Check if image URL is valid before loading
+            String imageUrl = prf.getString("IMAGE_USER").toString();
+            if (imageUrl != null && !imageUrl.trim().isEmpty() && !imageUrl.equals("null")) {
+                Picasso.get().load(imageUrl).placeholder(R.drawable.placeholder_profile).error(R.drawable.placeholder_profile).resize(200,200).centerCrop().into(circle_image_view_profile_nav_header);
+            } else {
+                // Set placeholder image if URL is null or empty
+                circle_image_view_profile_nav_header.setImageResource(R.drawable.placeholder_profile);
+            }
             if (prf.getString("TYPE_USER").toString().equals("google")){
             }else {
             }
@@ -701,19 +709,27 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             nav_Menu.findItem(R.id.my_list).setVisible(true);
             nav_Menu.findItem(R.id.login).setVisible(false);
             text_view_name_nave_header.setText(prf.getString("NAME_USER").toString());
-            Picasso.get().load(prf.getString("IMAGE_USER").toString()).placeholder(R.drawable.placeholder_profile).error(R.drawable.placeholder_profile).resize(200,200).centerCrop().into(circle_image_view_profile_nav_header);
+            
+            // Check if image URL is valid before loading
+            String imageUrl = prf.getString("IMAGE_USER").toString();
+            if (imageUrl != null && !imageUrl.trim().isEmpty() && !imageUrl.equals("null")) {
+                Picasso.get().load(imageUrl).placeholder(R.drawable.placeholder_profile).error(R.drawable.placeholder_profile).resize(200,200).centerCrop().into(circle_image_view_profile_nav_header);
 
-            final com.squareup.picasso.Target target = new com.squareup.picasso.Target() {
-                @Override
-                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                    BlurImage.with(getApplicationContext()).load(bitmap).intensity(25).Async(true).into(image_view_profile_nav_header_bg);
-                }
-                @Override
-                public void onBitmapFailed(Drawable errorDrawable) { }
-                @Override
-                public void onPrepareLoad(Drawable placeHolderDrawable) { }
-            };
-            Picasso.get().load(prf.getString("IMAGE_USER").toString()).into(target);
+                final com.squareup.picasso.Target target = new com.squareup.picasso.Target() {
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        BlurImage.with(getApplicationContext()).load(bitmap).intensity(25).Async(true).into(image_view_profile_nav_header_bg);
+                    }
+                    @Override
+                    public void onBitmapFailed(Drawable errorDrawable) { }
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) { }
+                };
+                Picasso.get().load(imageUrl).into(target);
+            } else {
+                // Set placeholder image if URL is null or empty
+                circle_image_view_profile_nav_header.setImageResource(R.drawable.placeholder_profile);
+            }
             image_view_profile_nav_header_bg.setTag(target);
             image_view_profile_nav_header_bg.setVisibility(View.VISIBLE);
 

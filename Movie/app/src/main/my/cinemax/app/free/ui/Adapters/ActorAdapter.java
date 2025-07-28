@@ -34,7 +34,14 @@ public class ActorAdapter  extends  RecyclerView.Adapter<ActorAdapter.ActorHolde
         }
         @Override
         public void onBindViewHolder(ActorHolder holder, final int position) {
-            Picasso.get().load(actorList.get(position).getImage()).placeholder(R.drawable.placeholder).into(holder.circle_image_view_item_actor);
+            // Check if image URL is valid before loading
+            String imageUrl = actorList.get(position).getImage();
+            if (imageUrl != null && !imageUrl.trim().isEmpty()) {
+                Picasso.get().load(imageUrl).placeholder(R.drawable.placeholder).into(holder.circle_image_view_item_actor);
+            } else {
+                // Set placeholder image if URL is null or empty
+                holder.circle_image_view_item_actor.setImageResource(R.drawable.placeholder);
+            }
             holder.text_view_item_actor_name.setText(actorList.get(position).getName());
             if (actorList.get(position).getRole() != null) {
                 holder.text_view_item_actor_cast.setText(actorList.get(position).getRole());
