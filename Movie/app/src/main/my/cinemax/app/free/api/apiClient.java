@@ -165,15 +165,25 @@ public class apiClient {
             try {
                 Picasso.with(MyApplication.getInstance());
             } catch (IllegalStateException e) {
-                // Picasso not initialized yet, create and set singleton
-                Picasso picasso = new Picasso.Builder(MyApplication.getInstance())
-                        .downloader(okHttp3Downloader)
-                        .build();
-                Picasso.setSingletonInstance(picasso);
+                // Check if Picasso singleton already exists
+                try {
+                    Picasso.with(MyApplication.getInstance());
+                } catch (IllegalStateException e2) {
+                    // Picasso not initialized yet, create and set singleton
+                    Picasso picasso = new Picasso.Builder(MyApplication.getInstance())
+                            .downloader(okHttp3Downloader)
+                            .build();
+                    try {
+                        Picasso.setSingletonInstance(picasso);
+                    } catch (IllegalStateException e3) {
+                        // Singleton already exists, ignore
+                        Log.d("apiClient", "Picasso singleton already exists");
+                    }
+                }
             }
 
-            // Use a safe base URL that won't cause URL scheme errors
-            String baseUrl = Actress.actress;
+            // Use a safe fallback base URL since the new GitHub URL doesn't work as a base API URL
+            String baseUrl = "https://httpbin.org/";
             try {
                 retrofit = new Retrofit.Builder()
                         .baseUrl(baseUrl)
