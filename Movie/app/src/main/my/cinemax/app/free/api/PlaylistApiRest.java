@@ -20,63 +20,83 @@ public class PlaylistApiRest {
         // Get the playlist entry and convert to Poster
         PlaylistDataStore dataStore = PlaylistDataStore.getInstance();
         
-        if (dataStore.getPlaylistData() != null) {
-            my.cinemax.app.free.entity.PlaylistEntry entry = dataStore.getEntryById(id);
-            if (entry != null) {
-                // Find the category for this entry
-                my.cinemax.app.free.entity.PlaylistCategory category = findCategoryForEntry(entry);
-                if (category != null) {
-                    Poster poster = PlaylistDataAdapter.convertToPoster(entry, category);
-                    Response<Poster> response = Response.success(poster);
-                    callback.onResponse(null, response);
-                    return;
-                }
-            }
-        }
-        
-        callback.onFailure(null, new Exception("Poster not found"));
-    }
-    
-    public static void getSeasonsBySerie(Integer serieId, Callback<List<Season>> callback) {
-        PlaylistDataStore dataStore = PlaylistDataStore.getInstance();
-        List<Season> seasons = dataStore.getSeasonsForEntry(serieId);
-        
-        if (!seasons.isEmpty()) {
-            Response<List<Season>> response = Response.success(seasons);
-            callback.onResponse(null, response);
-        } else {
-            callback.onFailure(null, new Exception("No seasons found"));
-        }
-    }
-    
-    public static void searchData(String query, Callback<Data> callback) {
-        PlaylistDataStore dataStore = PlaylistDataStore.getInstance();
-        
-        if (dataStore.getPlaylistData() != null) {
-            Data searchResults = new Data();
-            List<Poster> matchingPosters = new ArrayList<>();
-            
-            // Search through all entries
-            for (my.cinemax.app.free.entity.PlaylistCategory category : dataStore.getPlaylistData().getCategories()) {
-                if (category.getEntries() != null) {
-                    for (my.cinemax.app.free.entity.PlaylistEntry entry : category.getEntries()) {
-                        if (entry.getTitle() != null && 
-                            entry.getTitle().toLowerCase().contains(query.toLowerCase())) {
-                            
-                            if (!"Live TV".equals(category.getMainCategory())) {
-                                Poster poster = PlaylistDataAdapter.convertToPoster(entry, category);
-                                matchingPosters.add(poster);
-                            }
-                        }
+        try {
+            if (dataStore.getPlaylistData() != null) {
+                my.cinemax.app.free.entity.PlaylistEntry entry = dataStore.getEntryById(id);
+                if (entry != null) {
+                    // Find the category for this entry
+                    my.cinemax.app.free.entity.PlaylistCategory category = findCategoryForEntry(entry);
+                    if (category != null) {
+                        Poster poster = PlaylistDataAdapter.convertToPoster(entry, category);
+                        Response<Poster> response = Response.success(poster);
+                        // Create a dummy Call for compatibility
+                        Call<Poster> dummyCall = createDummyCall();
+                        callback.onResponse(dummyCall, response);
+                        return;
                     }
                 }
             }
             
-            searchResults.setPosters(matchingPosters);
-            Response<Data> response = Response.success(searchResults);
-            callback.onResponse(null, response);
-        } else {
-            callback.onFailure(null, new Exception("No data available for search"));
+            Call<Poster> dummyCall = createDummyCall();
+            callback.onFailure(dummyCall, new Exception("Poster not found"));
+        } catch (Exception e) {
+            Call<Poster> dummyCall = createDummyCall();
+            callback.onFailure(dummyCall, e);
+        }
+    }
+    
+    public static void getSeasonsBySerie(Integer serieId, Callback<List<Season>> callback) {
+        try {
+            PlaylistDataStore dataStore = PlaylistDataStore.getInstance();
+            List<Season> seasons = dataStore.getSeasonsForEntry(serieId);
+            
+            Call<List<Season>> dummyCall = createDummySeasonCall();
+            if (!seasons.isEmpty()) {
+                Response<List<Season>> response = Response.success(seasons);
+                callback.onResponse(dummyCall, response);
+            } else {
+                callback.onFailure(dummyCall, new Exception("No seasons found"));
+            }
+        } catch (Exception e) {
+            Call<List<Season>> dummyCall = createDummySeasonCall();
+            callback.onFailure(dummyCall, e);
+        }
+    }
+    
+    public static void searchData(String query, Callback<Data> callback) {
+        try {
+            PlaylistDataStore dataStore = PlaylistDataStore.getInstance();
+            
+            Call<Data> dummyCall = createDummyDataCall();
+            if (dataStore.getPlaylistData() != null) {
+                Data searchResults = new Data();
+                List<Poster> matchingPosters = new ArrayList<>();
+                
+                // Search through all entries
+                for (my.cinemax.app.free.entity.PlaylistCategory category : dataStore.getPlaylistData().getCategories()) {
+                    if (category.getEntries() != null) {
+                        for (my.cinemax.app.free.entity.PlaylistEntry entry : category.getEntries()) {
+                            if (entry.getTitle() != null && 
+                                entry.getTitle().toLowerCase().contains(query.toLowerCase())) {
+                                
+                                if (!"Live TV".equals(category.getMainCategory())) {
+                                    Poster poster = PlaylistDataAdapter.convertToPoster(entry, category);
+                                    matchingPosters.add(poster);
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                searchResults.setPosters(matchingPosters);
+                Response<Data> response = Response.success(searchResults);
+                callback.onResponse(dummyCall, response);
+            } else {
+                callback.onFailure(dummyCall, new Exception("No data available for search"));
+            }
+        } catch (Exception e) {
+            Call<Data> dummyCall = createDummyDataCall();
+            callback.onFailure(dummyCall, e);
         }
     }
     
@@ -96,5 +116,33 @@ public class PlaylistApiRest {
         }
         
         return null;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static <T> Call<T> createDummyCall() {
+        return (Call<T>) new Call<Object>() {
+            @Override
+            public Response<Object> execute() { return null; }
+            @Override
+            public void enqueue(Callback<Object> callback) { }
+            @Override
+            public boolean isExecuted() { return false; }
+            @Override
+            public void cancel() { }
+            @Override
+            public boolean isCanceled() { return false; }
+            @Override
+            public Call<Object> clone() { return this; }
+            @Override
+            public okhttp3.Request request() { return null; }
+        };
+    }
+    
+    private static Call<List<Season>> createDummySeasonCall() {
+        return createDummyCall();
+    }
+    
+    private static Call<Data> createDummyDataCall() {
+        return createDummyCall();
     }
 }

@@ -31,7 +31,7 @@ public class PolicyActivity extends AppCompatActivity {
         
         if ("policy".equals(policyType)) {
             url = PolicyUrls.TERMS_OF_SERVICE_URL;
-            title = getResources().getString(R.string.terms_of_service);
+            title = "Terms of Service";
         } else {
             // Default to privacy policy
             url = PolicyUrls.PRIVACY_POLICY_URL;

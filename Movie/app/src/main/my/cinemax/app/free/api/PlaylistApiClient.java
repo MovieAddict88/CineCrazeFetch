@@ -72,13 +72,13 @@ public class PlaylistApiClient {
                     retrofit2.Response<Data> dataResponse = retrofit2.Response.success(appData);
                     callback.onResponse(null, dataResponse);
                 } else {
-                    callback.onFailure(call, new Exception("Failed to load playlist data"));
+                    callback.onFailure(null, new Exception("Failed to load playlist data"));
                 }
             }
 
             @Override
             public void onFailure(Call<PlaylistData> call, Throwable t) {
-                callback.onFailure(call, t);
+                callback.onFailure(null, t);
             }
         });
     }
