@@ -89,7 +89,14 @@ public class SlideAdapter extends PagerAdapter {
             }
         });
 
-        Picasso.with(activity).load(slideList.get(position).getImage()).placeholder(R.drawable.placeholder).into(image_view_item_slide_one);
+        // Check if image URL is valid before loading
+        String imageUrl = slideList.get(position).getImage();
+        if (imageUrl != null && !imageUrl.trim().isEmpty()) {
+            Picasso.with(activity).load(imageUrl).placeholder(R.drawable.placeholder).into(image_view_item_slide_one);
+        } else {
+            // Set placeholder image if URL is null or empty
+            image_view_item_slide_one.setImageResource(R.drawable.placeholder);
+        }
 
         container.addView(view);
         return view;

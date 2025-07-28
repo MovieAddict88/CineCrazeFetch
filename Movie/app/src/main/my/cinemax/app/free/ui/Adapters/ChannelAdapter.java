@@ -151,7 +151,16 @@ public class ChannelAdapter  extends  RecyclerView.Adapter<RecyclerView.ViewHold
                     notifyDataSetChanged();
 
                 });
-                Picasso.with(activity).load(channelList.get(position).getImage()).placeholder(R.drawable.place_holder_channel).into(holder.image_view_item_channel);
+                
+                // Check if image URL is valid before loading
+                String imageUrl = channelList.get(position).getImage();
+                if (imageUrl != null && !imageUrl.trim().isEmpty()) {
+                    Picasso.with(activity).load(imageUrl).placeholder(R.drawable.place_holder_channel).into(holder.image_view_item_channel);
+                } else {
+                    // Set placeholder image if URL is null or empty
+                    holder.image_view_item_channel.setImageResource(R.drawable.place_holder_channel);
+                }
+                
                 holder.image_view_item_channel.setOnClickListener(v -> {
                     PrefManager prefManager= new PrefManager(activity);
 

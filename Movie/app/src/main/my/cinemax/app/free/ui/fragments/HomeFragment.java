@@ -84,30 +84,37 @@ public class HomeFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null){
                     dataList.clear();
                     dataList.add(new Data().setViewType(0));
-                    if (response.body().getSlides() != null && response.body().getSlides().size()>0){
-                        Data sliodeData =  new Data();
-                        sliodeData.setSlides(response.body().getSlides());
-                        dataList.add(sliodeData);
+                    
+                    // Add null checks for all nested lists
+                    Data responseBody = response.body();
+                    
+                    if (responseBody.getSlides() != null && responseBody.getSlides().size() > 0){
+                        Data slideData = new Data();
+                        slideData.setSlides(responseBody.getSlides());
+                        dataList.add(slideData);
                     }
-                    if (response.body().getChannels() != null && response.body().getChannels().size()>0){
+                    
+                    if (responseBody.getChannels() != null && responseBody.getChannels().size() > 0){
                        Data channelData = new Data();
-                       channelData.setChannels(response.body().getChannels());
+                       channelData.setChannels(responseBody.getChannels());
                         dataList.add(channelData);
                     }
-                    if (response.body().getActors() != null && response.body().getActors().size()>0){
+                    
+                    if (responseBody.getActors() != null && responseBody.getActors().size() > 0){
                         Data actorsData = new Data();
-                        actorsData.setActors(response.body().getActors());
+                        actorsData.setActors(responseBody.getActors());
                         dataList.add(actorsData);
                     }
-                    if (response.body().getGenres() != null && response.body().getGenres().size()>0){
-                        if (my_genre_list!=null){
+                    
+                    if (responseBody.getGenres() != null && responseBody.getGenres().size() > 0){
+                        if (my_genre_list != null){
                             Data genreDataMyList = new Data();
                             genreDataMyList.setGenre(my_genre_list);
                             dataList.add(genreDataMyList);
                         }
-                        for (int i = 0; i < response.body().getGenres().size(); i++) {
+                        for (int i = 0; i < responseBody.getGenres().size(); i++) {
                             Data genreData = new Data();
-                            genreData.setGenre(response.body().getGenres().get(i));
+                            genreData.setGenre(responseBody.getGenres().get(i));
                             dataList.add(genreData);
                             if (native_ads_enabled){
                                 item++;

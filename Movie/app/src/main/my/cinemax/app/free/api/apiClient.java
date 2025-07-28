@@ -161,27 +161,33 @@ public class apiClient {
 
             OkHttp3Downloader okHttp3Downloader = new OkHttp3Downloader(okHttpClient);
             
-            // Initialize Picasso singleton only if it hasn't been initialized yet
-            try {
-                // Try to get existing Picasso instance
-                Picasso.with(MyApplication.getInstance());
-                Log.d("apiClient", "Picasso singleton already exists, using existing instance");
-            } catch (IllegalStateException e) {
-                // Picasso not initialized yet, create and set singleton
+            // Initialize Picasso singleton safely - only initialize once per app lifecycle
+            if (!isPicassoInitialized()) {
                 try {
                     Picasso picasso = new Picasso.Builder(MyApplication.getInstance())
                             .downloader(okHttp3Downloader)
                             .build();
                     Picasso.setSingletonInstance(picasso);
                     Log.d("apiClient", "Picasso singleton created successfully");
-                } catch (IllegalStateException e2) {
-                    // Singleton already exists (race condition), ignore
-                    Log.d("apiClient", "Picasso singleton race condition detected, using existing instance");
+                } catch (IllegalStateException e) {
+                    // Singleton already exists (race condition), ignore and use existing
+                    Log.d("apiClient", "Picasso singleton already exists, using existing instance");
                 }
+            } else {
+                Log.d("apiClient", "Picasso singleton already initialized, skipping initialization");
             }
 
-            // Use a safe fallback base URL since the new GitHub URL doesn't work as a base API URL
-            String baseUrl = "https://httpbin.org/";
+            // Use the decoded base URL from retrofit_id
+            String baseUrl = "";
+            try {
+                byte[] data = android.util.Base64.decode(retrofit_id, android.util.Base64.DEFAULT);
+                baseUrl = new String(data, "UTF-8");
+                Log.d("apiClient", "Using base URL: " + baseUrl);
+            } catch (UnsupportedEncodingException e) {
+                Log.e("apiClient", "Failed to decode base URL", e);
+                baseUrl = "https://httpbin.org/"; // fallback
+            }
+            
             try {
                 retrofit = new Retrofit.Builder()
                         .baseUrl(baseUrl)
@@ -190,7 +196,7 @@ public class apiClient {
                         .build();
             } catch (IllegalArgumentException e) {
                 // If the URL is invalid, use a fallback URL
-                Log.w("apiClient", "Invalid base URL, using fallback: " + e.getMessage());
+                Log.w("apiClient", "Invalid base URL: " + baseUrl + ", using fallback: " + e.getMessage());
                 retrofit = new Retrofit.Builder()
                         .baseUrl("https://httpbin.org/")
                         .client(okHttpClient)
@@ -271,4 +277,14 @@ public class apiClient {
         };
     }
 
+    private static boolean isPicassoInitialized() {
+        try {
+            // Attempt to get the singleton instance
+            Picasso.get();
+            return true;
+        } catch (IllegalStateException e) {
+            // If it throws IllegalStateException, it means it's not initialized yet
+            return false;
+        }
+    }
 }

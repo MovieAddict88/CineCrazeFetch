@@ -122,7 +122,16 @@ public class PosterAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder
             case 1:
 
                 final PosterHolder holder = (PosterHolder) viewHolder;
-                Picasso.with(activity).load(posterList.get(position).getImage()).placeholder(R.drawable.poster_placeholder).into(holder.image_view_item_poster_image);
+                
+                // Check if image URL is valid before loading
+                String imageUrl = posterList.get(position).getImage();
+                if (imageUrl != null && !imageUrl.trim().isEmpty()) {
+                    Picasso.with(activity).load(imageUrl).placeholder(R.drawable.poster_placeholder).into(holder.image_view_item_poster_image);
+                } else {
+                    // Set placeholder image if URL is null or empty
+                    holder.image_view_item_poster_image.setImageResource(R.drawable.poster_placeholder);
+                }
+                
                 if (deletable)
                     holder.relative_layout_item_poster_delete.setVisibility(View.VISIBLE);
                 else

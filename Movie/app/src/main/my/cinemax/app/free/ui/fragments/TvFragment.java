@@ -123,7 +123,7 @@ public class TvFragment extends Fragment {
         my.cinemax.app.free.api.SmartApiClient.getCountriesList(new Callback<List<Country>>() {
             @Override
             public void onResponse(Call<List<Country>> call, Response<List<Country>> response) {
-                if (response.isSuccessful()){
+                if (response.isSuccessful() && response.body() != null){
                     if (response.body().size()>0) {
                         final String[] countryCodes = new String[response.body().size()+1];
                         countryCodes[0] = "All countries";
@@ -153,7 +153,7 @@ public class TvFragment extends Fragment {
         my.cinemax.app.free.api.SmartApiClient.getCategoriesList(new Callback<List<Category>>() {
             @Override
             public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
-                if (response.isSuccessful()){
+                if (response.isSuccessful() && response.body() != null){
                     if (response.body().size()>0) {
                         final String[] categoryCodes = new String[response.body().size()+1];
                         categoryCodes[0] = "All categories";
@@ -389,7 +389,7 @@ public class TvFragment extends Fragment {
         my.cinemax.app.free.api.SmartApiClient.getChannelsByFiltres(categorySelected,countrySelected,page, new Callback<List<Channel>>() {
             @Override
             public void onResponse(Call<List<Channel>> call, final Response<List<Channel>> response) {
-                if (response.isSuccessful()){
+                if (response.isSuccessful() && response.body() != null){
                     if (response.body().size()>0){
                         for (int i = 0; i < response.body().size(); i++) {
                             channelList.add(response.body().get(i));

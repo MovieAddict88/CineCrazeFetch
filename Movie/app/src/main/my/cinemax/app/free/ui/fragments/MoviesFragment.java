@@ -122,7 +122,7 @@ public class MoviesFragment extends Fragment {
             @Override
             public void onResponse(Call<List<Genre>> call, Response<List<Genre>> response) {
                 my.cinemax.app.free.api.SmartApiClient.formatData(getActivity(),response);
-                if (response.isSuccessful()){
+                if (response.isSuccessful() && response.body() != null){
                     if (response.body().size()>0) {
                         final String[] countryCodes = new String[response.body().size()+1];
                         countryCodes[0] = "All genres";
@@ -378,7 +378,7 @@ public class MoviesFragment extends Fragment {
         my.cinemax.app.free.api.SmartApiClient.getMoviesByFiltres(genreSelected,orderSelected,page, new Callback<List<Poster>>() {
             @Override
             public void onResponse(Call<List<Poster>> call, final Response<List<Poster>> response) {
-                if (response.isSuccessful()){
+                if (response.isSuccessful() && response.body() != null){
                     if (response.body().size()>0){
                         for (int i = 0; i < response.body().size(); i++) {
                             movieList.add(response.body().get(i));
