@@ -45,7 +45,7 @@ public class PlaylistApiClient {
                     .build();
 
             playlistRetrofit = new Retrofit.Builder()
-                    .baseUrl(Actress.actress)
+                    .baseUrl(my.cinemax.app.free.config.PlaylistConfig.PLAYLIST_API_URL)
                     .client(okHttpClient)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();

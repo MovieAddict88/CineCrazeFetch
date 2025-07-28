@@ -119,10 +119,8 @@ public class SplashActivity extends AppCompatActivity {
             if (prf.getString("LOGGED").toString().equals("TRUE")) {
                  id_user = Integer.parseInt(prf.getString("ID_USER"));
             }
-            Retrofit retrofit = apiClient.getClient();
-            apiRest service = retrofit.create(apiRest.class);
-            Call<ApiResponse> call = service.check(version,id_user);
-            call.enqueue(new Callback<ApiResponse>() {
+            // Use mock API to avoid network issues with old dead endpoints
+            my.cinemax.app.free.api.MockApiRest.handleVersionCheck(version, id_user, new Callback<ApiResponse>() {
                 @Override
                 public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
                     if (response.isSuccessful()){

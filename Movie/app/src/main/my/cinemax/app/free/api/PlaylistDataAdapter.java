@@ -69,7 +69,27 @@ public class PlaylistDataAdapter {
         poster.setCover(entry.getThumbnail());
         poster.setYear(entry.getYear() != null ? entry.getYear().toString() : "");
         poster.setDuration(entry.getDuration());
-        poster.setRating(entry.getRating() != null ? entry.getRating().floatValue() : 0f);
+        // Handle rating that can be either Integer or String
+        float rating = 0f;
+        if (entry.getRating() != null) {
+            try {
+                if (entry.getRating() instanceof Number) {
+                    rating = ((Number) entry.getRating()).floatValue();
+                } else if (entry.getRating() instanceof String) {
+                    String ratingStr = (String) entry.getRating();
+                    // Try to parse as number, if it fails, extract numbers or set to 0
+                    try {
+                        rating = Float.parseFloat(ratingStr);
+                    } catch (NumberFormatException e) {
+                        // For ratings like "TV-Y7", "PG-13", etc., set to 0
+                        rating = 0f;
+                    }
+                }
+            } catch (Exception e) {
+                rating = 0f;
+            }
+        }
+        poster.setRating(rating);
         poster.setClassification(entry.getSubCategory());
         
         // Set type based on category

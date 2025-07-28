@@ -33,7 +33,7 @@ public class PlaylistEntry {
 
     @SerializedName("Rating")
     @Expose
-    private Integer rating;
+    private Object rating; // Can be Integer or String
 
     @SerializedName("Duration")
     @Expose
@@ -99,11 +99,11 @@ public class PlaylistEntry {
         this.thumbnail = thumbnail;
     }
 
-    public Integer getRating() {
+    public Object getRating() {
         return rating;
     }
 
-    public void setRating(Integer rating) {
+    public void setRating(Object rating) {
         this.rating = rating;
     }
 
