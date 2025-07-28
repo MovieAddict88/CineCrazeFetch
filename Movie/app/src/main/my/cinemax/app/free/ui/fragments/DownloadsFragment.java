@@ -198,6 +198,7 @@ public class DownloadsFragment extends Fragment  implements DownloadedAdapter.Do
                 intent1.putExtra("image",downloadItem.getImage());
                 intent1.putExtra("title",downloadItem.getTitle());
                 intent1.putExtra("subtitle",downloadItem.getTitle());
+                intent1.putExtra("isLive",false);
                 getActivity().startActivity(intent1);
                 isStarted = true;
             } else if (stopAndroidWebServer()) {
@@ -215,6 +216,7 @@ public class DownloadsFragment extends Fragment  implements DownloadedAdapter.Do
             intent.putExtra("image",downloadItem.getImage());
             intent.putExtra("title",downloadItem.getTitle());
             intent.putExtra("subtitle",downloadItem.getTitle());
+            intent.putExtra("isLive",false);
             getActivity().startActivity(intent);
         }
     }

@@ -29,7 +29,7 @@ import android.widget.TextView;
 
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.text.CaptionStyleCompat;
-import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
+import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import my.cinemax.app.free.Provider.PrefManager;
 import my.cinemax.app.free.R;
@@ -60,7 +60,7 @@ public class CustomPlayerFragment extends Fragment {
 
     private static String videoKind;
     private CustomPlayerViewModel mCustomPlayerViewModel;
-    private SimpleExoPlayerView mSimpleExoPlayerView;
+    private PlayerView mSimpleExoPlayerView;
     private ImageView ic_media_stop;
     private RelativeLayout payer_pause_play;
     private View view;

@@ -99,7 +99,7 @@ public class CustomPlayerViewModel extends BaseObservable implements ExoPlayer.E
         mActivity = activity;
     }
 
-    public void onStart(SimpleExoPlayerView simpleExoPlayerView, Bundle bundle) {
+    public void onStart(PlayerView simpleExoPlayerView, Bundle bundle) {
         mSimpleExoPlayerView = simpleExoPlayerView;
         mUrl = bundle.getString("videoUrl");
         isLive = bundle.getBoolean("isLive");

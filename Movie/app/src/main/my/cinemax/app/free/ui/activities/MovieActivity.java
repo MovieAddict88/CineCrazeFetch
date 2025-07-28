@@ -600,6 +600,7 @@ public class MovieActivity extends AppCompatActivity {
             intent.putExtra("kind","movie");
             intent.putExtra("title",poster.getTitle());
             intent.putExtra("subtitle",poster.getTitle() + "("+poster.getYear()+")");
+            intent.putExtra("isLive",false);
             startActivity(intent);
         }
     }
@@ -624,11 +625,14 @@ public class MovieActivity extends AppCompatActivity {
             loadRemoteMedia(0, true);
         } else {
             Intent intent = new Intent(MovieActivity.this,PlayerActivity.class);
+            intent.putExtra("id",poster.getId());
             intent.putExtra("url",poster.getTrailer().getUrl());
             intent.putExtra("type",poster.getTrailer().getType());
             intent.putExtra("image",poster.getImage());
+            intent.putExtra("kind","movie");
             intent.putExtra("title",poster.getTitle());
             intent.putExtra("subtitle",poster.getTitle() + " Trailer");
+            intent.putExtra("isLive",false);
             startActivity(intent);
         }
     }

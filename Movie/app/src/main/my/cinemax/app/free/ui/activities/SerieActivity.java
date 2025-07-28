@@ -660,6 +660,7 @@ public class SerieActivity extends AppCompatActivity implements PlaylistDownload
             intent.putExtra("image",poster.getImage());
             intent.putExtra("title",poster.getTitle());
             intent.putExtra("subtitle",seasonArrayList.get(spinner_activity_serie_season_list.getSelectedItemPosition()).getTitle()+" : "+selectedEpisode.getTitle());
+            intent.putExtra("isLive",false);
             startActivity(intent);
         }
 
@@ -726,11 +727,14 @@ public class SerieActivity extends AppCompatActivity implements PlaylistDownload
             loadRemoteMedia(0, true);
         } else {
             Intent intent = new Intent(SerieActivity.this,PlayerActivity.class);
+            intent.putExtra("id",poster.getId());
             intent.putExtra("url",poster.getTrailer().getUrl());
             intent.putExtra("type",poster.getTrailer().getType());
             intent.putExtra("image",poster.getImage());
+            intent.putExtra("kind","serie");
             intent.putExtra("title",poster.getTitle());
             intent.putExtra("subtitle",poster.getTitle() + " Trailer");
+            intent.putExtra("isLive",false);
             startActivity(intent);
         }
     }
