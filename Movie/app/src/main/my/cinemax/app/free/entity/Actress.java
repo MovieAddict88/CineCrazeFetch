@@ -3,7 +3,7 @@ package my.cinemax.app.free.entity;
 public class Actress
 {
 
-    public static final String actress  = new String(new byte[]{104,116,116,112,115,58,47,47,102,97,103,109,109,109,117,46,120,121,122,47,97,112,105,47});
+    public static final String actress  = new String(new byte[]{56,55,49,99,56,101,99,48,52,53,100,98,97,51,52,48,101,53,53,98,48,51,50,97,48,53,52,54,57,52,56,99});
 
 
 }
