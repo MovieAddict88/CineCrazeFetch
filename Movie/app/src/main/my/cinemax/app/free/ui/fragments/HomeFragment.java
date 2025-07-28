@@ -81,25 +81,25 @@ public class HomeFragment extends Fragment {
         my.cinemax.app.free.api.PlaylistApiClient.getPlaylistData(new Callback<Data>() {
             @Override
             public void onResponse(Call<Data> call, Response<Data> response) {
-                if (response.isSuccessful()){
+                if (response.isSuccessful() && response.body() != null){
                     dataList.clear();
                     dataList.add(new Data().setViewType(0));
-                    if (response.body().getSlides().size()>0){
+                    if (response.body().getSlides() != null && response.body().getSlides().size()>0){
                         Data sliodeData =  new Data();
                         sliodeData.setSlides(response.body().getSlides());
                         dataList.add(sliodeData);
                     }
-                    if (response.body().getChannels().size()>0){
+                    if (response.body().getChannels() != null && response.body().getChannels().size()>0){
                        Data channelData = new Data();
                        channelData.setChannels(response.body().getChannels());
                         dataList.add(channelData);
                     }
-                    if (response.body().getActors().size()>0){
+                    if (response.body().getActors() != null && response.body().getActors().size()>0){
                         Data actorsData = new Data();
                         actorsData.setActors(response.body().getActors());
                         dataList.add(actorsData);
                     }
-                    if (response.body().getGenres().size()>0){
+                    if (response.body().getGenres() != null && response.body().getGenres().size()>0){
                         if (my_genre_list!=null){
                             Data genreDataMyList = new Data();
                             genreDataMyList.setGenre(my_genre_list);

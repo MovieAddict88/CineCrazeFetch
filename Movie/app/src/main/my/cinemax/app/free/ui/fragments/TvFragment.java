@@ -120,11 +120,7 @@ public class TvFragment extends Fragment {
         return view;
     }
     private void getCountiesList() {
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
-
-        Call<List<Country>> call = service.getCountiesList();
-        call.enqueue(new Callback<List<Country>>() {
+        my.cinemax.app.free.api.SmartApiClient.getCountriesList(new Callback<List<Country>>() {
             @Override
             public void onResponse(Call<List<Country>> call, Response<List<Country>> response) {
                 if (response.isSuccessful()){
@@ -154,11 +150,7 @@ public class TvFragment extends Fragment {
         });
     }
     private void getCategoriesList() {
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
-
-        Call<List<Category>> call = service.getCategoriesList();
-        call.enqueue(new Callback<List<Category>>() {
+        my.cinemax.app.free.api.SmartApiClient.getCategoriesList(new Callback<List<Category>>() {
             @Override
             public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
                 if (response.isSuccessful()){
@@ -394,10 +386,7 @@ public class TvFragment extends Fragment {
             relative_layout_load_more_channel_fragment.setVisibility(View.VISIBLE);
         }
         swipe_refresh_layout_channel_fragment.setRefreshing(false);
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
-        Call<List<Channel>> call = service.getChannelsByFiltres(categorySelected,countrySelected,page);
-        call.enqueue(new Callback<List<Channel>>() {
+        my.cinemax.app.free.api.SmartApiClient.getChannelsByFiltres(categorySelected,countrySelected,page, new Callback<List<Channel>>() {
             @Override
             public void onResponse(Call<List<Channel>> call, final Response<List<Channel>> response) {
                 if (response.isSuccessful()){

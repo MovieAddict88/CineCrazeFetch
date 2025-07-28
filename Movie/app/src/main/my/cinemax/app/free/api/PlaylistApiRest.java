@@ -118,6 +118,93 @@ public class PlaylistApiRest {
         return null;
     }
     
+    public static void getChannelsByFiltres(Integer category, Integer country, Integer page, Callback<List<my.cinemax.app.free.entity.Channel>> callback) {
+        try {
+            PlaylistDataStore dataStore = PlaylistDataStore.getInstance();
+            List<my.cinemax.app.free.entity.Channel> channels = new ArrayList<>();
+            
+            Call<List<my.cinemax.app.free.entity.Channel>> dummyCall = createDummyCall();
+            
+            if (dataStore.getPlaylistData() != null) {
+                // Get all channels from Live TV category
+                for (my.cinemax.app.free.entity.PlaylistCategory playlistCategory : dataStore.getPlaylistData().getCategories()) {
+                    if ("Live TV".equals(playlistCategory.getMainCategory()) && playlistCategory.getEntries() != null) {
+                        for (my.cinemax.app.free.entity.PlaylistEntry entry : playlistCategory.getEntries()) {
+                            my.cinemax.app.free.entity.Channel channel = PlaylistDataAdapter.convertToChannel(entry, playlistCategory);
+                            channels.add(channel);
+                        }
+                    }
+                }
+                
+                Response<List<my.cinemax.app.free.entity.Channel>> response = Response.success(channels);
+                callback.onResponse(dummyCall, response);
+            } else {
+                callback.onFailure(dummyCall, new Exception("No channel data available"));
+            }
+        } catch (Exception e) {
+            Call<List<my.cinemax.app.free.entity.Channel>> dummyCall = createDummyCall();
+            callback.onFailure(dummyCall, e);
+        }
+    }
+    
+    public static void getMoviesByFiltres(Integer genre, Integer order, Integer page, Callback<List<Poster>> callback) {
+        try {
+            PlaylistDataStore dataStore = PlaylistDataStore.getInstance();
+            List<Poster> movies = new ArrayList<>();
+            
+            Call<List<Poster>> dummyCall = createDummyCall();
+            
+            if (dataStore.getPlaylistData() != null) {
+                // Get all movies from Movies category
+                for (my.cinemax.app.free.entity.PlaylistCategory playlistCategory : dataStore.getPlaylistData().getCategories()) {
+                    if ("Movies".equals(playlistCategory.getMainCategory()) && playlistCategory.getEntries() != null) {
+                        for (my.cinemax.app.free.entity.PlaylistEntry entry : playlistCategory.getEntries()) {
+                            Poster poster = PlaylistDataAdapter.convertToPoster(entry, playlistCategory);
+                            movies.add(poster);
+                        }
+                    }
+                }
+                
+                Response<List<Poster>> response = Response.success(movies);
+                callback.onResponse(dummyCall, response);
+            } else {
+                callback.onFailure(dummyCall, new Exception("No movie data available"));
+            }
+        } catch (Exception e) {
+            Call<List<Poster>> dummyCall = createDummyCall();
+            callback.onFailure(dummyCall, e);
+        }
+    }
+    
+    public static void getSeriesByFiltres(Integer genre, Integer order, Integer page, Callback<List<Poster>> callback) {
+        try {
+            PlaylistDataStore dataStore = PlaylistDataStore.getInstance();
+            List<Poster> series = new ArrayList<>();
+            
+            Call<List<Poster>> dummyCall = createDummyCall();
+            
+            if (dataStore.getPlaylistData() != null) {
+                // Get all series from TV Series category
+                for (my.cinemax.app.free.entity.PlaylistCategory playlistCategory : dataStore.getPlaylistData().getCategories()) {
+                    if ("TV Series".equals(playlistCategory.getMainCategory()) && playlistCategory.getEntries() != null) {
+                        for (my.cinemax.app.free.entity.PlaylistEntry entry : playlistCategory.getEntries()) {
+                            Poster poster = PlaylistDataAdapter.convertToPoster(entry, playlistCategory);
+                            series.add(poster);
+                        }
+                    }
+                }
+                
+                Response<List<Poster>> response = Response.success(series);
+                callback.onResponse(dummyCall, response);
+            } else {
+                callback.onFailure(dummyCall, new Exception("No series data available"));
+            }
+        } catch (Exception e) {
+            Call<List<Poster>> dummyCall = createDummyCall();
+            callback.onFailure(dummyCall, e);
+        }
+    }
+    
     @SuppressWarnings("unchecked")
     private static <T> Call<T> createDummyCall() {
         return (Call<T>) new Call<Object>() {

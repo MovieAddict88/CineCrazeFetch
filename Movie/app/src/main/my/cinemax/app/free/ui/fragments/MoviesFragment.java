@@ -118,14 +118,10 @@ public class MoviesFragment extends Fragment {
     }
 
     private void getGenreList() {
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
-
-        Call<List<Genre>> call = service.getGenreList();
-        call.enqueue(new Callback<List<Genre>>() {
+        my.cinemax.app.free.api.SmartApiClient.getGenreList(new Callback<List<Genre>>() {
             @Override
             public void onResponse(Call<List<Genre>> call, Response<List<Genre>> response) {
-                apiClient.FormatData(getActivity(),response);
+                my.cinemax.app.free.api.SmartApiClient.formatData(getActivity(),response);
                 if (response.isSuccessful()){
                     if (response.body().size()>0) {
                         final String[] countryCodes = new String[response.body().size()+1];
@@ -379,10 +375,7 @@ public class MoviesFragment extends Fragment {
             relative_layout_load_more_movies_fragment.setVisibility(View.VISIBLE);
         }
         swipe_refresh_layout_movies_fragment.setRefreshing(false);
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
-        Call<List<Poster>> call = service.getMoviesByFiltres(genreSelected,orderSelected,page);
-        call.enqueue(new Callback<List<Poster>>() {
+        my.cinemax.app.free.api.SmartApiClient.getMoviesByFiltres(genreSelected,orderSelected,page, new Callback<List<Poster>>() {
             @Override
             public void onResponse(Call<List<Poster>> call, final Response<List<Poster>> response) {
                 if (response.isSuccessful()){

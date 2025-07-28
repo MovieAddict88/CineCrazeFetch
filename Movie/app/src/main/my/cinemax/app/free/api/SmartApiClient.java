@@ -61,4 +61,24 @@ public class SmartApiClient {
     public static void handleSupportRequest(String email, String name, String message, Callback<ApiResponse> callback) {
         MockApiRest.handleSupportRequest(email, name, message, callback);
     }
+    
+    public static void getChannelsByFiltres(Integer category, Integer country, Integer page, Callback<List<my.cinemax.app.free.entity.Channel>> callback) {
+        PlaylistApiRest.getChannelsByFiltres(category, country, page, callback);
+    }
+    
+    public static void getMoviesByFiltres(Integer genre, Integer order, Integer page, Callback<List<Poster>> callback) {
+        PlaylistApiRest.getMoviesByFiltres(genre, order, page, callback);
+    }
+    
+    public static void getSeriesByFiltres(Integer genre, Integer order, Integer page, Callback<List<Poster>> callback) {
+        PlaylistApiRest.getSeriesByFiltres(genre, order, page, callback);
+    }
+    
+    /**
+     * Safe replacement for apiClient.FormatData that doesn't cause URL errors
+     */
+    public static void formatData(android.app.Activity activity, Object response) {
+        // For now, this is a no-op to prevent URL errors
+        // In the future, this could handle device registration via a proper API
+    }
 }

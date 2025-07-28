@@ -120,11 +120,7 @@ public class SeriesFragment extends Fragment {
     }
 
     private void getGenreList() {
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
-
-        Call<List<Genre>> call = service.getGenreList();
-        call.enqueue(new Callback<List<Genre>>() {
+        my.cinemax.app.free.api.SmartApiClient.getGenreList(new Callback<List<Genre>>() {
             @Override
             public void onResponse(Call<List<Genre>> call, Response<List<Genre>> response) {
                 if (response.isSuccessful()){
@@ -381,10 +377,7 @@ public class SeriesFragment extends Fragment {
             relative_layout_load_more_series_fragment.setVisibility(View.VISIBLE);
         }
         swipe_refresh_layout_series_fragment.setRefreshing(false);
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
-        Call<List<Poster>> call = service.getSeriesByFiltres(genreSelected,orderSelected,page);
-        call.enqueue(new Callback<List<Poster>>() {
+        my.cinemax.app.free.api.SmartApiClient.getSeriesByFiltres(genreSelected,orderSelected,page, new Callback<List<Poster>>() {
             @Override
             public void onResponse(Call<List<Poster>> call, final Response<List<Poster>> response) {
                 if (response.isSuccessful()){

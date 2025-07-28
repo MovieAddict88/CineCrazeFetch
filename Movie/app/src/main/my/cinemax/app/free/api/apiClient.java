@@ -161,24 +161,22 @@ public class apiClient {
 
             OkHttp3Downloader okHttp3Downloader = new OkHttp3Downloader(okHttpClient);
             
-            // Only set Picasso singleton if it doesn't already exist
+            // Initialize Picasso singleton only if it hasn't been initialized yet
             try {
+                // Try to get existing Picasso instance
                 Picasso.with(MyApplication.getInstance());
+                Log.d("apiClient", "Picasso singleton already exists, using existing instance");
             } catch (IllegalStateException e) {
-                // Check if Picasso singleton already exists
+                // Picasso not initialized yet, create and set singleton
                 try {
-                    Picasso.with(MyApplication.getInstance());
-                } catch (IllegalStateException e2) {
-                    // Picasso not initialized yet, create and set singleton
                     Picasso picasso = new Picasso.Builder(MyApplication.getInstance())
                             .downloader(okHttp3Downloader)
                             .build();
-                    try {
-                        Picasso.setSingletonInstance(picasso);
-                    } catch (IllegalStateException e3) {
-                        // Singleton already exists, ignore
-                        Log.d("apiClient", "Picasso singleton already exists");
-                    }
+                    Picasso.setSingletonInstance(picasso);
+                    Log.d("apiClient", "Picasso singleton created successfully");
+                } catch (IllegalStateException e2) {
+                    // Singleton already exists (race condition), ignore
+                    Log.d("apiClient", "Picasso singleton race condition detected, using existing instance");
                 }
             }
 

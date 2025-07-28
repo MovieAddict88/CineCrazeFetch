@@ -104,10 +104,7 @@ public class CategoryActivity extends AppCompatActivity {
             relative_layout_load_more.setVisibility(View.VISIBLE);
         }
         swipe_refresh_layout_list_category_search.setRefreshing(false);
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
-        Call<List<Channel>> call = service.getChannelsByFiltres(category.getId(),0,page);
-        call.enqueue(new Callback<List<Channel>>() {
+        my.cinemax.app.free.api.SmartApiClient.getChannelsByFiltres(category.getId(),0,page, new Callback<List<Channel>>() {
             @Override
             public void onResponse(Call<List<Channel>> call, final Response<List<Channel>> response) {
                 if (response.isSuccessful()){

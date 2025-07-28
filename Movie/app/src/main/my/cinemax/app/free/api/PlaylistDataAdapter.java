@@ -143,7 +143,7 @@ public class PlaylistDataAdapter {
         return poster;
     }
 
-    private static Channel convertToChannel(PlaylistEntry entry, PlaylistCategory category) {
+    public static Channel convertToChannel(PlaylistEntry entry, PlaylistCategory category) {
         Channel channel = new Channel();
         
         channel.setId(entry.getTitle().hashCode());
