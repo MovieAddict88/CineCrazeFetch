@@ -657,6 +657,7 @@ public class SerieActivity extends AppCompatActivity implements PlaylistDownload
             intent.putExtra("url",playableList.get(position).getUrl());
             intent.putExtra("type",playableList.get(position).getType());
             intent.putExtra("kind","episode");
+            intent.putExtra("isLive",false);  // Add missing isLive extra
             intent.putExtra("image",poster.getImage());
             intent.putExtra("title",poster.getTitle());
             intent.putExtra("subtitle",seasonArrayList.get(spinner_activity_serie_season_list.getSelectedItemPosition()).getTitle()+" : "+selectedEpisode.getTitle());
@@ -726,9 +727,12 @@ public class SerieActivity extends AppCompatActivity implements PlaylistDownload
             loadRemoteMedia(0, true);
         } else {
             Intent intent = new Intent(SerieActivity.this,PlayerActivity.class);
+            intent.putExtra("id",poster.getId());  // Add missing id
             intent.putExtra("url",poster.getTrailer().getUrl());
             intent.putExtra("type",poster.getTrailer().getType());
             intent.putExtra("image",poster.getImage());
+            intent.putExtra("kind","trailer");  // Add missing kind
+            intent.putExtra("isLive",false);  // Add missing isLive extra
             intent.putExtra("title",poster.getTitle());
             intent.putExtra("subtitle",poster.getTitle() + " Trailer");
             startActivity(intent);

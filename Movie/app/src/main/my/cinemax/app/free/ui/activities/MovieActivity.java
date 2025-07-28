@@ -598,6 +598,7 @@ public class MovieActivity extends AppCompatActivity {
             intent.putExtra("type",playSources.get(position).getType());
             intent.putExtra("image",poster.getImage());
             intent.putExtra("kind","movie");
+            intent.putExtra("isLive",false);  // Add missing isLive extra
             intent.putExtra("title",poster.getTitle());
             intent.putExtra("subtitle",poster.getTitle() + "("+poster.getYear()+")");
             startActivity(intent);
@@ -624,9 +625,12 @@ public class MovieActivity extends AppCompatActivity {
             loadRemoteMedia(0, true);
         } else {
             Intent intent = new Intent(MovieActivity.this,PlayerActivity.class);
+            intent.putExtra("id",poster.getId());  // Add missing id
             intent.putExtra("url",poster.getTrailer().getUrl());
             intent.putExtra("type",poster.getTrailer().getType());
             intent.putExtra("image",poster.getImage());
+            intent.putExtra("kind","trailer");  // Add missing kind
+            intent.putExtra("isLive",false);  // Add missing isLive extra
             intent.putExtra("title",poster.getTitle());
             intent.putExtra("subtitle",poster.getTitle() + " Trailer");
             startActivity(intent);

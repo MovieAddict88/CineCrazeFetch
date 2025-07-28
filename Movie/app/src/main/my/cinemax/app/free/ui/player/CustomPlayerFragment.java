@@ -195,7 +195,8 @@ public class CustomPlayerFragment extends Fragment {
         relative_layout_dialog_source_background_color_picker = view.findViewById(R.id.relative_layout_dialog_source_background_color_picker);
         exo_duration = view.findViewById(R.id.exo_duration);
         exo_live = view.findViewById(R.id.exo_live);
-        isLive  =  getUrlExtra().getBoolean("isLive");
+        Bundle urlExtra = getUrlExtra();
+        isLive = urlExtra != null ? urlExtra.getBoolean("isLive", false) : false;
         mCustomPlayerViewModel.setPayerPausePlay(payer_pause_play);
         binding.setPlayerVm(mCustomPlayerViewModel);
         mSimpleExoPlayerView = binding.videoView;
@@ -470,7 +471,14 @@ public class CustomPlayerFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mCustomPlayerViewModel.onStart(mSimpleExoPlayerView, getUrlExtra());
+        Bundle urlExtra = getUrlExtra();
+        if (urlExtra != null) {
+            mCustomPlayerViewModel.onStart(mSimpleExoPlayerView, urlExtra);
+        } else {
+            Log.e("CustomPlayerFragment", "No arguments found, cannot start player");
+            getActivity().finish();
+            return;
+        }
         if (!done)
             setUpMediaRouteButton();
     }

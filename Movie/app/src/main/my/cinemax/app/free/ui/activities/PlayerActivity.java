@@ -129,7 +129,12 @@ public class PlayerActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        mSessionManager = CastContext.getSharedInstance(this).getSessionManager();
+        try {
+            mSessionManager = CastContext.getSharedInstance(this).getSessionManager();
+        } catch (Exception e) {
+            Log.e("PlayerActivity", "Failed to initialize CastContext", e);
+            mSessionManager = null;
+        }
 
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -144,16 +149,37 @@ public class PlayerActivity extends AppCompatActivity {
                 | View.SYSTEM_UI_FLAG_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         mScaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
-        mCastContext = CastContext.getSharedInstance(this);
-        Bundle bundle = getIntent().getExtras() ;
-        vodeoId = bundle.getInt("id");
-        videoUrl = bundle.getString("url");
-        videoKind = bundle.getString("kind");
-        isLive = bundle.getBoolean("isLive");
-        videoType = bundle.getString("type");
-        videoTitle = bundle.getString("title");
-        videoSubTile = bundle.getString("subtitle");
-        videoImage = bundle.getString("image");
+        try {
+            mCastContext = CastContext.getSharedInstance(this);
+        } catch (Exception e) {
+            Log.e("PlayerActivity", "Failed to get CastContext", e);
+            mCastContext = null;
+        }
+        Bundle bundle = getIntent().getExtras();
+        
+        // Add null check for bundle to prevent crashes
+        if (bundle == null) {
+            Log.e("PlayerActivity", "No extras found in intent");
+            finish();
+            return;
+        }
+        
+        // Extract data with default values to prevent crashes
+        vodeoId = bundle.getInt("id", 0);
+        videoUrl = bundle.getString("url", "");
+        videoKind = bundle.getString("kind", "");
+        isLive = bundle.getBoolean("isLive", false);
+        videoType = bundle.getString("type", "");
+        videoTitle = bundle.getString("title", "");
+        videoSubTile = bundle.getString("subtitle", "");
+        videoImage = bundle.getString("image", "");
+        
+        // Validate critical data
+        if (videoUrl == null || videoUrl.isEmpty()) {
+            Log.e("PlayerActivity", "No video URL provided");
+            finish();
+            return;
+        }
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         if (savedInstanceState == null) {
@@ -167,8 +193,10 @@ public class PlayerActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mCastSession = mSessionManager.getCurrentCastSession();
-        mSessionManager.addSessionManagerListener(mSessionManagerListener);
+        if (mSessionManager != null) {
+            mCastSession = mSessionManager.getCurrentCastSession();
+            mSessionManager.addSessionManagerListener(mSessionManagerListener);
+        }
 
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -182,7 +210,9 @@ public class PlayerActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        mSessionManager.removeSessionManagerListener(mSessionManagerListener);
+        if (mSessionManager != null) {
+            mSessionManager.removeSessionManagerListener(mSessionManagerListener);
+        }
         mCastSession = null;
         super.onPause();
     }
