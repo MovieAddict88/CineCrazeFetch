@@ -106,13 +106,25 @@ public class CustomPlayerFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        mCustomPlayerViewModel.play();
+        if (mCustomPlayerViewModel != null) {
+            mCustomPlayerViewModel.play();
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mCustomPlayerViewModel.pause();
+        if (mCustomPlayerViewModel != null) {
+            mCustomPlayerViewModel.pause();
+        }
+    }
+    
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mCustomPlayerViewModel != null) {
+            mCustomPlayerViewModel.release();
+        }
     }
     public static CustomPlayerFragment newInstance(String videoUrl, Boolean isLive, String videoType, String videoTitle, String videoSubTile, String videoImage, Integer videoId_, String _videoKind) {
         CustomPlayerFragment customPlayerFragment = new CustomPlayerFragment();
@@ -315,17 +327,34 @@ public class CustomPlayerFragment extends Fragment {
             }
         });
         this.image_view_exo_player_forward_10.setOnClickListener(v -> {
-            if ((mCustomPlayerViewModel.mExoPlayer.getCurrentPosition() + 10000 ) > mCustomPlayerViewModel.mExoPlayer.getDuration() ) {
-                mCustomPlayerViewModel.mExoPlayer.seekTo(mCustomPlayerViewModel.mExoPlayer.getDuration());
-            }else{
-                mCustomPlayerViewModel.mExoPlayer.seekTo(mCustomPlayerViewModel.mExoPlayer.getCurrentPosition() + 10000);
+            try {
+                if (mCustomPlayerViewModel != null && mCustomPlayerViewModel.mExoPlayer != null) {
+                    long currentPosition = mCustomPlayerViewModel.mExoPlayer.getCurrentPosition();
+                    long duration = mCustomPlayerViewModel.mExoPlayer.getDuration();
+                    
+                    if (duration > 0 && (currentPosition + 10000) > duration) {
+                        mCustomPlayerViewModel.mExoPlayer.seekTo(duration);
+                    } else {
+                        mCustomPlayerViewModel.mExoPlayer.seekTo(currentPosition + 10000);
+                    }
+                }
+            } catch (Exception e) {
+                Log.e("CustomPlayerFragment", "Error seeking forward: " + e.getMessage());
             }
         });
         this.image_view_exo_player_replay_10.setOnClickListener(v -> {
-            if (mCustomPlayerViewModel.mExoPlayer.getCurrentPosition()<10000) {
-                mCustomPlayerViewModel.mExoPlayer.seekTo(0);
-            }else{
-                mCustomPlayerViewModel.mExoPlayer.seekTo(mCustomPlayerViewModel.mExoPlayer.getCurrentPosition() - 10000);
+            try {
+                if (mCustomPlayerViewModel != null && mCustomPlayerViewModel.mExoPlayer != null) {
+                    long currentPosition = mCustomPlayerViewModel.mExoPlayer.getCurrentPosition();
+                    
+                    if (currentPosition < 10000) {
+                        mCustomPlayerViewModel.mExoPlayer.seekTo(0);
+                    } else {
+                        mCustomPlayerViewModel.mExoPlayer.seekTo(currentPosition - 10000);
+                    }
+                }
+            } catch (Exception e) {
+                Log.e("CustomPlayerFragment", "Error seeking backward: " + e.getMessage());
             }
         });
         this.image_view_dialog_source_less.setOnClickListener(v->{
