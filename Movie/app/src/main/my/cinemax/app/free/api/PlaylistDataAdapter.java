@@ -150,7 +150,7 @@ public class PlaylistDataAdapter {
         channel.setTitle(entry.getTitle());
         channel.setDescription(entry.getDescription());
         channel.setImage(entry.getPoster());
-        channel.setRating(entry.getRating() != null ? entry.getRating().floatValue() : 0f);
+        channel.setRating(entry.getRating() != null ? ((Number) entry.getRating()).floatValue() : 0f);
         
         // Convert servers to sources
         List<Source> sources = new ArrayList<>();

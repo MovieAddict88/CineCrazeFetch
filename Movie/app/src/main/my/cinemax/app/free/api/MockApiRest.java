@@ -59,17 +59,17 @@ public class MockApiRest {
         
         Genre actionGenre = new Genre();
         actionGenre.setId(1);
-        actionGenre.setName("Action");
+        actionGenre.setTitle("Action");
         genres.add(actionGenre);
         
         Genre animeGenre = new Genre();
         animeGenre.setId(2);
-        animeGenre.setName("Anime");
+        animeGenre.setTitle("Anime");
         genres.add(animeGenre);
         
         Genre entertainmentGenre = new Genre();
         entertainmentGenre.setId(3);
-        entertainmentGenre.setName("Entertainment");
+        entertainmentGenre.setTitle("Entertainment");
         genres.add(entertainmentGenre);
         
         Response<List<Genre>> retrofitResponse = Response.success(genres);
@@ -83,17 +83,17 @@ public class MockApiRest {
         
         Category liveTV = new Category();
         liveTV.setId(1);
-        liveTV.setName("Live TV");
+        liveTV.setTitle("Live TV");
         categories.add(liveTV);
         
         Category movies = new Category();
         movies.setId(2);
-        movies.setName("Movies");
+        movies.setTitle("Movies");
         categories.add(movies);
         
         Category series = new Category();
         series.setId(3);
-        series.setName("TV Series");
+        series.setTitle("TV Series");
         categories.add(series);
         
         Response<List<Category>> retrofitResponse = Response.success(categories);
@@ -107,17 +107,17 @@ public class MockApiRest {
         
         Country philippines = new Country();
         philippines.setId(1);
-        philippines.setName("Philippines");
+        philippines.setTitle("Philippines");
         countries.add(philippines);
         
         Country usa = new Country();
         usa.setId(2);
-        usa.setName("USA");
+        usa.setTitle("USA");
         countries.add(usa);
         
         Country japan = new Country();
         japan.setId(3);
-        japan.setName("Japan");
+        japan.setTitle("Japan");
         countries.add(japan);
         
         Response<List<Country>> retrofitResponse = Response.success(countries);

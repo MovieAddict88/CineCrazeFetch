@@ -147,7 +147,7 @@ public class PlaylistApiRest {
         }
     }
     
-    public static void getMoviesByFiltres(Integer genre, Integer order, Integer page, Callback<List<Poster>> callback) {
+    public static void getMoviesByFiltres(Integer genre, String order, Integer page, Callback<List<Poster>> callback) {
         try {
             PlaylistDataStore dataStore = PlaylistDataStore.getInstance();
             List<Poster> movies = new ArrayList<>();
@@ -176,7 +176,7 @@ public class PlaylistApiRest {
         }
     }
     
-    public static void getSeriesByFiltres(Integer genre, Integer order, Integer page, Callback<List<Poster>> callback) {
+    public static void getSeriesByFiltres(Integer genre, String order, Integer page, Callback<List<Poster>> callback) {
         try {
             PlaylistDataStore dataStore = PlaylistDataStore.getInstance();
             List<Poster> series = new ArrayList<>();

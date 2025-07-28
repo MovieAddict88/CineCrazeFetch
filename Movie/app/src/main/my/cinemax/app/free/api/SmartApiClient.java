@@ -66,11 +66,11 @@ public class SmartApiClient {
         PlaylistApiRest.getChannelsByFiltres(category, country, page, callback);
     }
     
-    public static void getMoviesByFiltres(Integer genre, Integer order, Integer page, Callback<List<Poster>> callback) {
+    public static void getMoviesByFiltres(Integer genre, String order, Integer page, Callback<List<Poster>> callback) {
         PlaylistApiRest.getMoviesByFiltres(genre, order, page, callback);
     }
     
-    public static void getSeriesByFiltres(Integer genre, Integer order, Integer page, Callback<List<Poster>> callback) {
+    public static void getSeriesByFiltres(Integer genre, String order, Integer page, Callback<List<Poster>> callback) {
         PlaylistApiRest.getSeriesByFiltres(genre, order, page, callback);
     }
     
