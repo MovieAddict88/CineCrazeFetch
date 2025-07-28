@@ -170,9 +170,14 @@ public class PlayerActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         if (savedInstanceState == null) {
-            customPlayerFragment =
-                    CustomPlayerFragment.newInstance(getVideoUrl(),isLive,videoType,videoTitle,videoSubTile,videoImage,vodeoId,videoKind);
-            launchFragment(customPlayerFragment);
+            try {
+                customPlayerFragment =
+                        CustomPlayerFragment.newInstance(getVideoUrl(),isLive,videoType,videoTitle,videoSubTile,videoImage,vodeoId,videoKind);
+                launchFragment(customPlayerFragment);
+            } catch (Exception e) {
+                Log.e("PlayerActivity", "Error creating player fragment: " + e.getMessage());
+                finish();
+            }
         }
 
     }
@@ -212,12 +217,15 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     private void launchFragment(Fragment fragment) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.main_fragment_container, fragment, "CustomPlayerFragment");
-        fragmentTransaction.commit();
-
-
+        try {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.add(R.id.main_fragment_container, fragment, "CustomPlayerFragment");
+            fragmentTransaction.commit();
+        } catch (Exception e) {
+            Log.e("PlayerActivity", "Error launching fragment: " + e.getMessage());
+            finish();
+        }
     }
 
     private String getVideoUrl() {

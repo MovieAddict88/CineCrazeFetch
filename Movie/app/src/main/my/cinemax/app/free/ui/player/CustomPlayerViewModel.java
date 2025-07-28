@@ -18,7 +18,7 @@ import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.PlaybackParameters;
@@ -86,7 +86,7 @@ public class CustomPlayerViewModel extends BaseObservable implements ExoPlayer.E
     private SessionManager mSessionManager;
 
     private PlayerView mSimpleExoPlayerView;
-    public ExoPlayer mExoPlayer;
+    public SimpleExoPlayer mExoPlayer;
     private ImageView ic_media_stop;
     private RelativeLayout payer_pause_play;
     private Boolean isLive = false;
@@ -100,19 +100,32 @@ public class CustomPlayerViewModel extends BaseObservable implements ExoPlayer.E
     }
 
     public void onStart(PlayerView simpleExoPlayerView, Bundle bundle) {
-        mSimpleExoPlayerView = simpleExoPlayerView;
-        mUrl = bundle.getString("videoUrl");
-        isLive = bundle.getBoolean("isLive");
-        videoType = bundle.getString("videoType");
-        videoTitle = bundle.getString("videoTitle");
-        videoSubTile = bundle.getString("videoSubTile");
-        videoImage = bundle.getString("videoImage");
-        initPlayer();
-        mSimpleExoPlayerView.setPlayer(mExoPlayer);
-
-        preparePlayer(null,0);
-        updateCastSessionAndSessionManager();
-
+        try {
+            mSimpleExoPlayerView = simpleExoPlayerView;
+            mUrl = bundle.getString("url");
+            isLive = bundle.getBoolean("isLive", false);
+            videoType = bundle.getString("type", "mp4");
+            videoTitle = bundle.getString("title", "");
+            videoSubTile = bundle.getString("subtitle", "");
+            videoImage = bundle.getString("image", "");
+            
+            // Validate URL
+            if (mUrl == null || mUrl.isEmpty()) {
+                Log.e("CustomPlayerViewModel", "Video URL is null or empty");
+                return;
+            }
+            
+            initPlayer();
+            if (mExoPlayer != null && mSimpleExoPlayerView != null) {
+                mSimpleExoPlayerView.setPlayer(mExoPlayer);
+                preparePlayer(null, 0);
+                updateCastSessionAndSessionManager();
+            } else {
+                Log.e("CustomPlayerViewModel", "ExoPlayer or PlayerView is null after initialization");
+            }
+        } catch (Exception e) {
+            Log.e("CustomPlayerViewModel", "Error in onStart: " + e.getMessage());
+        }
     }
 
     public void setPayerPausePlay(RelativeLayout payer_pause_play) {
@@ -138,7 +151,7 @@ public class CustomPlayerViewModel extends BaseObservable implements ExoPlayer.E
 
             // 3. Create the player with null check
             if (mActivity != null && !mActivity.isFinishing()) {
-                mExoPlayer = new ExoPlayer.Builder(mActivity)
+                mExoPlayer = new SimpleExoPlayer.Builder(mActivity)
                         .setTrackSelector(trackSelector)
                         .setLoadControl(loadControl)
                         .build();
@@ -490,7 +503,7 @@ public class CustomPlayerViewModel extends BaseObservable implements ExoPlayer.E
         return mExoPlayer;
     }
 
-    public SimpleExoPlayerView getSimpleExoPlayerView() {
+    public PlayerView getSimpleExoPlayerView() {
         return mSimpleExoPlayerView;
     }
 

@@ -186,7 +186,17 @@ public class CustomPlayerFragment extends Fragment {
         text_view_dialog_source_size_text.setText("Text size : "+textSiz+" pt");
     }
     private void initView(FragmentPlayerBinding binding) {
-        mCustomPlayerViewModel = new CustomPlayerViewModel(getActivity());
+        try {
+            if (getActivity() != null) {
+                mCustomPlayerViewModel = new CustomPlayerViewModel(getActivity());
+            } else {
+                Log.e("CustomPlayerFragment", "Activity is null during initialization");
+                return;
+            }
+        } catch (Exception e) {
+            Log.e("CustomPlayerFragment", "Error creating ViewModel: " + e.getMessage());
+            return;
+        }
 
         image_view_exo_player_back = view.findViewById(R.id.image_view_exo_player_back);
         text_view_exo_player_loading_subtitles = view.findViewById(R.id.text_view_exo_player_loading_subtitles);
@@ -499,9 +509,29 @@ public class CustomPlayerFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mCustomPlayerViewModel.onStart(mSimpleExoPlayerView, getUrlExtra());
-        if (!done)
-            setUpMediaRouteButton();
+        try {
+            if (mCustomPlayerViewModel != null && mSimpleExoPlayerView != null) {
+                Bundle urlExtra = getUrlExtra();
+                if (urlExtra != null) {
+                    mCustomPlayerViewModel.onStart(mSimpleExoPlayerView, urlExtra);
+                } else {
+                    Log.e("CustomPlayerFragment", "URL extras are null");
+                    getActivity().finish();
+                    return;
+                }
+            } else {
+                Log.e("CustomPlayerFragment", "ViewModel or PlayerView is null");
+                getActivity().finish();
+                return;
+            }
+            if (!done)
+                setUpMediaRouteButton();
+        } catch (Exception e) {
+            Log.e("CustomPlayerFragment", "Error in onActivityCreated: " + e.getMessage());
+            if (getActivity() != null) {
+                getActivity().finish();
+            }
+        }
     }
     private void setUpMediaRouteButton() {
         androidx.mediarouter.app.MediaRouteButton mediaRouteButton = view.findViewById(R.id.media_route_button);
@@ -533,33 +563,47 @@ public class CustomPlayerFragment extends Fragment {
     @Subscribe
     public void onCastSessionStartedEvent(CastSessionStartedEvent event) {
         Log.v("V","onCastSessionStartedEvent");
-        ExoPlayer mExoPlayer = mCustomPlayerViewModel.getExoPlayer();
-        if (mExoPlayer != null) {
-
-            long currentPosition = mExoPlayer.getCurrentPosition();
-            if (currentPosition > 0) {
-                int position = (int) currentPosition;
-                mCustomPlayerViewModel.loadMedia(position, true);
+        try {
+            if (mCustomPlayerViewModel != null) {
+                ExoPlayer mExoPlayer = mCustomPlayerViewModel.getExoPlayer();
+                if (mExoPlayer != null) {
+                    long currentPosition = mExoPlayer.getCurrentPosition();
+                    if (currentPosition > 0) {
+                        int position = (int) currentPosition;
+                        mCustomPlayerViewModel.loadMedia(position, true);
+                    }
+                }
             }
+        } catch (Exception e) {
+            Log.e("CustomPlayerFragment", "Error in onCastSessionStartedEvent: " + e.getMessage());
         }
     }
 
     @Subscribe
     public void onCastSessionEndedEvent(CastSessionEndedEvent event) {
-        ExoPlayer mExoPlayer = mCustomPlayerViewModel.getExoPlayer();
-        SimpleExoPlayerView mSimpleExoPlayerView = mCustomPlayerViewModel.getSimpleExoPlayerView();
-        if (mExoPlayer != null) {
-            long time = mExoPlayer.getDuration() - event.getSessionRemainingTime();
-            if (time > 0) {
-                mCustomPlayerViewModel.setIsInProgress(true);
-                mExoPlayer.seekTo(time);
-                mExoPlayer.setPlayWhenReady(true);
+        try {
+            if (mCustomPlayerViewModel != null) {
+                ExoPlayer mExoPlayer = mCustomPlayerViewModel.getExoPlayer();
+                PlayerView mSimpleExoPlayerView = mCustomPlayerViewModel.getSimpleExoPlayerView();
+                if (mExoPlayer != null) {
+                    long duration = mExoPlayer.getDuration();
+                    if (duration > 0) {
+                        long time = duration - event.getSessionRemainingTime();
+                        if (time > 0 && time < duration) {
+                            mCustomPlayerViewModel.setIsInProgress(true);
+                            mExoPlayer.seekTo(time);
+                            mExoPlayer.setPlayWhenReady(true);
+                        }
+                    }
+                }
+                if (mSimpleExoPlayerView != null) {
+                    if (!mSimpleExoPlayerView.getUseController()) {
+                        mSimpleExoPlayerView.setUseController(true);
+                    }
+                }
             }
-        }
-        if (mSimpleExoPlayerView != null) {
-            if (!mSimpleExoPlayerView.getUseController()) {
-                mSimpleExoPlayerView.setUseController(true);
-            }
+        } catch (Exception e) {
+            Log.e("CustomPlayerFragment", "Error in onCastSessionEndedEvent: " + e.getMessage());
         }
     }
 
