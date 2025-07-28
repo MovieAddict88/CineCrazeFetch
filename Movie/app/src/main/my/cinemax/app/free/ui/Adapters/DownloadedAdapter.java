@@ -62,7 +62,7 @@ public class DownloadedAdapter extends   RecyclerView.Adapter<RecyclerView.ViewH
             case 1:
                 DownloadedHolder downloadedHolder =  (DownloadedHolder) holder;
                 downloadedHolder.text_view_item_download_title.setText(downloadItemList.get(position).getTitle());
-                Picasso.with(activity).load(downloadItemList.get(position).getImage()).into(downloadedHolder.image_view_item_download_image);
+                Picasso.get().load(downloadItemList.get(position).getImage()).into(downloadedHolder.image_view_item_download_image);
                 downloadedHolder.text_view_item_download_duration.setText(downloadItemList.get(position).getDuration());
                 downloadedHolder.text_view_item_download_size.setText(downloadItemList.get(position).getSize());
                 Log.log(downloadItemList.get(position).getId()+"");

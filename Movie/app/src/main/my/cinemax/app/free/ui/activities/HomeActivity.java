@@ -369,7 +369,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         prf.remove("NEW_SUBSCRIBE_ENABLED");
         if (prf.getString("LOGGED").toString().equals("TRUE")){
             text_view_name_nave_header.setText(prf.getString("NAME_USER").toString());
-            Picasso.with(getApplicationContext()).load(prf.getString("IMAGE_USER").toString()).placeholder(R.drawable.placeholder_profile).error(R.drawable.placeholder_profile).resize(200,200).centerCrop().into(circle_image_view_profile_nav_header);
+            Picasso.get().load(prf.getString("IMAGE_USER").toString()).placeholder(R.drawable.placeholder_profile).error(R.drawable.placeholder_profile).resize(200,200).centerCrop().into(circle_image_view_profile_nav_header);
             if (prf.getString("TYPE_USER").toString().equals("google")){
             }else {
             }
@@ -381,7 +381,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             nav_Menu.findItem(R.id.my_list).setVisible(false);
             nav_Menu.findItem(R.id.login).setVisible(true);
             text_view_name_nave_header.setText(getResources().getString(R.string.please_login));
-            Picasso.with(getApplicationContext()).load(R.drawable.placeholder_profile).placeholder(R.drawable.placeholder_profile).error(R.drawable.placeholder_profile).resize(200,200).centerCrop().into(circle_image_view_profile_nav_header);
+            Picasso.get().load(R.drawable.placeholder_profile).placeholder(R.drawable.placeholder_profile).error(R.drawable.placeholder_profile).resize(200,200).centerCrop().into(circle_image_view_profile_nav_header);
         }
 
         if (prf.getString("APP_LOGIN_REQUIRED").toString().equals("TRUE")) {
@@ -701,7 +701,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             nav_Menu.findItem(R.id.my_list).setVisible(true);
             nav_Menu.findItem(R.id.login).setVisible(false);
             text_view_name_nave_header.setText(prf.getString("NAME_USER").toString());
-            Picasso.with(getApplicationContext()).load(prf.getString("IMAGE_USER").toString()).placeholder(R.drawable.placeholder_profile).error(R.drawable.placeholder_profile).resize(200,200).centerCrop().into(circle_image_view_profile_nav_header);
+            Picasso.get().load(prf.getString("IMAGE_USER").toString()).placeholder(R.drawable.placeholder_profile).error(R.drawable.placeholder_profile).resize(200,200).centerCrop().into(circle_image_view_profile_nav_header);
 
             final com.squareup.picasso.Target target = new com.squareup.picasso.Target() {
                 @Override
@@ -713,7 +713,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 @Override
                 public void onPrepareLoad(Drawable placeHolderDrawable) { }
             };
-            Picasso.with(getApplicationContext()).load(prf.getString("IMAGE_USER").toString()).into(target);
+            Picasso.get().load(prf.getString("IMAGE_USER").toString()).into(target);
             image_view_profile_nav_header_bg.setTag(target);
             image_view_profile_nav_header_bg.setVisibility(View.VISIBLE);
 
@@ -726,7 +726,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             image_view_profile_nav_header_bg.setVisibility(View.GONE);
 
             text_view_name_nave_header.setText(getResources().getString(R.string.please_login));
-            Picasso.with(getApplicationContext()).load(R.drawable.placeholder_profile).placeholder(R.drawable.placeholder_profile).error(R.drawable.placeholder_profile).resize(200,200).centerCrop().into(circle_image_view_profile_nav_header);
+            Picasso.get().load(R.drawable.placeholder_profile).placeholder(R.drawable.placeholder_profile).error(R.drawable.placeholder_profile).resize(200,200).centerCrop().into(circle_image_view_profile_nav_header);
         }
         if (FromLogin){
             FromLogin = false;

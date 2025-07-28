@@ -92,7 +92,7 @@ public class SlideAdapter extends PagerAdapter {
         // Check if image URL is valid before loading
         String imageUrl = slideList.get(position).getImage();
         if (imageUrl != null && !imageUrl.trim().isEmpty()) {
-            Picasso.with(activity).load(imageUrl).placeholder(R.drawable.placeholder).into(image_view_item_slide_one);
+            Picasso.get().load(imageUrl).placeholder(R.drawable.placeholder).into(image_view_item_slide_one);
         } else {
             // Set placeholder image if URL is null or empty
             image_view_item_slide_one.setImageResource(R.drawable.placeholder);

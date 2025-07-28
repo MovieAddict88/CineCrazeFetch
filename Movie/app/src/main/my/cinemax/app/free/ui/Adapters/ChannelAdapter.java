@@ -155,7 +155,7 @@ public class ChannelAdapter  extends  RecyclerView.Adapter<RecyclerView.ViewHold
                 // Check if image URL is valid before loading
                 String imageUrl = channelList.get(position).getImage();
                 if (imageUrl != null && !imageUrl.trim().isEmpty()) {
-                    Picasso.with(activity).load(imageUrl).placeholder(R.drawable.place_holder_channel).into(holder.image_view_item_channel);
+                    Picasso.get().load(imageUrl).placeholder(R.drawable.place_holder_channel).into(holder.image_view_item_channel);
                 } else {
                     // Set placeholder image if URL is null or empty
                     holder.image_view_item_channel.setImageResource(R.drawable.place_holder_channel);
