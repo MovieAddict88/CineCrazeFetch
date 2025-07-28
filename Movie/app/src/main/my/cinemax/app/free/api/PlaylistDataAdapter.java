@@ -57,9 +57,12 @@ public class PlaylistDataAdapter {
         data.setChannels(allChannels);
         data.setSlides(slides);
         
+        // Create genre sections from playlist categories
+        List<Genre> genres = createGenresFromCategories(playlistData);
+        data.setGenres(genres);
+        
         // Initialize other collections to empty lists to prevent null reference exceptions
         data.setActors(new ArrayList<>());
-        data.setGenres(new ArrayList<>());
         
         return data;
     }
@@ -226,5 +229,40 @@ public class PlaylistDataAdapter {
         }
         
         return seasons;
+    }
+    
+    private static List<Genre> createGenresFromCategories(PlaylistData playlistData) {
+        List<Genre> genres = new ArrayList<>();
+        
+        if (playlistData.getCategories() != null) {
+            for (PlaylistCategory category : playlistData.getCategories()) {
+                // Skip Live TV as it's handled as channels
+                if ("Live TV".equals(category.getMainCategory())) {
+                    continue;
+                }
+                
+                // Create a genre for each main category
+                Genre genre = new Genre();
+                genre.setId(category.getMainCategory().hashCode());
+                genre.setTitle(category.getMainCategory());
+                
+                // Get all posters for this category
+                List<Poster> categoryPosters = new ArrayList<>();
+                if (category.getEntries() != null) {
+                    for (PlaylistEntry entry : category.getEntries()) {
+                        Poster poster = convertToPoster(entry, category);
+                        categoryPosters.add(poster);
+                    }
+                }
+                genre.setPosters(categoryPosters);
+                
+                // Only add the genre if it has content
+                if (!categoryPosters.isEmpty()) {
+                    genres.add(genre);
+                }
+            }
+        }
+        
+        return genres;
     }
 }
