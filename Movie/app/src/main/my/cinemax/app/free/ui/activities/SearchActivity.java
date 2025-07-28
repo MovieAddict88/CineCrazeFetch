@@ -113,10 +113,7 @@ public class SearchActivity extends AppCompatActivity {
 
     private void loadPosters() {
         swipe_refresh_layout_list_search_search.setRefreshing(false);
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
-        Call<Data> call = service.searchData(query);
-        call.enqueue(new Callback<Data>() {
+        my.cinemax.app.free.api.PlaylistApiRest.searchData(query, new Callback<Data>() {
             @Override
             public void onResponse(Call<Data> call, final Response<Data> response) {
                 if (response.isSuccessful()){

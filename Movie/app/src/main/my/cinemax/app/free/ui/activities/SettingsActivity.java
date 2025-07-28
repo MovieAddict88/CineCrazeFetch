@@ -169,6 +169,7 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), PolicyActivity.class);
+                intent.putExtra("policy_type", "privacy");
                 startActivity(intent);
                 overridePendingTransition(R.anim.enter, R.anim.exit);
 

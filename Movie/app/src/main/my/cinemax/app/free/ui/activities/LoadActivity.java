@@ -381,10 +381,7 @@ public class LoadActivity extends AppCompatActivity {
 
     public void getPoster(){
 
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
-        Call<Poster> call = service.getPosterById(id);
-        call.enqueue(new retrofit2.Callback<Poster>() {
+        my.cinemax.app.free.api.PlaylistApiRest.getPosterById(id, new retrofit2.Callback<Poster>() {
             @Override
             public void onResponse(Call<Poster> call, Response<Poster> response) {
                 if(response.isSuccessful()) {

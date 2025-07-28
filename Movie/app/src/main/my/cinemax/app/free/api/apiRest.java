@@ -46,6 +46,12 @@ public interface apiRest {
     @GET("first/" + Global.SECURE_KEY + "/" + Global.ITEM_PURCHASE_CODE + "/")
     Call<Data> homeData();
 
+    // Playlist-based methods (these will be handled differently)
+    default Call<Data> getPlaylistHomeData() {
+        // This will be implemented using PlaylistApiClient
+        return null;
+    }
+
     @GET("search/{query}/" + Global.SECURE_KEY + "/" + Global.ITEM_PURCHASE_CODE + "/")
     Call<Data> searchData(@Path("query") String query);
 

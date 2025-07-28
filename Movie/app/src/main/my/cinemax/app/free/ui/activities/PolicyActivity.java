@@ -9,6 +9,7 @@ import android.webkit.WebView;
 
 import my.cinemax.app.free.R;
 import my.cinemax.app.free.config.Global;
+import my.cinemax.app.free.config.PolicyUrls;
 import my.cinemax.app.free.entity.Actress;
 
 
@@ -20,13 +21,27 @@ public class PolicyActivity extends AppCompatActivity {
         setContentView(R.layout.activity_policy);
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
-        toolbar.setTitle(getResources().getString(R.string.policy_privacy));
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        // Get the type from intent extras (privacy or policy)
+        String policyType = getIntent().getStringExtra("policy_type");
+        String url;
+        String title;
+        
+        if ("policy".equals(policyType)) {
+            url = PolicyUrls.TERMS_OF_SERVICE_URL;
+            title = getResources().getString(R.string.terms_of_service);
+        } else {
+            // Default to privacy policy
+            url = PolicyUrls.PRIVACY_POLICY_URL;
+            title = getResources().getString(R.string.policy_privacy);
+        }
+        
+        toolbar.setTitle(title);
 
         WebView webView=findViewById(R.id.web_view);
-        webView.loadUrl(Actress.actress.replace("/api/","/privacy_policy.html"));
+        webView.loadUrl(url);
 
     }
     @Override

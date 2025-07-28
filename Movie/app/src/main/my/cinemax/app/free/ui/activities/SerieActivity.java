@@ -417,11 +417,7 @@ public class SerieActivity extends AppCompatActivity implements PlaylistDownload
     }
     private void getSeasons() {
 
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
-
-        Call<List<Season>> call = service.getSeasonsBySerie(poster.getId());
-        call.enqueue(new Callback<List<Season>>() {
+        my.cinemax.app.free.api.PlaylistApiRest.getSeasonsBySerie(poster.getId(), new Callback<List<Season>>() {
             @Override
             public void onResponse(Call<List<Season>> call, Response<List<Season>> response) {
                 if (response.isSuccessful()){

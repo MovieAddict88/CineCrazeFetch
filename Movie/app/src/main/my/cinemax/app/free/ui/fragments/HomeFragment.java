@@ -78,13 +78,9 @@ public class HomeFragment extends Fragment {
     private void loadData() {
 
         showLoadingView();
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
-        Call<Data> call = service.homeData();
-        call.enqueue(new Callback<Data>() {
+        my.cinemax.app.free.api.PlaylistApiClient.getPlaylistData(new Callback<Data>() {
             @Override
             public void onResponse(Call<Data> call, Response<Data> response) {
-                apiClient.FormatData(getActivity(),response);
                 if (response.isSuccessful()){
                     dataList.clear();
                     dataList.add(new Data().setViewType(0));
