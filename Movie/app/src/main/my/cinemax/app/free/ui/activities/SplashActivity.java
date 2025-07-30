@@ -123,15 +123,15 @@ public class SplashActivity extends AppCompatActivity {
         // Load ad configurations from your GitHub JSON file
         apiClient.loadAdsConfigAndUpdatePrefs(this, new apiClient.AdsConfigCallback() {
             @Override
-            public void onAdsConfigLoaded(boolean success) {
-                // Ad config loaded (or failed), continue with app
-                if (success) {
-                    // Successfully loaded ad config from JSON
-                    // The PrefManager has been updated with new ad IDs
-                } else {
-                    // Failed to load ad config, use default values
-                    // Default ad IDs are already set in onCreate()
-                }
+            public void onSuccess(String message) {
+                // Successfully loaded ad config from JSON
+                // The PrefManager has been updated with new ad IDs
+            }
+            
+            @Override
+            public void onError(String error) {
+                // Failed to load ad config, use default values
+                // Default ad IDs are already set in onCreate()
             }
         });
     }
