@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
+import es.dmoral.toasty.Toasty;
 
 /**
  * A simple {@link Fragment} subclass.
