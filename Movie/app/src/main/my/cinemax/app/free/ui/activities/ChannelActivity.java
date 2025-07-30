@@ -811,7 +811,7 @@ public class ChannelActivity extends AppCompatActivity {
         }
         if (playSources.size()==1){
             if (checkSUBSCRIBED()) {
-                if (playSources.get(0).getExternal()) {
+                if (playSources.get(0).getExternal() != null && playSources.get(0).getExternal()) {
                     openLink(0);
                 } else {
                     playSource(0);
@@ -824,7 +824,7 @@ public class ChannelActivity extends AppCompatActivity {
                     current_position_play = 0;
                     showDialog(true);
                 } else {
-                    if (playSources.get(0).getExternal()) {
+                    if (playSources.get(0).getExternal() != null && playSources.get(0).getExternal()) {
                         openLink(0);
                     } else {
                         playSource(0);

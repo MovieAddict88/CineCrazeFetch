@@ -59,7 +59,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentH
 
         holder.text_view_name_item_comment.setText(commentList.get(position).getUser());
         Picasso.with(context).load(commentList.get(position).getImage()).error(R.drawable.placeholder_profile).placeholder(R.drawable.placeholder_profile).into(holder.image_view_comment_iten);
-        if (!commentList.get(position).getEnabled()){
+        if (commentList.get(position).getEnabled() != null && !commentList.get(position).getEnabled()){
             holder.text_view_content_item_comment.setText(context.getResources().getString(R.string.comment_hidden));
             holder.text_view_content_item_comment.setTextColor(context.getResources().getColor(R.color.gray));
         }else{
