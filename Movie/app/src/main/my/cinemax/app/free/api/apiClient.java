@@ -48,75 +48,27 @@ public class apiClient {
     private static Retrofit retrofit = null;
     private static final String CACHE_CONTROL = "Cache-Control";
 
+    // Removed old API client - now using only GitHub API
     public static Retrofit initClient(){
-        String text = "";
-        byte[] data = android.util.Base64.decode(apiClient.retrofit_id, android.util.Base64.DEFAULT);
-        try {
-            text = new String(data, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(text)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        return retrofit;
+        return getJsonApiClient();
     }
 
+    // Removed old API methods - now using only GitHub API
     public static  void setClient(retrofit2.Response<ApiResponse> response, Activity activity, PrefManager prf){
-        if (response.isSuccessful()) {
-            if (response.body().getCode().equals(202)) {
-                prf.setString("formatted","false");
-                if (response.body().getValues()!=null){
-                    adapterDataWithNewVersion(response,prf);
-                }
-            } else {
-                prf.setString("formatted","true");
-            }
-        }
+        // This method is kept for compatibility but no longer used
     }
     private static void adapterDataWithNewVersion(retrofit2.Response<ApiResponse> response,PrefManager prf) {
-        if (response.body().getValues().size()>0){
-            for (int i = 0; i < response.body().getValues().size(); i++) {
-                prf.setString(response.body().getValues().get(i).getName(), response.body().getValues().get(i).getValue());
-            }
-        }
+        // This method is kept for compatibility but no longer used
     }
     public static String LoadClientData(Activity activity){
         return activity.getApplicationContext().getPackageName();
     }
     public static void FormatData(final Activity activity,Object o){
-
-        try {
-
-            final PrefManager prf = new PrefManager(activity.getApplication());
-
-            if (!prf.getString("formatted").equals("true")) {
-
-                if (apiClient.check(activity)) {
-                    Retrofit retrofit=apiClient.initClient();
-                    apiRest service = retrofit.create(apiRest.class);
-                    Call<ApiResponse> callback = service.addInstall(apiClient.LoadClientData(activity));
-                    callback.enqueue(new Callback<ApiResponse>() {
-                        @Override
-                        public void onResponse(Call<ApiResponse> call, retrofit2.Response<ApiResponse> response) {
-                             apiClient.setClient(response,activity,prf);
-
-                        }
-                        @Override
-                        public void onFailure(Call<ApiResponse> call, Throwable t) {
-                        }
-                    });
-                }
-            }
-        }catch (Exception e){
-            if (o!=null){
-                return;
-            }else{
-
-            }
-        }
+        // Skip old API calls - app now uses GitHub JSON API
+        // Set formatted to true to skip old API calls
+        final PrefManager prf = new PrefManager(activity.getApplication());
+        prf.setString("formatted","true");
+        // Old API calls removed - app now uses GitHub JSON API
     }
     public static boolean check(Activity activity){
         final PrefManager prf = new PrefManager(activity.getApplication());
@@ -223,7 +175,8 @@ public class apiClient {
             }
         };
     }
-    public static String retrofit_id = "aHR0cDovL2xpY2Vuc2UudmlybWFuYS5jb20vYXBpLw==";
+    // Old API ID removed - now using GitHub API
+    public static String retrofit_id = "https://raw.githubusercontent.com/MovieAddict88/movie-api/main/";
     
     // ===== JSON API CLIENT METHODS =====
     // These methods will fetch data from your GitHub JSON file

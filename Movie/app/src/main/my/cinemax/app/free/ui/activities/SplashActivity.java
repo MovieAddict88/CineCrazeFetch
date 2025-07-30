@@ -107,12 +107,8 @@ public class SplashActivity extends AppCompatActivity {
         });
     }
     private void checkAccount() {
-
-        // ===== SKIP OLD API CALL AND LOAD FROM JSON INSTEAD =====
-        // The old API server is no longer working, so we'll skip the check
-        // and optionally load ad configurations from JSON
-        
-        // Load ad configurations from JSON (optional)
+        // ===== USE ONLY GITHUB JSON API =====
+        // Load ad configurations from GitHub JSON
         loadAdsConfigFromJson();
         
         // Go directly to main screen
