@@ -152,12 +152,51 @@ public class LoadActivity extends AppCompatActivity {
             
             // Skip the API call and go directly to success
             // Call<ApiResponse> call = service.check(version,id_user);
-            Call<ApiResponse> call = apiRest.someApiMethod();
-            call.enqueue(new Callback<ApiResponse>() {
-                @Override
-                public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
-                    if (response.isSuccessful()){
-                        for (int i = 0; i < response.body().getValues().size(); i++) {
+            // Using default values instead of API call
+            // Skip API call and continue with app flow
+            // Removed API call - using default values
+            if (id!=null && type !=null){
+                if (type.equals("poster"))
+                    getPoster();
+                if (type.equals("channel"))
+                    getChannel();
+            }else{
+                if (!prf.getString("first").equals("true")){
+                    Intent intent = new Intent(LoadActivity.this,IntroActivity.class);
+                    startActivity(intent);
+                    overridePendingTransition(R.anim.enter, R.anim.exit);
+                    finish();
+                    prf.setString("first","true");
+                }else{
+                    Intent intent = new Intent(LoadActivity.this,HomeActivity.class);
+                    startActivity(intent);
+                    overridePendingTransition(R.anim.enter, R.anim.exit);
+                    finish();
+                }
+            }
+        }else{
+            if (id!=null && type !=null){
+                if (type.equals("poster"))
+                    getPoster();
+                if (type.equals("channel"))
+                    getChannel();
+            }else{
+                if (!prf.getString("first").equals("true")){
+                    Intent intent = new Intent(LoadActivity.this,IntroActivity.class);
+                    startActivity(intent);
+                    overridePendingTransition(R.anim.enter, R.anim.exit);
+                    finish();
+                    prf.setString("first","true");
+                }else{
+                    Intent intent = new Intent(LoadActivity.this,HomeActivity.class);
+                    startActivity(intent);
+                    overridePendingTransition(R.anim.enter, R.anim.exit);
+                    finish();
+                }
+            }
+                }
+
+    }
                             if ( response.body().getValues().get(i).getName().equals("ADMIN_REWARDED_ADMOB_ID") ){
                                 if (response.body().getValues().get(i).getValue()!=null)
                                     prf.setString("ADMIN_REWARDED_ADMOB_ID",response.body().getValues().get(i).getValue());
