@@ -72,7 +72,8 @@ public class HomeFragment extends Fragment {
 
         initViews();
         initActions();
-        loadData();
+        // Don't load data here - it will be loaded by HomeActivity
+        // loadData();
         return view;
     }
 
@@ -167,7 +168,8 @@ public class HomeFragment extends Fragment {
         swipe_refresh_layout_home_fragment.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                loadData();
+                // Don't load data here - it will be loaded by HomeActivity
+                // loadData();
                 swipe_refresh_layout_home_fragment.setRefreshing(false);
             }
         });

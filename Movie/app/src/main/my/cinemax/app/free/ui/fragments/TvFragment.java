@@ -99,9 +99,10 @@ public class TvFragment extends Fragment {
                 loaded=true;
                 page = 0;
                 loading = true;
-                getCountiesList();
-                getCategoriesList();
-                loadChannels();
+                // Don't load data here - it will be loaded by HomeActivity
+                // getCountiesList();
+                // getCategoriesList();
+                // loadChannels();
             }
         }
     }
@@ -259,7 +260,8 @@ public class TvFragment extends Fragment {
                 channelList.clear();
                 channelList.add(new Channel().setTypeView(2));
                 adapter.notifyDataSetChanged();
-                loadChannels();
+                // Don't load data here - it will be loaded by HomeActivity
+                // loadChannels();
             }
         });
         button_try_again.setOnClickListener(new View.OnClickListener() {
@@ -271,7 +273,8 @@ public class TvFragment extends Fragment {
                 channelList.clear();
                 channelList.add(new Channel().setTypeView(2));
                 adapter.notifyDataSetChanged();
-                loadChannels();
+                // Don't load data here - it will be loaded by HomeActivity
+                // loadChannels();
             }
         });
         recycler_view_channel_fragment.addOnScrollListener(new RecyclerView.OnScrollListener()
@@ -291,7 +294,8 @@ public class TvFragment extends Fragment {
                         if ( (visibleItemCount + pastVisiblesItems) >= totalItemCount)
                         {
                             loading = false;
-                            loadChannels();
+                            // Don't load data here - it will be loaded by HomeActivity
+                            // loadChannels();
                         }
                     }
                 }else{

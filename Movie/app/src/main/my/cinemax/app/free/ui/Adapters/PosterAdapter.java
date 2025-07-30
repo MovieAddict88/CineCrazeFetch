@@ -154,12 +154,16 @@ public class PosterAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                 holder.image_view_item_poster_image.setOnClickListener(v -> {
 
+                    // Add null check to prevent NullPointerException
+                    if (posterList == null || position >= posterList.size() || posterList.get(position) == null) {
+                        return;
+                    }
 
                     ActivityOptionsCompat activityOptionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(activity, holder.image_view_item_poster_image, "imageMain");
                     Intent intent = new Intent(activity, MovieActivity.class);
-                    if (posterList.get(position).getType().equals("movie")) {
+                    if (posterList.get(position).getType() != null && posterList.get(position).getType().equals("movie")) {
                         intent = new Intent(activity, MovieActivity.class);
-                    } else if (posterList.get(position).getType().equals("serie")) {
+                    } else if (posterList.get(position).getType() != null && posterList.get(position).getType().equals("serie")) {
                         intent = new Intent(activity, SerieActivity.class);
                     }
                     intent.putExtra("poster", posterList.get(holder.getAdapterPosition()));
@@ -198,25 +202,33 @@ public class PosterAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                 });
                 holder.image_view_item_poster_delete.setOnClickListener(v->{
-                    final PrefManager prefManager = new PrefManager(activity);
-                    Integer id_user=  Integer.parseInt(prefManager.getString("ID_USER"));
-                    String   key_user=  prefManager.getString("TOKEN_USER");
-                    Retrofit retrofit = apiClient.getClient();
-                    apiRest service = retrofit.create(apiRest.class);
-                    Call<Integer> call = service.AddMyList(posterList.get(position).getId(),id_user,key_user,"poster");
-                    call.enqueue(new Callback<Integer>() {
-                        @Override
-                        public void onResponse(Call<Integer> call, retrofit2.Response<Integer> response) {
-                            if (response.isSuccessful()){
-                                if (response.body() == 202){
-                                    Toasty.warning(activity, "This movie has been removed from your list", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }
-                        @Override
-                        public void onFailure(Call<Integer> call, Throwable t) {
-                        }
-                    });
+                    // Add null check to prevent NullPointerException
+                    if (posterList == null || position >= posterList.size() || posterList.get(position) == null) {
+                        return;
+                    }
+                    
+                    // Don't call old API for my list functionality
+                    // final PrefManager prefManager = new PrefManager(activity);
+                    // Integer id_user=  Integer.parseInt(prefManager.getString("ID_USER"));
+                    // String   key_user=  prefManager.getString("TOKEN_USER");
+                    // Retrofit retrofit = apiClient.getClient();
+                    // apiRest service = retrofit.create(apiRest.class);
+                    // Call<Integer> call = service.AddMyList(posterList.get(position).getId(),id_user,key_user,"poster");
+                    // call.enqueue(new Callback<Integer>() {
+                    //     @Override
+                    //     public void onResponse(Call<Integer> call, retrofit2.Response<Integer> response) {
+                    //         if (response.isSuccessful()){
+                    //             if (response.body() == 202){
+                    //                 Toasty.warning(activity, "This movie has been removed from your list", Toast.LENGTH_SHORT).show();
+                    //             }
+                    //         }
+                    //     }
+                    //     @Override
+                    //     public void onFailure(Call<Integer> call, Throwable t) {
+                    //     }
+                    // });
+                    
+                    // Just remove from local list without API call
                     posterList.remove(position);
                     notifyItemRemoved(position);
                     notifyDataSetChanged();

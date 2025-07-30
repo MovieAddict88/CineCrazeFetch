@@ -132,7 +132,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        getGenreList();
+        // Don't call old API - getGenreList();
         initViews();
         initActions();
         firebaseSubscribe();
@@ -457,23 +457,24 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        Retrofit retrofit = apiClient.getClient();
-                        apiRest service = retrofit.create(apiRest.class);
-                        String unique_id = Settings.Secure.getString(getApplicationContext().getContentResolver(),Settings.Secure.ANDROID_ID);
+                        // Don't call old API for device registration
+                        // Retrofit retrofit = apiClient.getClient();
+                        // apiRest service = retrofit.create(apiRest.class);
+                        // String unique_id = Settings.Secure.getString(getApplicationContext().getContentResolver(),Settings.Secure.ANDROID_ID);
 
-                        Call<ApiResponse> call = service.addDevice(unique_id);
-                        call.enqueue(new Callback<ApiResponse>() {
-                            @Override
-                            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
-                                if (response.isSuccessful())
-                                    Log.v("HomeActivity","Added : "+response.body().getMessage());
-                            }
+                        // Call<ApiResponse> call = service.addDevice(unique_id);
+                        // call.enqueue(new Callback<ApiResponse>() {
+                        //     @Override
+                        //     public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                        //         if (response.isSuccessful())
+                        //             Log.v("HomeActivity","Added : "+response.body().getMessage());
+                        //     }
 
-                            @Override
-                            public void onFailure(Call<ApiResponse> call, Throwable t) {
-                                Log.v("HomeActivity","onFailure : "+ t.getMessage().toString());
-                            }
-                        });
+                        //     @Override
+                        //     public void onFailure(Call<ApiResponse> call, Throwable t) {
+                        //         Log.v("HomeActivity","onFailure : "+ t.getMessage().toString());
+                        //     }
+                        // });
                     }
                 });
 
@@ -626,32 +627,39 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View v) {
                 prf.setString("NOT_RATE_APP", "TRUE");
-                Retrofit retrofit = apiClient.getClient();
-                apiRest service = retrofit.create(apiRest.class);
-                Call<ApiResponse> call = service.addSupport("Application rating feedback",AppCompatRatingBar_dialog_rating_app.getRating()+" star(s) Rating".toString(),edit_text_feed_back.getText().toString());
-                call.enqueue(new Callback<ApiResponse>() {
-                    @Override
-                    public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
-                        if(response.isSuccessful()){
-                            Toasty.success(getApplicationContext(), getResources().getString(R.string.rating_done), Toast.LENGTH_SHORT).show();
-                        }else{
-                            Toasty.error(getApplicationContext(), getString(R.string.error_server), Toast.LENGTH_SHORT).show();
-                        }
-                        rateDialog.dismiss();
+                // Don't call old API for rating feedback
+                // Retrofit retrofit = apiClient.getClient();
+                // apiRest service = retrofit.create(apiRest.class);
+                // Call<ApiResponse> call = service.addSupport("Application rating feedback",AppCompatRatingBar_dialog_rating_app.getRating()+" star(s) Rating".toString(),edit_text_feed_back.getText().toString());
+                // call.enqueue(new Callback<ApiResponse>() {
+                //     @Override
+                //     public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                //         if(response.isSuccessful()){
+                //             Toasty.success(getApplicationContext(), getResources().getString(R.string.rating_done), Toast.LENGTH_SHORT).show();
+                //         }else{
+                //             Toasty.error(getApplicationContext(), getString(R.string.error_server), Toast.LENGTH_SHORT).show();
+                //         }
+                //         rateDialog.dismiss();
 
-                        if (close)
-                            finish();
+                //         if (close)
+                //             finish();
 
-                    }
-                    @Override
-                    public void onFailure(Call<ApiResponse> call, Throwable t) {
-                        Toasty.error(getApplicationContext(), getString(R.string.error_server), Toast.LENGTH_SHORT).show();
-                        rateDialog.dismiss();
+                //     }
+                //     @Override
+                //     public void onFailure(Call<ApiResponse> call, Throwable t) {
+                //         Toasty.error(getApplicationContext(), getString(R.string.error_server), Toast.LENGTH_SHORT).show();
+                //         rateDialog.dismiss();
 
-                        if (close)
-                            finish();
-                    }
-                });
+                //         if (close)
+                //             finish();
+                //     }
+                // });
+                
+                // Just dismiss the dialog without API call
+                Toasty.success(getApplicationContext(), getResources().getString(R.string.rating_done), Toast.LENGTH_SHORT).show();
+                rateDialog.dismiss();
+                if (close)
+                    finish();
             }
         });
         AppCompatRatingBar_dialog_rating_app.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {

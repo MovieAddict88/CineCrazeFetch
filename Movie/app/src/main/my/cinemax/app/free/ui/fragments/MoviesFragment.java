@@ -98,8 +98,9 @@ public class MoviesFragment extends Fragment {
                 loaded=true;
                 page = 0;
                 loading = true;
-                getGenreList();
-                loadMovies();
+                // Don't load data here - it will be loaded by HomeActivity
+                // getGenreList();
+                // loadMovies();
             }
         }
     }
@@ -238,7 +239,8 @@ public class MoviesFragment extends Fragment {
                 movieList.clear();
                 movieList.add(new Poster().setTypeView(2));
                 adapter.notifyDataSetChanged();
-                loadMovies();
+                // Don't load data here - it will be loaded by HomeActivity
+                // loadMovies();
 
             }
         });
@@ -251,7 +253,8 @@ public class MoviesFragment extends Fragment {
                 movieList.clear();
                 movieList.add(new Poster().setTypeView(2));
                 adapter.notifyDataSetChanged();
-                loadMovies();
+                // Don't load data here - it will be loaded by HomeActivity
+                // loadMovies();
 
             }
         });
@@ -272,7 +275,8 @@ public class MoviesFragment extends Fragment {
                         if ( (visibleItemCount + pastVisiblesItems) >= totalItemCount)
                         {
                             loading = false;
-                            loadMovies();
+                            // Don't load data here - it will be loaded by HomeActivity
+                            // loadMovies();
                         }
                     }
                 }else{
