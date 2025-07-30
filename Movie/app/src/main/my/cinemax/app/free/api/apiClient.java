@@ -368,6 +368,98 @@ public class apiClient {
                 return chain.proceed( request );
             }
         };
+        }
+    
+    /**
+     * Get ads configuration from JSON API
+     */
+    public static void getAdsConfigFromJson(Callback<JsonApiResponse> callback) {
+        getJsonApiData(new Callback<JsonApiResponse>() {
+            @Override
+            public void onResponse(Call<JsonApiResponse> call, retrofit2.Response<JsonApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    JsonApiResponse.AdsConfig adsConfig = response.body().getAdsConfig();
+                    if (adsConfig != null) {
+                        callback.onResponse(call, response);
+                    } else {
+                        callback.onFailure(call, new Exception("No ads configuration found"));
+                    }
+                } else {
+                    callback.onFailure(call, new Exception("Failed to load ads configuration"));
+                }
+            }
+            
+            @Override
+            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
+                callback.onFailure(call, t);
+            }
+        });
     }
-
+    
+    /**
+     * Load ads configuration and update PrefManager
+     */
+    public static void loadAdsConfigAndUpdatePrefs(Activity activity, AdsConfigCallback callback) {
+        getAdsConfigFromJson(new Callback<JsonApiResponse>() {
+            @Override
+            public void onResponse(Call<JsonApiResponse> call, retrofit2.Response<JsonApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    JsonApiResponse.AdsConfig adsConfig = response.body().getAdsConfig();
+                    if (adsConfig != null) {
+                        PrefManager prefManager = new PrefManager(activity.getApplicationContext());
+                        
+                        // Update AdMob IDs
+                        if (adsConfig.getAdmob() != null) {
+                            prefManager.setString("ADMIN_BANNER_ADMOB_ID", adsConfig.getAdmob().getBannerId());
+                            prefManager.setString("ADMIN_INTERSTITIAL_ADMOB_ID", adsConfig.getAdmob().getInterstitialId());
+                            prefManager.setString("ADMIN_REWARDED_ADMOB_ID", adsConfig.getAdmob().getRewardedId());
+                            prefManager.setString("ADMIN_NATIVE_ADMOB_ID", adsConfig.getAdmob().getNativeId());
+                        }
+                        
+                        // Update Facebook IDs
+                        if (adsConfig.getFacebook() != null) {
+                            prefManager.setString("ADMIN_BANNER_FACEBOOK_ID", adsConfig.getFacebook().getBannerId());
+                            prefManager.setString("ADMIN_INTERSTITIAL_FACEBOOK_ID", adsConfig.getFacebook().getInterstitialId());
+                            prefManager.setString("ADMIN_REWARDED_FACEBOOK_ID", adsConfig.getFacebook().getRewardedId());
+                            prefManager.setString("ADMIN_NATIVE_FACEBOOK_ID", adsConfig.getFacebook().getNativeId());
+                        }
+                        
+                        // Update settings
+                        if (adsConfig.getSettings() != null) {
+                            JsonApiResponse.AdsSettings settings = adsConfig.getSettings();
+                            
+                            prefManager.setString("ADMIN_BANNER_TYPE", settings.getBannerType());
+                            prefManager.setString("ADMIN_INTERSTITIAL_TYPE", settings.getInterstitialType());
+                            prefManager.setString("ADMIN_NATIVE_TYPE", settings.getNativeType());
+                            prefManager.setInt("ADMIN_INTERSTITIAL_CLICKS", settings.getInterstitialClicks());
+                            prefManager.setString("ADMIN_NATIVE_LINES", String.valueOf(settings.getNativeLines()));
+                            
+                            // Enable/disable ads
+                            prefManager.setString("ADMIN_BANNER_TYPE", settings.isBannerEnabled() ? settings.getBannerType() : "FALSE");
+                            prefManager.setString("ADMIN_INTERSTITIAL_TYPE", settings.isInterstitialEnabled() ? settings.getInterstitialType() : "FALSE");
+                            prefManager.setString("ADMIN_NATIVE_TYPE", settings.isNativeEnabled() ? settings.getNativeType() : "FALSE");
+                        }
+                        
+                        callback.onSuccess("Ads configuration updated successfully");
+                    } else {
+                        callback.onError("No ads configuration found");
+                    }
+                } else {
+                    callback.onError("Failed to load ads configuration");
+                }
+            }
+            
+            @Override
+            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
+                callback.onError("Failed to load ads config: " + t.getMessage());
+            }
+        });
+    }
+    
+    // Callback interface for ads configuration
+    public interface AdsConfigCallback {
+        void onSuccess(String message);
+        void onError(String error);
+    }
+    
 }

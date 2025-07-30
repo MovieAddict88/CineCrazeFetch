@@ -1128,5 +1128,27 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         
         // Load channels
         loadChannelsFromJson();
+        
+        // Load ads configuration
+        loadAdsConfigFromJson();
+    }
+    
+    /**
+     * Load ads configuration from JSON API
+     */
+    private void loadAdsConfigFromJson() {
+        apiClient.loadAdsConfigAndUpdatePrefs(this, new apiClient.AdsConfigCallback() {
+            @Override
+            public void onSuccess(String message) {
+                Log.d("JSON_API", "Ads config loaded: " + message);
+                Toasty.success(HomeActivity.this, "Ads configuration updated", Toast.LENGTH_SHORT).show();
+            }
+            
+            @Override
+            public void onError(String error) {
+                Log.e("JSON_API", "Ads config error: " + error);
+                Toasty.error(HomeActivity.this, "Ads config error: " + error, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
