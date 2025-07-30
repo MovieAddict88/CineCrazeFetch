@@ -234,26 +234,27 @@ public interface apiRest {
     // ===== NEW JSON API ENDPOINTS =====
     // These endpoints will fetch data from your GitHub JSON file
     
-    @GET("free_movie_api.json")
-    Call<JsonApiResponse> getJsonApiData();
+    // Deprecated: Remove old monolithic JSON endpoints
+    // @GET("free_movie_api.json")
+    // Call<JsonApiResponse> getJsonApiData();
     
-    @GET("ads_config.json")
-    Call<JsonApiResponse> getAdsConfig();
+    // @GET("ads_config.json")
+    // Call<JsonApiResponse> getAdsConfig();
     
-    @GET("free_movie_api.json")
-    Call<JsonApiResponse> getHomeDataFromJson();
+    // @GET("free_movie_api.json")
+    // Call<JsonApiResponse> getHomeDataFromJson();
     
-    @GET("free_movie_api.json")
-    Call<JsonApiResponse> getMoviesFromJson();
+    // @GET("free_movie_api.json")
+    // Call<JsonApiResponse> getMoviesFromJson();
     
-    @GET("free_movie_api.json")
-    Call<JsonApiResponse> getChannelsFromJson();
+    // @GET("free_movie_api.json")
+    // Call<JsonApiResponse> getChannelsFromJson();
     
-    @GET("free_movie_api.json")
-    Call<JsonApiResponse> getActorsFromJson();
+    // @GET("free_movie_api.json")
+    // Call<JsonApiResponse> getActorsFromJson();
     
-    @GET("free_movie_api.json")
-    Call<JsonApiResponse> getGenresFromJson();
+    // @GET("free_movie_api.json")
+    // Call<JsonApiResponse> getGenresFromJson();
 
     @GET("slides.json")
     Call<List<Object>> getSlides();

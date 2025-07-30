@@ -13,7 +13,8 @@ public class Global {
 	
 	
     // Change this to your GitHub Raw URL where you upload free_movie_api.json
-    public static final String API_URL = "https://raw.githubusercontent.com/MovieAddict88/movie-api/main/free_movie_api.json";
+    // DEPRECATED: Use modular endpoints (slides.json, movies.json, etc.) instead.
+    public static final String API_URL = ""; // Deprecated
     public static final String ADS_API_URL = "https://raw.githubusercontent.com/MovieAddict88/movie-api/main/ads_config.json";
     
     // Original encoded URL (commented out)
