@@ -778,19 +778,19 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         viewPager.setCurrentItem(3);
     }
     private void getGenreList() {
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
+        // Don't load genres from old API - they will be loaded from JSON data
+        // Retrofit retrofit = apiClient.getClient();
+        // apiRest service = retrofit.create(apiRest.class);
+        // Call<List<Genre>> call = service.getGenreList();
+        // call.enqueue(new Callback<List<Genre>>() {
+        //     @Override
+        //     public void onResponse(Call<List<Genre>> call, Response<List<Genre>> response) {
 
-        Call<List<Genre>> call = service.getGenreList();
-        call.enqueue(new Callback<List<Genre>>() {
-            @Override
-            public void onResponse(Call<List<Genre>> call, Response<List<Genre>> response) {
-
-            }
-            @Override
-            public void onFailure(Call<List<Genre>> call, Throwable t) {
-            }
-        });
+        //     }
+        //     @Override
+        //     public void onFailure(Call<List<Genre>> call, Throwable t) {
+        //     }
+        // });
     }
     public void showDialog(){
         this.dialog = new Dialog(this,

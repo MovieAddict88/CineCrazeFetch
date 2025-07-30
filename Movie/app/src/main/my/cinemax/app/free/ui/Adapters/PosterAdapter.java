@@ -161,9 +161,14 @@ public class PosterAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                     ActivityOptionsCompat activityOptionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(activity, holder.image_view_item_poster_image, "imageMain");
                     Intent intent = new Intent(activity, MovieActivity.class);
-                    if (posterList.get(position).getType() != null && posterList.get(position).getType().equals("movie")) {
+                    
+                    // Get the poster object and its type safely
+                    Poster poster = posterList.get(position);
+                    String posterType = poster != null ? poster.getType() : null;
+                    
+                    if ("movie".equals(posterType)) {
                         intent = new Intent(activity, MovieActivity.class);
-                    } else if (posterList.get(position).getType() != null && posterList.get(position).getType().equals("serie")) {
+                    } else if ("serie".equals(posterType)) {
                         intent = new Intent(activity, SerieActivity.class);
                     }
                     intent.putExtra("poster", posterList.get(holder.getAdapterPosition()));

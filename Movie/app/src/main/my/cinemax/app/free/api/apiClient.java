@@ -168,7 +168,7 @@ public class apiClient {
             Picasso.setSingletonInstance(picasso);
 
             retrofit = new Retrofit.Builder()
-				.baseUrl(Actress.actress)
+				.baseUrl("https://raw.githubusercontent.com/MovieAddict88/movie-api/main/")
                     .client(okHttpClient)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
