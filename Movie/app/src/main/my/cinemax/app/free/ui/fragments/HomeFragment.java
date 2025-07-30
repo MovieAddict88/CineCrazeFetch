@@ -78,42 +78,53 @@ public class HomeFragment extends Fragment {
     }
 
     private void loadData() {
-
         showLoadingView();
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
-        Call<Data> call = service.homeData();
-        call.enqueue(new Callback<Data>() {
+        // Use GitHub JSON API instead of old API
+        apiClient.getJsonApiData(new Callback<JsonApiResponse>() {
             @Override
-            public void onResponse(Call<Data> call, Response<Data> response) {
-                apiClient.FormatData(getActivity(),response);
-                if (response.isSuccessful()){
+            public void onResponse(Call<JsonApiResponse> call, Response<JsonApiResponse> response) {
+                apiClient.FormatData(getActivity(), null); // Initialize format data
+                if (response.isSuccessful() && response.body() != null) {
                     dataList.clear();
                     dataList.add(new Data().setViewType(0));
-                    if (response.body().getSlides().size()>0){
-                        Data sliodeData =  new Data();
-                        sliodeData.setSlides(response.body().getSlides());
-                        dataList.add(sliodeData);
+                    
+                    JsonApiResponse apiResponse = response.body();
+                    
+                    // Load slides from GitHub JSON
+                    if (apiResponse.getHome() != null && apiResponse.getHome().getSlides() != null && 
+                        apiResponse.getHome().getSlides().size() > 0) {
+                        Data slideData = new Data();
+                        slideData.setSlides(apiResponse.getHome().getSlides());
+                        dataList.add(slideData);
                     }
-                    if (response.body().getChannels().size()>0){
-                       Data channelData = new Data();
-                       channelData.setChannels(response.body().getChannels());
+                    
+                    // Load channels from GitHub JSON
+                    if (apiResponse.getHome() != null && apiResponse.getHome().getChannels() != null && 
+                        apiResponse.getHome().getChannels().size() > 0) {
+                        Data channelData = new Data();
+                        channelData.setChannels(apiResponse.getHome().getChannels());
                         dataList.add(channelData);
                     }
-                    if (response.body().getActors().size()>0){
+                    
+                    // Load actors from GitHub JSON
+                    if (apiResponse.getHome() != null && apiResponse.getHome().getActors() != null && 
+                        apiResponse.getHome().getActors().size() > 0) {
                         Data actorsData = new Data();
-                        actorsData.setActors(response.body().getActors());
+                        actorsData.setActors(apiResponse.getHome().getActors());
                         dataList.add(actorsData);
                     }
-                    if (response.body().getGenres().size()>0){
-                        if (my_genre_list!=null){
+                    
+                    // Load genres from GitHub JSON
+                    if (apiResponse.getHome() != null && apiResponse.getHome().getGenres() != null && 
+                        apiResponse.getHome().getGenres().size() > 0) {
+                        if (my_genre_list != null) {
                             Data genreDataMyList = new Data();
                             genreDataMyList.setGenre(my_genre_list);
                             dataList.add(genreDataMyList);
                         }
-                        for (int i = 0; i < response.body().getGenres().size(); i++) {
+                        for (int i = 0; i < apiResponse.getHome().getGenres().size(); i++) {
                             Data genreData = new Data();
-                            genreData.setGenre(response.body().getGenres().get(i));
+                            genreData.setGenre(apiResponse.getHome().getGenres().get(i));
                             dataList.add(genreData);
                             if (native_ads_enabled){
                                 item++;
@@ -138,13 +149,13 @@ public class HomeFragment extends Fragment {
                     }
                     showListView();
                     homeAdapter.notifyDataSetChanged();
-                }else{
+                } else {
                     showErrorView();
                 }
             }
 
             @Override
-            public void onFailure(Call<Data> call, Throwable t) {
+            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
                 showErrorView();
             }
         });

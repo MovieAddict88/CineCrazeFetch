@@ -405,54 +405,108 @@ public class LoadActivity extends AppCompatActivity {
 
 
     public void getPoster(){
-
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
-        Call<Poster> call = service.getPosterById(id);
-        call.enqueue(new retrofit2.Callback<Poster>() {
+        // Use GitHub JSON API to get movie/series by ID
+        apiClient.getJsonApiData(new retrofit2.Callback<my.cinemax.app.free.entity.JsonApiResponse>() {
             @Override
-            public void onResponse(Call<Poster> call, Response<Poster> response) {
-                if(response.isSuccessful()) {
-                    if (response.body().getType().equals("serie")) {
-                        Intent in = new Intent(LoadActivity.this,SerieActivity.class);
-                        in.putExtra("poster", response.body());
-                        in.putExtra("from", "true");
-                        startActivity(in);
-                        finish();
-                    }if (response.body().getType().equals("movie")){
-                        Intent in = new Intent(LoadActivity.this,MovieActivity.class);
-                        in.putExtra("poster", response.body());
-                        in.putExtra("from", "true");
-                        startActivity(in);
-                        finish();
+            public void onResponse(Call<my.cinemax.app.free.entity.JsonApiResponse> call, Response<my.cinemax.app.free.entity.JsonApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    my.cinemax.app.free.entity.JsonApiResponse apiResponse = response.body();
+                    
+                    // Search for the poster/movie by ID
+                    if (apiResponse.getMovies() != null) {
+                        for (Poster poster : apiResponse.getMovies()) {
+                            if (poster.getId() == id) {
+                                if (poster.getType().equals("serie") || poster.getType().equals("series")) {
+                                    Intent in = new Intent(LoadActivity.this, SerieActivity.class);
+                                    in.putExtra("poster", poster);
+                                    in.putExtra("from", "true");
+                                    startActivity(in);
+                                    finish();
+                                    return;
+                                } else if (poster.getType().equals("movie")) {
+                                    Intent in = new Intent(LoadActivity.this, MovieActivity.class);
+                                    in.putExtra("poster", poster);
+                                    in.putExtra("from", "true");
+                                    startActivity(in);
+                                    finish();
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    
+                    // If not found in movies, try featured movies in home section
+                    if (apiResponse.getHome() != null && apiResponse.getHome().getFeaturedMovies() != null) {
+                        for (Poster poster : apiResponse.getHome().getFeaturedMovies()) {
+                            if (poster.getId() == id) {
+                                if (poster.getType().equals("serie") || poster.getType().equals("series")) {
+                                    Intent in = new Intent(LoadActivity.this, SerieActivity.class);
+                                    in.putExtra("poster", poster);
+                                    in.putExtra("from", "true");
+                                    startActivity(in);
+                                    finish();
+                                    return;
+                                } else if (poster.getType().equals("movie")) {
+                                    Intent in = new Intent(LoadActivity.this, MovieActivity.class);
+                                    in.putExtra("poster", poster);
+                                    in.putExtra("from", "true");
+                                    startActivity(in);
+                                    finish();
+                                    return;
+                                }
+                            }
+                        }
                     }
                 }
             }
+            
             @Override
-            public void onFailure(Call<Poster> call, Throwable t) {
-
+            public void onFailure(Call<my.cinemax.app.free.entity.JsonApiResponse> call, Throwable t) {
+                // Handle error
             }
         });
     }
     public void getChannel(){
-
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
-        Call<Channel> call = service.geChannelById(id);
-        call.enqueue(new retrofit2.Callback<Channel>() {
+        // Use GitHub JSON API to get channel by ID
+        apiClient.getJsonApiData(new retrofit2.Callback<my.cinemax.app.free.entity.JsonApiResponse>() {
             @Override
-            public void onResponse(Call<Channel> call, Response<Channel> response) {
-                if(response.isSuccessful()) {
-                    Intent in = new Intent(LoadActivity.this,ChannelActivity.class);
-                    in.putExtra("channel", response.body());
-                    in.putExtra("from", "true");
-                    startActivity(in);
-                    finish();
+            public void onResponse(Call<my.cinemax.app.free.entity.JsonApiResponse> call, Response<my.cinemax.app.free.entity.JsonApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    my.cinemax.app.free.entity.JsonApiResponse apiResponse = response.body();
+                    
+                    // Search for the channel by ID
+                    if (apiResponse.getChannels() != null) {
+                        for (Channel channel : apiResponse.getChannels()) {
+                            if (channel.getId() == id) {
+                                Intent in = new Intent(LoadActivity.this, ChannelActivity.class);
+                                in.putExtra("channel", channel);
+                                in.putExtra("from", "true");
+                                startActivity(in);
+                                finish();
+                                return;
+                            }
+                        }
+                    }
+                    
+                    // If not found in main channels, try channels in home section
+                    if (apiResponse.getHome() != null && apiResponse.getHome().getChannels() != null) {
+                        for (Channel channel : apiResponse.getHome().getChannels()) {
+                            if (channel.getId() == id) {
+                                Intent in = new Intent(LoadActivity.this, ChannelActivity.class);
+                                in.putExtra("channel", channel);
+                                in.putExtra("from", "true");
+                                startActivity(in);
+                                finish();
+                                return;
+                            }
+                        }
+                    }
                 }
             }
+            
             @Override
-            public void onFailure(Call<Channel> call, Throwable t) {
-
+            public void onFailure(Call<my.cinemax.app.free.entity.JsonApiResponse> call, Throwable t) {
+                // Handle error
             }
         });
     }

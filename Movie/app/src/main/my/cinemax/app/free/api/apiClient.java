@@ -37,125 +37,31 @@ import timber.log.Timber;
 
 import static okhttp3.logging.HttpLoggingInterceptor.Level.HEADERS;
 import static okhttp3.logging.HttpLoggingInterceptor.Level.NONE;
-import my.cinemax.app.free.entity.Actress;
 
 /**
  * Created by Tamim on 28/09/2019.
+ * Updated to use GitHub JSON API exclusively
  */
-
 
 public class apiClient {
     private static Retrofit retrofit = null;
+    private static Retrofit githubRetrofit = null;
     private static final String CACHE_CONTROL = "Cache-Control";
+    
+    // GitHub API base URL - all data comes from GitHub now
+    private static final String GITHUB_API_BASE_URL = "https://raw.githubusercontent.com/MovieAddict88/movie-api/main/";
 
-    public static Retrofit initClient(){
-        String text = "";
-        byte[] data = android.util.Base64.decode(apiClient.retrofit_id, android.util.Base64.DEFAULT);
-        try {
-            text = new String(data, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(text)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        return retrofit;
-    }
-
-    public static  void setClient(retrofit2.Response<ApiResponse> response, Activity activity, PrefManager prf){
-        if (response.isSuccessful()) {
-            if (response.body().getCode().equals(202)) {
-                prf.setString("formatted","false");
-                if (response.body().getValues()!=null){
-                    adapterDataWithNewVersion(response,prf);
-                }
-            } else {
-                prf.setString("formatted","true");
-            }
-        }
-    }
-    private static void adapterDataWithNewVersion(retrofit2.Response<ApiResponse> response,PrefManager prf) {
-        if (response.body().getValues().size()>0){
-            for (int i = 0; i < response.body().getValues().size(); i++) {
-                prf.setString(response.body().getValues().get(i).getName(), response.body().getValues().get(i).getValue());
-            }
-        }
-    }
-    public static String LoadClientData(Activity activity){
-        return activity.getApplicationContext().getPackageName();
-    }
-    public static void FormatData(final Activity activity,Object o){
-
-        try {
-
-            final PrefManager prf = new PrefManager(activity.getApplication());
-
-            if (!prf.getString("formatted").equals("true")) {
-
-                if (apiClient.check(activity)) {
-                    Retrofit retrofit=apiClient.initClient();
-                    apiRest service = retrofit.create(apiRest.class);
-                    Call<ApiResponse> callback = service.addInstall(apiClient.LoadClientData(activity));
-                    callback.enqueue(new Callback<ApiResponse>() {
-                        @Override
-                        public void onResponse(Call<ApiResponse> call, retrofit2.Response<ApiResponse> response) {
-                             apiClient.setClient(response,activity,prf);
-
-                        }
-                        @Override
-                        public void onFailure(Call<ApiResponse> call, Throwable t) {
-                        }
-                    });
-                }
-            }
-        }catch (Exception e){
-            if (o!=null){
-                return;
-            }else{
-
-            }
-        }
-    }
-    public static boolean check(Activity activity){
-        final PrefManager prf = new PrefManager(activity.getApplication());
-        Calendar c = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String strDate = sdf.format(c.getTime());
-
-        if (prf.getString("LAST_DATA_LOAD").equals("")) {
-            prf.setString("LAST_DATA_LOAD", strDate);
-        } else {
-            String toyBornTime = prf.getString("LAST_DATA_LOAD");
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-            try {
-                Date oldDate = dateFormat.parse(toyBornTime);
-                System.out.println(oldDate);
-
-                Date currentDate = new Date();
-
-                long diff = currentDate.getTime() - oldDate.getTime();
-                long seconds = diff / 1000;
-
-                if (seconds >15) {
-                    prf.setString("LAST_DATA_LOAD", strDate);
-                    return  true;
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        }
-        return  false;
-    }
+    /**
+     * Get the main GitHub API client for all movie data
+     * This replaces the old API system completely
+     */
     public static Retrofit getClient() {
-        if (retrofit==null) {
+        if (retrofit == null) {
             OkHttpClient okHttpClient = new OkHttpClient().newBuilder()
-                    .addInterceptor( provideHttpLoggingInterceptor() )
-                    .addInterceptor( provideOfflineCacheInterceptor() )
-                    .addNetworkInterceptor( provideCacheInterceptor() )
-                    .cache( provideCache() )
+                    .addInterceptor(provideHttpLoggingInterceptor())
+                    .addInterceptor(provideOfflineCacheInterceptor())
+                    .addNetworkInterceptor(provideCacheInterceptor())
+                    .cache(provideCache())
                     .connectTimeout(60, TimeUnit.SECONDS)
                     .readTimeout(60, TimeUnit.SECONDS)
                     .writeTimeout(60, TimeUnit.SECONDS)
@@ -168,152 +74,147 @@ public class apiClient {
             Picasso.setSingletonInstance(picasso);
 
             retrofit = new Retrofit.Builder()
-				.baseUrl("https://raw.githubusercontent.com/MovieAddict88/movie-api/main/")
+                    .baseUrl(GITHUB_API_BASE_URL)
                     .client(okHttpClient)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
         }
         return retrofit;
     }
-    private static Cache provideCache ()
-    {
+
+    /**
+     * Get GitHub JSON API client (same as getClient() for consistency)
+     */
+    public static Retrofit getJsonApiClient() {
+        return getClient();
+    }
+
+    private static Cache provideCache() {
         Cache cache = null;
-        try
-        {
-            cache = new Cache( new File(MyApplication.getInstance().getCacheDir(), "wallpaper-cache" ),
-                    10 * 1024 * 1024 ); // 10 MB
-        }
-        catch (Exception e)
-        {
-            Timber.e( e, "Could not create Cache!" );
+        try {
+            cache = new Cache(new File(MyApplication.getInstance().getCacheDir(), "movie-api-cache"),
+                    20 * 1024 * 1024); // 20 MB cache for better performance
+        } catch (Exception e) {
+            Timber.e(e, "Could not create Cache!");
         }
         return cache;
     }
-    private static HttpLoggingInterceptor provideHttpLoggingInterceptor ()
-    {
-        HttpLoggingInterceptor httpLoggingInterceptor =
-                new HttpLoggingInterceptor( new HttpLoggingInterceptor.Logger()
-                {
-                    @Override
-                    public void log (String message)
-                    {
-                        Timber.d( message );
-                        Log.v("MYAPI",message);
 
+    private static HttpLoggingInterceptor provideHttpLoggingInterceptor() {
+        HttpLoggingInterceptor httpLoggingInterceptor =
+                new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
+                    @Override
+                    public void log(String message) {
+                        Timber.d(message);
+                        Log.v("GITHUB_API", message);
                     }
-                } );
-        httpLoggingInterceptor.setLevel( BuildConfig.DEBUG ? HEADERS : NONE );
+                });
+        httpLoggingInterceptor.setLevel(BuildConfig.DEBUG ? HEADERS : NONE);
         return httpLoggingInterceptor;
     }
-    public static Interceptor provideCacheInterceptor ()
-    {
-        return new Interceptor()
-        {
+
+    public static Interceptor provideCacheInterceptor() {
+        return new Interceptor() {
             @Override
-            public Response intercept (Chain chain) throws IOException
-            {
-                Response response = chain.proceed( chain.request() );
-                // re-write response header to force use of cache
+            public Response intercept(Chain chain) throws IOException {
+                Response response = chain.proceed(chain.request());
+                // Cache for 5 minutes for better performance
                 CacheControl cacheControl = new CacheControl.Builder()
-                        .maxAge( 2, TimeUnit.SECONDS )
+                        .maxAge(5, TimeUnit.MINUTES)
                         .build();
                 return response.newBuilder()
-                        .header( CACHE_CONTROL, cacheControl.toString() )
+                        .header(CACHE_CONTROL, cacheControl.toString())
                         .build();
             }
         };
     }
-    public static String retrofit_id = "aHR0cDovL2xpY2Vuc2UudmlybWFuYS5jb20vYXBpLw==";
-    
-    // ===== JSON API CLIENT METHODS =====
-    // These methods will fetch data from your GitHub JSON file
-    
-    /**
-     * Get the JSON API client for fetching data from GitHub Raw
-     */
-    public static Retrofit getJsonApiClient() {
-        return new Retrofit.Builder()
-                .baseUrl("https://raw.githubusercontent.com/MovieAddict88/movie-api/main/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+
+    public static Interceptor provideOfflineCacheInterceptor() {
+        return new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                Request request = chain.request();
+                if (!MyApplication.hasNetwork()) {
+                    CacheControl cacheControl = new CacheControl.Builder()
+                            .maxStale(7, TimeUnit.DAYS) // Cache for 7 days when offline
+                            .build();
+                    request = request.newBuilder()
+                            .cacheControl(cacheControl)
+                            .build();
+                }
+                return chain.proceed(request);
+            }
+        };
     }
+
+    // ===== GITHUB JSON API METHODS =====
     
     /**
-     * Fetch all data from the JSON API
+     * Fetch all data from the GitHub JSON API
      */
     public static void getJsonApiData(Callback<JsonApiResponse> callback) {
-        Retrofit retrofit = getJsonApiClient();
+        Retrofit retrofit = getClient();
         apiRest service = retrofit.create(apiRest.class);
         Call<JsonApiResponse> call = service.getJsonApiData();
         call.enqueue(callback);
     }
     
     /**
-     * Fetch home data from the JSON API
+     * Fetch home data from the GitHub JSON API
      */
     public static void getHomeDataFromJson(Callback<JsonApiResponse> callback) {
-        Retrofit retrofit = getJsonApiClient();
-        apiRest service = retrofit.create(apiRest.class);
-        Call<JsonApiResponse> call = service.getHomeDataFromJson();
-        call.enqueue(callback);
+        getJsonApiData(callback);
     }
     
     /**
-     * Fetch movies from the JSON API
+     * Fetch movies from the GitHub JSON API
      */
     public static void getMoviesFromJson(Callback<JsonApiResponse> callback) {
-        Retrofit retrofit = getJsonApiClient();
-        apiRest service = retrofit.create(apiRest.class);
-        Call<JsonApiResponse> call = service.getMoviesFromJson();
-        call.enqueue(callback);
+        getJsonApiData(callback);
     }
     
     /**
-     * Fetch channels from the JSON API
+     * Fetch channels from the GitHub JSON API
      */
     public static void getChannelsFromJson(Callback<JsonApiResponse> callback) {
-        Retrofit retrofit = getJsonApiClient();
-        apiRest service = retrofit.create(apiRest.class);
-        Call<JsonApiResponse> call = service.getChannelsFromJson();
-        call.enqueue(callback);
+        getJsonApiData(callback);
     }
     
     /**
-     * Fetch actors from the JSON API
+     * Fetch actors from the GitHub JSON API
      */
     public static void getActorsFromJson(Callback<JsonApiResponse> callback) {
-        Retrofit retrofit = getJsonApiClient();
-        apiRest service = retrofit.create(apiRest.class);
-        Call<JsonApiResponse> call = service.getActorsFromJson();
-        call.enqueue(callback);
+        getJsonApiData(callback);
     }
     
     /**
-     * Fetch genres from the JSON API
+     * Fetch genres from the GitHub JSON API
      */
     public static void getGenresFromJson(Callback<JsonApiResponse> callback) {
-        Retrofit retrofit = getJsonApiClient();
-        apiRest service = retrofit.create(apiRest.class);
-        Call<JsonApiResponse> call = service.getGenresFromJson();
-        call.enqueue(callback);
+        getJsonApiData(callback);
     }
     
     /**
-     * Get a specific movie by ID from the JSON API
+     * Get a specific movie by ID from the GitHub JSON API
      */
     public static void getMovieByIdFromJson(int movieId, Callback<JsonApiResponse> callback) {
         getMoviesFromJson(new Callback<JsonApiResponse>() {
             @Override
             public void onResponse(Call<JsonApiResponse> call, retrofit2.Response<JsonApiResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    // Find the movie by ID
-                    for (Poster movie : response.body().getMovies()) {
-                        if (movie.getId() == movieId) {
-                            // Create a new response with just this movie
-                            JsonApiResponse singleMovieResponse = new JsonApiResponse();
-                            // You can customize this response as needed
-                            callback.onResponse(call, retrofit2.Response.success(singleMovieResponse));
-                            return;
+                    JsonApiResponse apiResponse = response.body();
+                    if (apiResponse.getMovies() != null) {
+                        // Find the movie by ID
+                        for (Poster movie : apiResponse.getMovies()) {
+                            if (movie.getId() == movieId) {
+                                // Create a new response with just this movie
+                                JsonApiResponse singleMovieResponse = new JsonApiResponse();
+                                java.util.List<Poster> singleMovieList = new java.util.ArrayList<>();
+                                singleMovieList.add(movie);
+                                singleMovieResponse.setMovies(singleMovieList);
+                                callback.onResponse(call, retrofit2.Response.success(singleMovieResponse));
+                                return;
+                            }
                         }
                     }
                     callback.onFailure(call, new Exception("Movie not found"));
@@ -330,55 +231,18 @@ public class apiClient {
     }
     
     /**
-     * Get video sources for a movie from the JSON API
+     * Get video sources for a movie from the GitHub JSON API
      */
     public static void getMovieVideoSources(int movieId, Callback<JsonApiResponse> callback) {
-        getMovieByIdFromJson(movieId, new Callback<JsonApiResponse>() {
-            @Override
-            public void onResponse(Call<JsonApiResponse> call, retrofit2.Response<JsonApiResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    // Return video sources from the JSON
-                    callback.onResponse(call, response);
-                } else {
-                    callback.onFailure(call, new Exception("Failed to load video sources"));
-                }
-            }
-            
-            @Override
-            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
-                callback.onFailure(call, t);
-            }
-        });
+        getMovieByIdFromJson(movieId, callback);
     }
-    public static Interceptor provideOfflineCacheInterceptor ()
-    {
-        return new Interceptor()
-        {
-            @Override
-            public Response intercept (Chain chain) throws IOException
-            {
-                Request request = chain.request();
-                if ( !MyApplication.hasNetwork() )
-                {
-                    CacheControl cacheControl = new CacheControl.Builder()
-                            .maxStale( 30, TimeUnit.DAYS )
-                            .build();
-                    request = request.newBuilder()
-                            .cacheControl( cacheControl )
-                            .build();
-                }
-                return chain.proceed( request );
-            }
-        };
-        }
     
     /**
-     * Get ads configuration from separate JSON API
+     * Get ads configuration from GitHub JSON API
      */
     public static void getAdsConfigFromJson(Callback<JsonApiResponse> callback) {
-        // Create a separate Retrofit client for ads config
         Retrofit adsRetrofit = new Retrofit.Builder()
-                .baseUrl("https://raw.githubusercontent.com/MovieAddict88/movie-api/main/")
+                .baseUrl(GITHUB_API_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         
@@ -389,12 +253,7 @@ public class apiClient {
             @Override
             public void onResponse(Call<JsonApiResponse> call, retrofit2.Response<JsonApiResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    JsonApiResponse.AdsConfig adsConfig = response.body().getAdsConfig();
-                    if (adsConfig != null) {
-                        callback.onResponse(call, response);
-                    } else {
-                        callback.onFailure(call, new Exception("No ads configuration found"));
-                    }
+                    callback.onResponse(call, response);
                 } else {
                     callback.onFailure(call, new Exception("Failed to load ads configuration"));
                 }
@@ -408,7 +267,7 @@ public class apiClient {
     }
     
     /**
-     * Get JSON API data with custom callback
+     * Get GitHub JSON API data with custom callback
      */
     public static void getJsonApiData(JsonApiCallback callback) {
         getJsonApiData(new Callback<JsonApiResponse>() {
@@ -417,7 +276,7 @@ public class apiClient {
                 if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body());
                 } else {
-                    callback.onError("Failed to load data from JSON API");
+                    callback.onError("Failed to load data from GitHub JSON API");
                 }
             }
             
@@ -472,20 +331,121 @@ public class apiClient {
                             prefManager.setString("ADMIN_NATIVE_TYPE", settings.isNativeEnabled() ? settings.getNativeType() : "FALSE");
                         }
                         
-                        callback.onSuccess("Ads configuration updated successfully");
+                        callback.onSuccess("Ads configuration updated successfully from GitHub");
                     } else {
-                        callback.onError("No ads configuration found");
+                        callback.onError("No ads configuration found in GitHub JSON");
                     }
                 } else {
-                    callback.onError("Failed to load ads configuration");
+                    callback.onError("Failed to load ads configuration from GitHub");
                 }
             }
             
             @Override
             public void onFailure(Call<JsonApiResponse> call, Throwable t) {
-                callback.onError("Failed to load ads config: " + t.getMessage());
+                callback.onError("Failed to load ads config from GitHub: " + t.getMessage());
             }
         });
+    }
+
+    // ===== DEPRECATED OLD API METHODS (Kept for backward compatibility but redirect to GitHub) =====
+    
+    /**
+     * @deprecated Use getJsonApiData() instead. This now redirects to GitHub API.
+     */
+    @Deprecated
+    public static Retrofit initClient() {
+        return getClient();
+    }
+    
+    /**
+     * @deprecated Old API system replaced with GitHub JSON API
+     */
+    @Deprecated
+    public static void setClient(retrofit2.Response<ApiResponse> response, Activity activity, PrefManager prf) {
+        // Load GitHub JSON data instead
+        loadAdsConfigAndUpdatePrefs(activity, new AdsConfigCallback() {
+            @Override
+            public void onSuccess(String message) {
+                prf.setString("formatted", "true");
+                Log.d("API_CLIENT", "GitHub API loaded successfully: " + message);
+            }
+            
+            @Override
+            public void onError(String error) {
+                prf.setString("formatted", "false");
+                Log.e("API_CLIENT", "GitHub API load failed: " + error);
+            }
+        });
+    }
+    
+    /**
+     * @deprecated Old API system replaced with GitHub JSON API
+     */
+    @Deprecated
+    public static String LoadClientData(Activity activity) {
+        return activity.getApplicationContext().getPackageName();
+    }
+    
+    /**
+     * @deprecated Old API system replaced with GitHub JSON API. This now loads GitHub data.
+     */
+    @Deprecated
+    public static void FormatData(final Activity activity, Object o) {
+        try {
+            final PrefManager prf = new PrefManager(activity.getApplication());
+            
+            if (!prf.getString("formatted").equals("true")) {
+                if (check(activity)) {
+                    // Load GitHub JSON data instead of old API
+                    loadAdsConfigAndUpdatePrefs(activity, new AdsConfigCallback() {
+                        @Override
+                        public void onSuccess(String message) {
+                            prf.setString("formatted", "true");
+                            Log.d("API_CLIENT", "GitHub JSON API data loaded successfully");
+                        }
+                        
+                        @Override
+                        public void onError(String error) {
+                            prf.setString("formatted", "false");
+                            Log.e("API_CLIENT", "Failed to load GitHub JSON API data: " + error);
+                        }
+                    });
+                }
+            }
+        } catch (Exception e) {
+            Log.e("API_CLIENT", "Error in FormatData: " + e.getMessage());
+        }
+    }
+    
+    public static boolean check(Activity activity) {
+        final PrefManager prf = new PrefManager(activity.getApplication());
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String strDate = sdf.format(c.getTime());
+
+        if (prf.getString("LAST_DATA_LOAD").equals("")) {
+            prf.setString("LAST_DATA_LOAD", strDate);
+            return true;
+        } else {
+            String toyBornTime = prf.getString("LAST_DATA_LOAD");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+            try {
+                Date oldDate = dateFormat.parse(toyBornTime);
+                Date currentDate = new Date();
+                long diff = currentDate.getTime() - oldDate.getTime();
+                long seconds = diff / 1000;
+
+                if (seconds > 300) { // Check every 5 minutes instead of 15 seconds
+                    prf.setString("LAST_DATA_LOAD", strDate);
+                    return true;
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+                return true;
+            }
+        }
+        return false;
     }
     
     // Callback interface for ads configuration
@@ -499,5 +459,4 @@ public class apiClient {
         void onSuccess(JsonApiResponse jsonResponse);
         void onError(String error);
     }
-    
 }

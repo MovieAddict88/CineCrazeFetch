@@ -1,11 +1,13 @@
 {
   "api_info": {
     "version": "1.0",
-    "description": "Free Movie & TV Streaming JSON API for Mobile Apps",
+    "description": "Free Movie & TV Streaming JSON API for Mobile Apps - GitHub API Integration",
     "last_updated": "2024-01-15",
     "total_movies": 2,
     "total_channels": 2,
-    "total_actors": 2
+    "total_actors": 2,
+    "base_url": "https://raw.githubusercontent.com/MovieAddict88/movie-api/main/",
+    "api_type": "github_json"
   },
   "home": {
     "slides": [
@@ -997,5 +999,30 @@
       }
     }
   },
-  "ads_config": null
+  "ads_config": {
+    "admob": {
+      "banner_id": "ca-app-pub-3940256099942544/6300978111",
+      "interstitial_id": "ca-app-pub-3940256099942544/1033173712",
+      "rewarded_id": "ca-app-pub-3940256099942544/5224354917",
+      "native_id": "ca-app-pub-3940256099942544/2247696110",
+      "app_id": "ca-app-pub-3940256099942544~3347511713"
+    },
+    "facebook": {
+      "banner_id": "YOUR_PLACEMENT_ID",
+      "interstitial_id": "YOUR_PLACEMENT_ID",
+      "rewarded_id": "YOUR_PLACEMENT_ID",
+      "native_id": "YOUR_PLACEMENT_ID"
+    },
+    "settings": {
+      "banner_enabled": true,
+      "interstitial_enabled": true,
+      "rewarded_enabled": true,
+      "native_enabled": true,
+      "interstitial_clicks": 3,
+      "native_lines": 4,
+      "banner_type": "ADMOB",
+      "interstitial_type": "ADMOB",
+      "native_type": "ADMOB"
+    }
+  }
 }

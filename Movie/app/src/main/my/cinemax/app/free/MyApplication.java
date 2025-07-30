@@ -23,6 +23,9 @@ import com.google.android.gms.ads.MobileAds;
 import com.orhanobut.hawk.Hawk;
 import com.unity3d.ads.UnityAds;
 
+import my.cinemax.app.free.BuildConfig;
+import my.cinemax.app.free.R;
+
 /**
  * Created by Tamim on 28/09/2019.
 
