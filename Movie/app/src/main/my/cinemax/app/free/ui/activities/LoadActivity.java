@@ -154,219 +154,48 @@ public class LoadActivity extends AppCompatActivity {
             apiClient.loadAdsConfigAndUpdatePrefs(this, new apiClient.AdsConfigCallback() {
                 @Override
                 public void onSuccess(String message) {
-                    // Ads configuration has been loaded and applied automatically
+                    // Ads configuration has been loaded and applied automatically from ads_config.json
                     // Configuration is now stored in PrefManager
-                            if ( response.body().getValues().get(i).getName().equals("ADMIN_REWARDED_ADMOB_ID") ){
-                                if (response.body().getValues().get(i).getValue()!=null)
-                                    prf.setString("ADMIN_REWARDED_ADMOB_ID",response.body().getValues().get(i).getValue());
-                            }
-                            if ( response.body().getValues().get(i).getName().equals("ADMIN_INTERSTITIAL_ADMOB_ID") ){
-                                if (response.body().getValues().get(i).getValue()!=null)
-                                    prf.setString("ADMIN_INTERSTITIAL_ADMOB_ID",response.body().getValues().get(i).getValue());
-                            }
-                            if ( response.body().getValues().get(i).getName().equals("ADMIN_INTERSTITIAL_FACEBOOK_ID") ){
-                                if (response.body().getValues().get(i).getValue()!=null)
-                                    prf.setString("ADMIN_INTERSTITIAL_FACEBOOK_ID",response.body().getValues().get(i).getValue());
-                            }
-                            if ( response.body().getValues().get(i).getName().equals("ADMIN_INTERSTITIAL_TYPE") ){
-                                if (response.body().getValues().get(i).getValue()!=null)
-                                    prf.setString("ADMIN_INTERSTITIAL_TYPE",response.body().getValues().get(i).getValue());
-                            }
-                            if ( response.body().getValues().get(i).getName().equals("ADMIN_INTERSTITIAL_CLICKS") ){
-                                if (response.body().getValues().get(i).getValue()!=null)
-                                    prf.setInt("ADMIN_INTERSTITIAL_CLICKS",Integer.parseInt(response.body().getValues().get(i).getValue()));
-                            }
-                            if ( response.body().getValues().get(i).getName().equals("ADMIN_BANNER_ADMOB_ID") ){
-                                if (response.body().getValues().get(i).getValue()!=null)
-                                    prf.setString("ADMIN_BANNER_ADMOB_ID",response.body().getValues().get(i).getValue());
-                            }
-                            if ( response.body().getValues().get(i).getName().equals("ADMIN_BANNER_FACEBOOK_ID") ){
-                                if (response.body().getValues().get(i).getValue()!=null)
-                                    prf.setString("ADMIN_BANNER_FACEBOOK_ID",response.body().getValues().get(i).getValue());
-                            }
-                            if ( response.body().getValues().get(i).getName().equals("ADMIN_BANNER_TYPE") ){
-                                if (response.body().getValues().get(i).getValue()!=null)
-                                    prf.setString("ADMIN_BANNER_TYPE",response.body().getValues().get(i).getValue());
-                            }
-                            if ( response.body().getValues().get(i).getName().equals("ADMIN_NATIVE_FACEBOOK_ID") ){
-                                if (response.body().getValues().get(i).getValue()!=null)
-                                    prf.setString("ADMIN_NATIVE_FACEBOOK_ID",response.body().getValues().get(i).getValue());
-                            }
-                            if ( response.body().getValues().get(i).getName().equals("ADMIN_NATIVE_ADMOB_ID") ){
-                                if (response.body().getValues().get(i).getValue()!=null)
-                                    prf.setString("ADMIN_NATIVE_ADMOB_ID",response.body().getValues().get(i).getValue());
-                            }
-                            if ( response.body().getValues().get(i).getName().equals("ADMIN_NATIVE_LINES") ){
-                                if (response.body().getValues().get(i).getValue()!=null)
-                                    prf.setString("ADMIN_NATIVE_LINES",response.body().getValues().get(i).getValue());
-                            }
-                            if ( response.body().getValues().get(i).getName().equals("ADMIN_NATIVE_TYPE") ){
-                                if (response.body().getValues().get(i).getValue()!=null)
-                                    prf.setString("ADMIN_NATIVE_TYPE",response.body().getValues().get(i).getValue());
-                            }
-                            if ( response.body().getValues().get(i).getName().equals("APP_CURRENCY") ){
-                                if (response.body().getValues().get(i).getValue()!=null)
-                                    prf.setString("APP_CURRENCY",response.body().getValues().get(i).getValue());
-                            }
-                            if ( response.body().getValues().get(i).getName().equals("APP_CASH_ACCOUNT") ){
-                                if (response.body().getValues().get(i).getValue()!=null)
-                                    prf.setString("APP_CASH_ACCOUNT",response.body().getValues().get(i).getValue());
-                            }
-                            if ( response.body().getValues().get(i).getName().equals("APP_STRIPE_PUBLIC_KEY") ){
-                                if (response.body().getValues().get(i).getValue()!=null)
-                                    prf.setString("APP_STRIPE_PUBLIC_KEY",response.body().getValues().get(i).getValue());
-                            }
-
-                            if ( response.body().getValues().get(i).getName().equals("APP_CASH_ENABLED") ){
-                                if (response.body().getValues().get(i).getValue()!=null)
-                                    prf.setString("APP_CASH_ENABLED",response.body().getValues().get(i).getValue());
-                            }
-
-                            if ( response.body().getValues().get(i).getName().equals("APP_PAYPAL_ENABLED") ){
-                                if (response.body().getValues().get(i).getValue()!=null)
-                                    prf.setString("APP_PAYPAL_ENABLED",response.body().getValues().get(i).getValue());
-                            }
-
-
-                            if ( response.body().getValues().get(i).getName().equals("APP_STRIPE_ENABLED") ){
-                                if (response.body().getValues().get(i).getValue()!=null)
-                                    prf.setString("APP_STRIPE_ENABLED",response.body().getValues().get(i).getValue());
-                            }
-
-                            if ( response.body().getValues().get(i).getName().equals("APP_LOGIN_REQUIRED") ){
-                                if (response.body().getValues().get(i).getValue()!=null)
-                                    prf.setString("APP_LOGIN_REQUIRED",response.body().getValues().get(i).getValue());
-                            }
-                            if ( response.body().getValues().get(i).getName().equals("subscription") ){
-                                if (response.body().getValues().get(i).getValue()!=null)
-                                    prf.setString("NEW_SUBSCRIBE_ENABLED",response.body().getValues().get(i).getValue());
-                            }
-                        }
-                        if (response.body().getValues().get(1).getValue().equals("403")){
-                            prf.remove("ID_USER");
-                            prf.remove("SALT_USER");
-                            prf.remove("TOKEN_USER");
-                            prf.remove("NAME_USER");
-                            prf.remove("TYPE_USER");
-                            prf.remove("USERN_USER");
-                            prf.remove("IMAGE_USER");
-                            prf.remove("LOGGED");
-                            prf.remove("NEW_SUBSCRIBE_ENABLED");
-                            Toasty.error(getApplicationContext(),getResources().getString(R.string.account_disabled), Toast.LENGTH_SHORT, true).show();
-                        }
-                        if (id!=null && type !=null){
-                            if (type.equals("poster"))
-                                getPoster();
-                            if (type.equals("channel"))
-                                getChannel();
-                        }else{
-                            if (response.body().getCode().equals(200)) {
-                                if (!prf.getString("first").equals("true")){
-                                    Intent intent = new Intent(LoadActivity.this,IntroActivity.class);
-                                    startActivity(intent);
-                                    overridePendingTransition(R.anim.enter, R.anim.exit);
-                                    finish();
-                                    prf.setString("first","true");
-                                }else{
-                                    Intent intent = new Intent(LoadActivity.this,HomeActivity.class);
-                                    startActivity(intent);
-                                    overridePendingTransition(R.anim.enter, R.anim.exit);
-                                    finish();
-                                }
-                            }else if (response.body().getCode().equals(202)) {
-                                String title_update=response.body().getValues().get(0).getValue();
-                                String featurs_update=response.body().getMessage();
-                                View v = (View)  getLayoutInflater().inflate(R.layout.update_message,null);
-                                TextView update_text_view_title=(TextView) v.findViewById(R.id.update_text_view_title);
-                                TextView update_text_view_updates=(TextView) v.findViewById(R.id.update_text_view_updates);
-                                update_text_view_title.setText(title_update);
-                                update_text_view_updates.setText(featurs_update);
-                                AlertDialog.Builder builder;
-                                builder = new AlertDialog.Builder(LoadActivity.this);
-                                builder.setTitle("New Update")
-                                        //.setMessage(response.body().getValue())
-                                        .setView(v)
-                                        .setPositiveButton(getResources().getString(R.string.update_now), new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                final String appPackageName=getApplication().getPackageName();
-											    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(MyApi.API_URL)));
-                                                finish();
-                                            }
-                                        })
-                                        .setNegativeButton(getResources().getString(R.string.skip), new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                if (!prf.getString("first").equals("true")){
-                                                    Intent intent = new Intent(LoadActivity.this,IntroActivity.class);
-                                                    startActivity(intent);
-                                                    overridePendingTransition(R.anim.enter, R.anim.exit);
-                                                    finish();
-                                                    prf.setString("first","true");
-                                                }else{
-                                                    Intent intent = new Intent(LoadActivity.this,HomeActivity.class);
-                                                    startActivity(intent);
-                                                    overridePendingTransition(R.anim.enter, R.anim.exit);
-                                                    finish();
-                                                }
-                                            }
-                                        })
-                                        .setCancelable(false)
-                                        .setIcon(R.drawable.ic_update)
-                                        .show();
-                            } else {
-                                if (!prf.getString("first").equals("true")){
-                                    Intent intent = new Intent(LoadActivity.this,IntroActivity.class);
-                                    startActivity(intent);
-                                    overridePendingTransition(R.anim.enter, R.anim.exit);
-                                    finish();
-                                    prf.setString("first","true");
-                                }else{
-                                    Intent intent = new Intent(LoadActivity.this,HomeActivity.class);
-                                    startActivity(intent);
-                                    overridePendingTransition(R.anim.enter, R.anim.exit);
-                                    finish();
-                                }
-                            }
-                        }
-                    }else {
-
-                        if (id!=null && type !=null){
-                            if (type.equals("poster"))
-                                getPoster();
-                            if (type.equals("channel"))
-                                getChannel();
-                        }else{
-                            if (!prf.getString("first").equals("true")){
-                                Intent intent = new Intent(LoadActivity.this,IntroActivity.class);
-                                startActivity(intent);
-                                overridePendingTransition(R.anim.enter, R.anim.exit);
-                                finish();
-                                prf.setString("first","true");
-                            }else{
-                                Intent intent = new Intent(LoadActivity.this,HomeActivity.class);
-                                startActivity(intent);
-                                overridePendingTransition(R.anim.enter, R.anim.exit);
-                                finish();
-                            }
-                        }
-                    }
-                }
-                @Override
-                public void onFailure(Call<ApiResponse> call, Throwable t) {
-
-                    if (id!=null && type !=null){
+                    
+                    // Navigate to appropriate activity
+                    if (id != null && type != null) {
                         if (type.equals("poster"))
                             getPoster();
-                        if (type.equals("channel"))
+                        else if (type.equals("channel"))
                             getChannel();
-                    }else{
-                        if (!prf.getString("first").equals("true")){
-                            Intent intent = new Intent(LoadActivity.this,IntroActivity.class);
+                    } else {
+                        if (!prf.getString("first").equals("true")) {
+                            Intent intent = new Intent(LoadActivity.this, IntroActivity.class);
                             startActivity(intent);
                             overridePendingTransition(R.anim.enter, R.anim.exit);
                             finish();
-                            prf.setString("first","true");
-                        }else{
-                            Intent intent = new Intent(LoadActivity.this,HomeActivity.class);
+                            prf.setString("first", "true");
+                        } else {
+                            Intent intent = new Intent(LoadActivity.this, HomeActivity.class);
+                            startActivity(intent);
+                            overridePendingTransition(R.anim.enter, R.anim.exit);
+                            finish();
+                        }
+                    }
+                }
+                
+                @Override
+                public void onError(String error) {
+                    // Even if ads config fails, continue with app flow
+                    if (id != null && type != null) {
+                        if (type.equals("poster"))
+                            getPoster();
+                        else if (type.equals("channel"))
+                            getChannel();
+                    } else {
+                        if (!prf.getString("first").equals("true")) {
+                            Intent intent = new Intent(LoadActivity.this, IntroActivity.class);
+                            startActivity(intent);
+                            overridePendingTransition(R.anim.enter, R.anim.exit);
+                            finish();
+                            prf.setString("first", "true");
+                        } else {
+                            Intent intent = new Intent(LoadActivity.this, HomeActivity.class);
                             startActivity(intent);
                             overridePendingTransition(R.anim.enter, R.anim.exit);
                             finish();
