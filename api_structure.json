@@ -1,0 +1,1078 @@
+{
+  "api_info": {
+    "base_url": "https://your-api-domain.com/api/v1",
+    "version": "1.0",
+    "description": "Movie and TV Streaming API converted from Android app structure"
+  },
+  "endpoints": {
+    "authentication": {
+      "login": {
+        "method": "POST",
+        "url": "/auth/login",
+        "body": {
+          "username": "string",
+          "password": "string"
+        },
+        "response": {
+          "success": "boolean",
+          "message": "string",
+          "user": {
+            "id": "integer",
+            "name": "string",
+            "username": "string",
+            "email": "string",
+            "type": "string",
+            "image": "string",
+            "key": "string"
+          }
+        }
+      },
+      "register": {
+        "method": "POST",
+        "url": "/auth/register",
+        "body": {
+          "name": "string",
+          "username": "string",
+          "password": "string",
+          "email": "string",
+          "type": "string",
+          "image": "string"
+        }
+      },
+      "forgot_password": {
+        "method": "POST",
+        "url": "/auth/forgot-password",
+        "body": {
+          "email": "string"
+        }
+      }
+    },
+    "home": {
+      "get_home_data": {
+        "method": "GET",
+        "url": "/home",
+        "response": {
+          "slides": [
+            {
+              "id": "integer",
+              "title": "string",
+              "type": "string",
+              "image": "string",
+              "url": "string",
+              "poster": "object (Poster)",
+              "category": "object (Category)",
+              "genre": "object (Genre)",
+              "channel": "object (Channel)"
+            }
+          ],
+          "featured_movies": [
+            {
+              "id": "integer",
+              "title": "string",
+              "type": "string",
+              "label": "string",
+              "sublabel": "string",
+              "imdb": "string",
+              "downloadas": "string",
+              "comment": "boolean",
+              "playas": "string",
+              "description": "string",
+              "classification": "string",
+              "year": "string",
+              "duration": "string",
+              "rating": "float",
+              "image": "string",
+              "cover": "string",
+              "genres": [
+                {
+                  "id": "integer",
+                  "title": "string"
+                }
+              ],
+              "sources": [
+                {
+                  "id": "integer",
+                  "type": "string",
+                  "title": "string",
+                  "quality": "string",
+                  "size": "string",
+                  "kind": "string",
+                  "premium": "string",
+                  "external": "boolean",
+                  "url": "string"
+                }
+              ],
+              "trailer": {
+                "id": "integer",
+                "type": "string",
+                "title": "string",
+                "url": "string"
+              }
+            }
+          ],
+          "channels": [
+            {
+              "id": "integer",
+              "title": "string",
+              "label": "string",
+              "sublabel": "string",
+              "description": "string",
+              "website": "string",
+              "classification": "string",
+              "views": "integer",
+              "shares": "integer",
+              "rating": "float",
+              "comment": "boolean",
+              "image": "string",
+              "playas": "string",
+              "sources": [
+                {
+                  "id": "integer",
+                  "type": "string",
+                  "title": "string",
+                  "quality": "string",
+                  "size": "string",
+                  "kind": "string",
+                  "premium": "string",
+                  "external": "boolean",
+                  "url": "string"
+                }
+              ],
+              "categories": [
+                {
+                  "id": "integer",
+                  "title": "string"
+                }
+              ],
+              "countries": [
+                {
+                  "id": "integer",
+                  "title": "string"
+                }
+              ]
+            }
+          ],
+          "actors": [
+            {
+              "id": "integer",
+              "name": "string",
+              "type": "string",
+              "role": "string",
+              "image": "string",
+              "born": "string",
+              "height": "string",
+              "bio": "string"
+            }
+          ],
+          "genres": [
+            {
+              "id": "integer",
+              "title": "string",
+              "posters": [
+                {
+                  "id": "integer",
+                  "title": "string",
+                  "image": "string"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "movies": {
+      "get_movie": {
+        "method": "GET",
+        "url": "/movies/{id}",
+        "response": {
+          "id": "integer",
+          "title": "string",
+          "type": "string",
+          "label": "string",
+          "sublabel": "string",
+          "imdb": "string",
+          "downloadas": "string",
+          "comment": "boolean",
+          "playas": "string",
+          "description": "string",
+          "classification": "string",
+          "year": "string",
+          "duration": "string",
+          "rating": "float",
+          "image": "string",
+          "cover": "string",
+          "genres": [
+            {
+              "id": "integer",
+              "title": "string"
+            }
+          ],
+          "sources": [
+            {
+              "id": "integer",
+              "type": "string",
+              "title": "string",
+              "quality": "string",
+              "size": "string",
+              "kind": "string",
+              "premium": "string",
+              "external": "boolean",
+              "url": "string"
+            }
+          ],
+          "trailer": {
+            "id": "integer",
+            "type": "string",
+            "title": "string",
+            "url": "string"
+          },
+          "actors": [
+            {
+              "id": "integer",
+              "name": "string",
+              "type": "string",
+              "role": "string",
+              "image": "string"
+            }
+          ],
+          "subtitles": [
+            {
+              "id": "integer",
+              "title": "string",
+              "language": "string",
+              "url": "string"
+            }
+          ],
+          "comments": [
+            {
+              "id": "integer",
+              "user": "string",
+              "comment": "string",
+              "created_at": "string"
+            }
+          ]
+        }
+      },
+      "search_movies": {
+        "method": "GET",
+        "url": "/movies/search?q={query}",
+        "response": {
+          "movies": [
+            {
+              "id": "integer",
+              "title": "string",
+              "image": "string",
+              "year": "string",
+              "rating": "float"
+            }
+          ]
+        }
+      },
+      "get_movies_by_genre": {
+        "method": "GET",
+        "url": "/movies/genre/{genre_id}?order={order}&page={page}",
+        "response": {
+          "movies": [
+            {
+              "id": "integer",
+              "title": "string",
+              "image": "string",
+              "year": "string",
+              "rating": "float"
+            }
+          ],
+          "pagination": {
+            "current_page": "integer",
+            "total_pages": "integer",
+            "total_items": "integer"
+          }
+        }
+      },
+      "get_random_movies": {
+        "method": "GET",
+        "url": "/movies/random?genres={genres}",
+        "response": {
+          "movies": [
+            {
+              "id": "integer",
+              "title": "string",
+              "image": "string",
+              "year": "string",
+              "rating": "float"
+            }
+          ]
+        }
+      },
+      "add_movie_view": {
+        "method": "POST",
+        "url": "/movies/{id}/view",
+        "response": {
+          "success": "boolean",
+          "views": "integer"
+        }
+      },
+      "add_movie_download": {
+        "method": "POST",
+        "url": "/movies/{id}/download",
+        "response": {
+          "success": "boolean",
+          "downloads": "integer"
+        }
+      },
+      "add_movie_share": {
+        "method": "POST",
+        "url": "/movies/{id}/share",
+        "response": {
+          "success": "boolean",
+          "shares": "integer"
+        }
+      },
+      "rate_movie": {
+        "method": "POST",
+        "url": "/movies/{id}/rate",
+        "body": {
+          "rating": "float"
+        },
+        "response": {
+          "success": "boolean",
+          "average_rating": "float"
+        }
+      }
+    },
+    "series": {
+      "get_series_by_genre": {
+        "method": "GET",
+        "url": "/series/genre/{genre_id}?order={order}&page={page}",
+        "response": {
+          "series": [
+            {
+              "id": "integer",
+              "title": "string",
+              "image": "string",
+              "year": "string",
+              "rating": "float",
+              "seasons_count": "integer"
+            }
+          ]
+        }
+      },
+      "get_seasons": {
+        "method": "GET",
+        "url": "/series/{id}/seasons",
+        "response": {
+          "seasons": [
+            {
+              "id": "integer",
+              "title": "string",
+              "episodes": [
+                {
+                  "id": "integer",
+                  "title": "string",
+                  "episode_number": "integer",
+                  "image": "string",
+                  "duration": "string",
+                  "sources": [
+                    {
+                      "id": "integer",
+                      "type": "string",
+                      "title": "string",
+                      "quality": "string",
+                      "url": "string"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "get_episode": {
+        "method": "GET",
+        "url": "/episodes/{id}",
+        "response": {
+          "id": "integer",
+          "title": "string",
+          "episode_number": "integer",
+          "season_number": "integer",
+          "image": "string",
+          "duration": "string",
+          "description": "string",
+          "sources": [
+            {
+              "id": "integer",
+              "type": "string",
+              "title": "string",
+              "quality": "string",
+              "url": "string"
+            }
+          ],
+          "subtitles": [
+            {
+              "id": "integer",
+              "title": "string",
+              "language": "string",
+              "url": "string"
+            }
+          ]
+        }
+      },
+      "add_episode_view": {
+        "method": "POST",
+        "url": "/episodes/{id}/view",
+        "response": {
+          "success": "boolean",
+          "views": "integer"
+        }
+      },
+      "add_episode_download": {
+        "method": "POST",
+        "url": "/episodes/{id}/download",
+        "response": {
+          "success": "boolean",
+          "downloads": "integer"
+        }
+      }
+    },
+    "channels": {
+      "get_channel": {
+        "method": "GET",
+        "url": "/channels/{id}",
+        "response": {
+          "id": "integer",
+          "title": "string",
+          "label": "string",
+          "sublabel": "string",
+          "description": "string",
+          "website": "string",
+          "classification": "string",
+          "views": "integer",
+          "shares": "integer",
+          "rating": "float",
+          "comment": "boolean",
+          "image": "string",
+          "playas": "string",
+          "sources": [
+            {
+              "id": "integer",
+              "type": "string",
+              "title": "string",
+              "quality": "string",
+              "size": "string",
+              "kind": "string",
+              "premium": "string",
+              "external": "boolean",
+              "url": "string"
+            }
+          ],
+          "categories": [
+            {
+              "id": "integer",
+              "title": "string"
+            }
+          ],
+          "countries": [
+            {
+              "id": "integer",
+              "title": "string"
+            }
+          ],
+          "comments": [
+            {
+              "id": "integer",
+              "user": "string",
+              "comment": "string",
+              "created_at": "string"
+            }
+          ]
+        }
+      },
+      "get_channels_by_filters": {
+        "method": "GET",
+        "url": "/channels?category={category_id}&country={country_id}&page={page}",
+        "response": {
+          "channels": [
+            {
+              "id": "integer",
+              "title": "string",
+              "image": "string",
+              "views": "integer",
+              "rating": "float"
+            }
+          ]
+        }
+      },
+      "get_random_channels": {
+        "method": "GET",
+        "url": "/channels/random?categories={categories}",
+        "response": {
+          "channels": [
+            {
+              "id": "integer",
+              "title": "string",
+              "image": "string",
+              "views": "integer",
+              "rating": "float"
+            }
+          ]
+        }
+      },
+      "add_channel_view": {
+        "method": "POST",
+        "url": "/channels/{id}/view",
+        "response": {
+          "success": "boolean",
+          "views": "integer"
+        }
+      },
+      "add_channel_share": {
+        "method": "POST",
+        "url": "/channels/{id}/share",
+        "response": {
+          "success": "boolean",
+          "shares": "integer"
+        }
+      },
+      "rate_channel": {
+        "method": "POST",
+        "url": "/channels/{id}/rate",
+        "body": {
+          "rating": "float"
+        },
+        "response": {
+          "success": "boolean",
+          "average_rating": "float"
+        }
+      }
+    },
+    "actors": {
+      "get_actors": {
+        "method": "GET",
+        "url": "/actors?page={page}&search={search}",
+        "response": {
+          "actors": [
+            {
+              "id": "integer",
+              "name": "string",
+              "type": "string",
+              "role": "string",
+              "image": "string",
+              "born": "string",
+              "height": "string",
+              "bio": "string"
+            }
+          ]
+        }
+      },
+      "get_actor": {
+        "method": "GET",
+        "url": "/actors/{id}",
+        "response": {
+          "id": "integer",
+          "name": "string",
+          "type": "string",
+          "role": "string",
+          "image": "string",
+          "born": "string",
+          "height": "string",
+          "bio": "string",
+          "movies": [
+            {
+              "id": "integer",
+              "title": "string",
+              "image": "string",
+              "year": "string"
+            }
+          ]
+        }
+      },
+      "get_roles_by_movie": {
+        "method": "GET",
+        "url": "/movies/{id}/actors",
+        "response": {
+          "actors": [
+            {
+              "id": "integer",
+              "name": "string",
+              "type": "string",
+              "role": "string",
+              "image": "string"
+            }
+          ]
+        }
+      }
+    },
+    "categories": {
+      "get_categories": {
+        "method": "GET",
+        "url": "/categories",
+        "response": {
+          "categories": [
+            {
+              "id": "integer",
+              "title": "string"
+            }
+          ]
+        }
+      }
+    },
+    "genres": {
+      "get_genres": {
+        "method": "GET",
+        "url": "/genres",
+        "response": {
+          "genres": [
+            {
+              "id": "integer",
+              "title": "string"
+            }
+          ]
+        }
+      }
+    },
+    "countries": {
+      "get_countries": {
+        "method": "GET",
+        "url": "/countries",
+        "response": {
+          "countries": [
+            {
+              "id": "integer",
+              "title": "string"
+            }
+          ]
+        }
+      }
+    },
+    "comments": {
+      "add_movie_comment": {
+        "method": "POST",
+        "url": "/movies/{id}/comments",
+        "body": {
+          "comment": "string"
+        },
+        "response": {
+          "success": "boolean",
+          "comment": {
+            "id": "integer",
+            "user": "string",
+            "comment": "string",
+            "created_at": "string"
+          }
+        }
+      },
+      "add_channel_comment": {
+        "method": "POST",
+        "url": "/channels/{id}/comments",
+        "body": {
+          "comment": "string"
+        },
+        "response": {
+          "success": "boolean",
+          "comment": {
+            "id": "integer",
+            "user": "string",
+            "comment": "string",
+            "created_at": "string"
+          }
+        }
+      },
+      "get_movie_comments": {
+        "method": "GET",
+        "url": "/movies/{id}/comments",
+        "response": {
+          "comments": [
+            {
+              "id": "integer",
+              "user": "string",
+              "comment": "string",
+              "created_at": "string"
+            }
+          ]
+        }
+      },
+      "get_channel_comments": {
+        "method": "GET",
+        "url": "/channels/{id}/comments",
+        "response": {
+          "comments": [
+            {
+              "id": "integer",
+              "user": "string",
+              "comment": "string",
+              "created_at": "string"
+            }
+          ]
+        }
+      }
+    },
+    "user": {
+      "get_profile": {
+        "method": "GET",
+        "url": "/user/profile",
+        "response": {
+          "id": "integer",
+          "name": "string",
+          "username": "string",
+          "email": "string",
+          "type": "string",
+          "image": "string"
+        }
+      },
+      "update_profile": {
+        "method": "PUT",
+        "url": "/user/profile",
+        "body": {
+          "name": "string",
+          "email": "string",
+          "image": "file"
+        },
+        "response": {
+          "success": "boolean",
+          "user": {
+            "id": "integer",
+            "name": "string",
+            "username": "string",
+            "email": "string",
+            "type": "string",
+            "image": "string"
+          }
+        }
+      },
+      "change_password": {
+        "method": "PUT",
+        "url": "/user/password",
+        "body": {
+          "old_password": "string",
+          "new_password": "string"
+        },
+        "response": {
+          "success": "boolean"
+        }
+      },
+      "get_my_list": {
+        "method": "GET",
+        "url": "/user/my-list",
+        "response": {
+          "movies": [
+            {
+              "id": "integer",
+              "title": "string",
+              "image": "string",
+              "type": "string"
+            }
+          ],
+          "series": [
+            {
+              "id": "integer",
+              "title": "string",
+              "image": "string",
+              "type": "string"
+            }
+          ],
+          "channels": [
+            {
+              "id": "integer",
+              "title": "string",
+              "image": "string",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "add_to_my_list": {
+        "method": "POST",
+        "url": "/user/my-list",
+        "body": {
+          "item_id": "integer",
+          "type": "string"
+        },
+        "response": {
+          "success": "boolean"
+        }
+      },
+      "check_my_list": {
+        "method": "GET",
+        "url": "/user/my-list/check?item_id={id}&type={type}",
+        "response": {
+          "in_list": "boolean"
+        }
+      }
+    },
+    "subscription": {
+      "get_plans": {
+        "method": "GET",
+        "url": "/subscription/plans",
+        "response": {
+          "plans": [
+            {
+              "id": "integer",
+              "title": "string",
+              "price": "float",
+              "currency": "string",
+              "duration": "string",
+              "features": [
+                "string"
+              ]
+            }
+          ]
+        }
+      },
+      "subscribe_paypal": {
+        "method": "POST",
+        "url": "/subscription/paypal",
+        "body": {
+          "plan_id": "integer",
+          "payment_id": "string"
+        },
+        "response": {
+          "success": "boolean",
+          "subscription": {
+            "id": "integer",
+            "plan": "string",
+            "expires_at": "string"
+          }
+        }
+      },
+      "subscribe_stripe": {
+        "method": "POST",
+        "url": "/subscription/stripe",
+        "body": {
+          "plan_id": "integer",
+          "payment_intent_id": "string"
+        },
+        "response": {
+          "success": "boolean",
+          "subscription": {
+            "id": "integer",
+            "plan": "string",
+            "expires_at": "string"
+          }
+        }
+      },
+      "get_stripe_intent": {
+        "method": "POST",
+        "url": "/subscription/stripe/intent",
+        "body": {
+          "plan_id": "integer"
+        },
+        "response": {
+          "client_secret": "string"
+        }
+      },
+      "subscribe_cash": {
+        "method": "POST",
+        "url": "/subscription/cash",
+        "body": {
+          "plan_id": "integer",
+          "payment_proof": "file",
+          "additional_info": "string"
+        },
+        "response": {
+          "success": "boolean",
+          "message": "string"
+        }
+      }
+    },
+    "support": {
+      "contact_support": {
+        "method": "POST",
+        "url": "/support",
+        "body": {
+          "name": "string",
+          "email": "string",
+          "message": "string"
+        },
+        "response": {
+          "success": "boolean",
+          "message": "string"
+        }
+      }
+    },
+    "system": {
+      "check_version": {
+        "method": "GET",
+        "url": "/version/check/{code}/{user}",
+        "response": {
+          "success": "boolean",
+          "message": "string",
+          "update_available": "boolean",
+          "latest_version": "string"
+        }
+      },
+      "add_device": {
+        "method": "GET",
+        "url": "/device/{token}",
+        "response": {
+          "success": "boolean"
+        }
+      }
+    }
+  },
+  "data_models": {
+    "Movie": {
+      "id": "integer",
+      "title": "string",
+      "type": "string (movie|series)",
+      "label": "string",
+      "sublabel": "string",
+      "imdb": "string",
+      "downloadas": "string",
+      "comment": "boolean",
+      "playas": "string",
+      "description": "string",
+      "classification": "string",
+      "year": "string",
+      "duration": "string",
+      "rating": "float",
+      "image": "string (URL)",
+      "cover": "string (URL)",
+      "genres": "array of Genre objects",
+      "sources": "array of Source objects",
+      "trailer": "Source object",
+      "actors": "array of Actor objects",
+      "subtitles": "array of Subtitle objects",
+      "comments": "array of Comment objects",
+      "views": "integer",
+      "downloads": "integer",
+      "shares": "integer"
+    },
+    "Channel": {
+      "id": "integer",
+      "title": "string",
+      "label": "string",
+      "sublabel": "string",
+      "description": "string",
+      "website": "string",
+      "classification": "string",
+      "views": "integer",
+      "shares": "integer",
+      "rating": "float",
+      "comment": "boolean",
+      "image": "string (URL)",
+      "playas": "string",
+      "sources": "array of Source objects",
+      "categories": "array of Category objects",
+      "countries": "array of Country objects",
+      "comments": "array of Comment objects"
+    },
+    "Actor": {
+      "id": "integer",
+      "name": "string",
+      "type": "string",
+      "role": "string",
+      "image": "string (URL)",
+      "born": "string",
+      "height": "string",
+      "bio": "string",
+      "movies": "array of Movie objects"
+    },
+    "Source": {
+      "id": "integer",
+      "type": "string",
+      "title": "string",
+      "quality": "string",
+      "size": "string",
+      "kind": "string",
+      "premium": "string",
+      "external": "boolean",
+      "url": "string"
+    },
+    "Genre": {
+      "id": "integer",
+      "title": "string",
+      "posters": "array of Movie objects"
+    },
+    "Category": {
+      "id": "integer",
+      "title": "string"
+    },
+    "Country": {
+      "id": "integer",
+      "title": "string"
+    },
+    "Slide": {
+      "id": "integer",
+      "title": "string",
+      "type": "string",
+      "image": "string (URL)",
+      "url": "string",
+      "poster": "Movie object",
+      "category": "Category object",
+      "genre": "Genre object",
+      "channel": "Channel object"
+    },
+    "Comment": {
+      "id": "integer",
+      "user": "string",
+      "comment": "string",
+      "created_at": "string (ISO 8601)"
+    },
+    "User": {
+      "id": "integer",
+      "name": "string",
+      "username": "string",
+      "email": "string",
+      "type": "string",
+      "image": "string (URL)",
+      "key": "string (for authentication)"
+    },
+    "Plan": {
+      "id": "integer",
+      "title": "string",
+      "price": "float",
+      "currency": "string",
+      "duration": "string",
+      "features": "array of strings"
+    }
+  },
+  "authentication": {
+    "type": "Bearer Token",
+    "header": "Authorization: Bearer {token}",
+    "token_expiry": "24 hours"
+  },
+  "pagination": {
+    "default_per_page": 20,
+    "max_per_page": 100,
+    "parameters": {
+      "page": "integer (default: 1)",
+      "per_page": "integer (default: 20)"
+    }
+  },
+  "error_responses": {
+    "400": {
+      "error": "Bad Request",
+      "message": "string",
+      "details": "object"
+    },
+    "401": {
+      "error": "Unauthorized",
+      "message": "Authentication required"
+    },
+    "403": {
+      "error": "Forbidden",
+      "message": "Access denied"
+    },
+    "404": {
+      "error": "Not Found",
+      "message": "Resource not found"
+    },
+    "422": {
+      "error": "Validation Error",
+      "message": "string",
+      "details": "object"
+    },
+    "500": {
+      "error": "Internal Server Error",
+      "message": "Something went wrong"
+    }
+  },
+  "rate_limiting": {
+    "requests_per_minute": 60,
+    "requests_per_hour": 1000,
+    "headers": {
+      "X-RateLimit-Limit": "integer",
+      "X-RateLimit-Remaining": "integer",
+      "X-RateLimit-Reset": "timestamp"
+    }
+  }
+}
