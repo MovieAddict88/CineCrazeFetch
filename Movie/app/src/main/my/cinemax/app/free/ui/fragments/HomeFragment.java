@@ -174,7 +174,9 @@ public class HomeFragment extends Fragment {
             }
         });
         button_try_again.setOnClickListener(v->{
-            loadData();
+            // Don't call old API - data should be loaded by HomeActivity
+            // loadData();
+            Toasty.info(getActivity(), "Please restart the app to reload data", Toast.LENGTH_SHORT).show();
         });
     }
     public boolean checkSUBSCRIBED(){

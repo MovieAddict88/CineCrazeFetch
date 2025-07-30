@@ -169,9 +169,10 @@ public class PosterAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                 holder.image_view_item_poster_image.setOnClickListener(v -> {
 
-                    // Add null check to prevent NullPointerException
+                    // Add comprehensive null check to prevent NullPointerException
                     if (posterList == null || position >= posterList.size() || posterList.get(position) == null) {
                         Log.e("PosterAdapter", "Poster is null at position " + position);
+                        Toasty.error(activity, "Content not available", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
@@ -180,7 +181,16 @@ public class PosterAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     
                     // Get the poster object and its type safely
                     Poster poster = posterList.get(position);
-                    String posterType = poster != null ? poster.getType() : null;
+                    if (poster == null) {
+                        Log.e("PosterAdapter", "Poster object is null at position " + position);
+                        Toasty.error(activity, "Content not available", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    
+                    String posterType = poster.getType();
+                    if (posterType == null) {
+                        posterType = "movie"; // Default to movie if type is null
+                    }
                     
                     if ("movie".equals(posterType)) {
                         intent = new Intent(activity, MovieActivity.class);
@@ -189,9 +199,7 @@ public class PosterAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     }
                     
                     // Add null check before putting extra
-                    if (poster != null) {
-                        intent.putExtra("poster", poster);
-                    }
+                    intent.putExtra("poster", poster);
                     final Intent intent1 = intent;
 
                     PrefManager prefManager= new PrefManager(activity);
