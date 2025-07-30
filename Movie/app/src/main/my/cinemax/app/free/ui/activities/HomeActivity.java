@@ -79,6 +79,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import android.os.Handler;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
 import androidx.appcompat.widget.Toolbar;
 
@@ -937,102 +940,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     // ===== JSON API INTEGRATION =====
     // These methods will load data from your GitHub JSON file
     
-    /**
-     * Load home data from the JSON API
-     */
-    private void loadHomeDataFromJson() {
-        Log.d("JSON_API", "Starting to load home data from JSON API...");
-        apiClient.getHomeDataFromJson(new Callback<JsonApiResponse>() {
-            @Override
-            public void onResponse(Call<JsonApiResponse> call, Response<JsonApiResponse> response) {
-                Log.d("JSON_API", "Response received. Success: " + response.isSuccessful() + ", Code: " + response.code());
-                
-                if (response.isSuccessful() && response.body() != null) {
-                    JsonApiResponse jsonResponse = response.body();
-                    
-                    // Log success
-                    Log.d("JSON_API", "Successfully loaded home data from JSON API");
-                    Log.d("JSON_API", "Movies: " + (jsonResponse.getMovies() != null ? jsonResponse.getMovies().size() : "null"));
-                    Log.d("JSON_API", "Channels: " + (jsonResponse.getChannels() != null ? jsonResponse.getChannels().size() : "null"));
-                    Log.d("JSON_API", "Actors: " + (jsonResponse.getActors() != null ? jsonResponse.getActors().size() : "null"));
-                    Log.d("JSON_API", "Home data: " + (jsonResponse.getHome() != null ? "available" : "null"));
-                    
-                    // You can now use this data in your fragments
-                    // For example, pass it to HomeFragment
-                    updateHomeFragmentWithJsonData(jsonResponse);
-                    
-                } else {
-                    Log.e("JSON_API", "Failed to load home data: " + response.code());
-                    try {
-                        String errorBody = response.errorBody() != null ? response.errorBody().string() : "null";
-                        Log.e("JSON_API", "Error body: " + errorBody);
-                    } catch (IOException e) {
-                        Log.e("JSON_API", "Error reading error body: " + e.getMessage());
-                    }
-                    Toasty.error(HomeActivity.this, "Failed to load data from JSON API (Code: " + response.code() + ")", Toast.LENGTH_SHORT).show();
-                }
-            }
-            
-            @Override
-            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
-                Log.e("JSON_API", "Error loading home data", t);
-                Log.e("JSON_API", "Error message: " + t.getMessage());
-                Toasty.error(HomeActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-    
-    /**
-     * Load movies from the JSON API
-     */
-    private void loadMoviesFromJson() {
-        apiClient.getMoviesFromJson(new Callback<JsonApiResponse>() {
-            @Override
-            public void onResponse(Call<JsonApiResponse> call, Response<JsonApiResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<Poster> movies = response.body().getMovies();
-                    Log.d("JSON_API", "Loaded " + movies.size() + " movies from JSON API");
-                    
-                    // Update your movies fragment with this data
-                    updateMoviesFragmentWithJsonData(movies);
-                    
-                } else {
-                    Log.e("JSON_API", "Failed to load movies: " + response.code());
-                }
-            }
-            
-            @Override
-            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
-                Log.e("JSON_API", "Error loading movies", t);
-            }
-        });
-    }
-    
-    /**
-     * Load channels from the JSON API
-     */
-    private void loadChannelsFromJson() {
-        apiClient.getChannelsFromJson(new Callback<JsonApiResponse>() {
-            @Override
-            public void onResponse(Call<JsonApiResponse> call, Response<JsonApiResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<Channel> channels = response.body().getChannels();
-                    Log.d("JSON_API", "Loaded " + channels.size() + " channels from JSON API");
-                    
-                    // Update your TV fragment with this data
-                    updateTvFragmentWithJsonData(channels);
-                    
-                } else {
-                    Log.e("JSON_API", "Failed to load channels: " + response.code());
-                }
-            }
-            
-            @Override
-            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
-                Log.e("JSON_API", "Error loading channels", t);
-            }
-        });
-    }
+    // Individual loading methods removed to prevent conflicts and instability
     
     /**
      * Get video sources for a movie from JSON API
@@ -1150,44 +1058,82 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
     
     /**
-     * Example: Load all data from JSON API when app starts
+     * Load all data from JSON API when app starts
      */
     private void loadAllDataFromJson() {
         Log.d("JSON_API", "Loading all data from JSON API...");
         
-        // Load home data
-        loadHomeDataFromJson();
+        // Check if we have internet connection
+        if (!isNetworkAvailable()) {
+            Log.e("JSON_API", "No network connection");
+            Toasty.error(HomeActivity.this, "No internet connection", Toast.LENGTH_SHORT).show();
+            return;
+        }
         
-        // Load movies
-        loadMoviesFromJson();
-        
-        // Load channels
-        loadChannelsFromJson();
-        
-        // Load ads configuration - DISABLED TO PREVENT INTERFERENCE
-        // loadAdsConfigFromJson();
-        
-        // Subscription loading removed to fix compilation issues
-    }
-    
-    /**
-     * Load ads configuration from JSON API
-     */
-    private void loadAdsConfigFromJson() {
-        apiClient.loadAdsConfigAndUpdatePrefs(this, new apiClient.AdsConfigCallback() {
+        // Load everything in one call to prevent conflicts
+        apiClient.getJsonApiData(new apiClient.JsonApiCallback() {
             @Override
-            public void onSuccess(String message) {
-                Log.d("JSON_API", "Ads config loaded: " + message);
-                Toasty.success(HomeActivity.this, "Ads configuration updated", Toast.LENGTH_SHORT).show();
+            public void onSuccess(JsonApiResponse jsonResponse) {
+                if (jsonResponse != null) {
+                    Log.d("JSON_API", "Successfully loaded all data");
+                    
+                    try {
+                        // Update all fragments at once with error handling
+                        if (jsonResponse.getHome() != null) {
+                            updateHomeFragmentWithJsonData(jsonResponse);
+                        }
+                        
+                        if (jsonResponse.getMovies() != null && !jsonResponse.getMovies().isEmpty()) {
+                            updateMoviesFragmentWithJsonData(jsonResponse.getMovies());
+                        }
+                        
+                        if (jsonResponse.getChannels() != null && !jsonResponse.getChannels().isEmpty()) {
+                            updateTvFragmentWithJsonData(jsonResponse.getChannels());
+                        }
+                        
+                        // Show success message
+                        Toasty.success(HomeActivity.this, "Content loaded successfully", Toast.LENGTH_SHORT).show();
+                        
+                    } catch (Exception e) {
+                        Log.e("JSON_API", "Error updating fragments: " + e.getMessage());
+                        Toasty.error(HomeActivity.this, "Error displaying content", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Log.e("JSON_API", "JSON response is null");
+                    Toasty.error(HomeActivity.this, "Failed to load content", Toast.LENGTH_SHORT).show();
+                }
             }
             
             @Override
             public void onError(String error) {
-                Log.e("JSON_API", "Ads config error: " + error);
-                Toasty.error(HomeActivity.this, "Ads config error: " + error, Toast.LENGTH_SHORT).show();
+                Log.e("JSON_API", "Error loading data: " + error);
+                Toasty.error(HomeActivity.this, "Network error: " + error, Toast.LENGTH_SHORT).show();
+                
+                // Retry after 3 seconds
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d("JSON_API", "Retrying data load...");
+                        loadAllDataFromJson();
+                    }
+                }, 3000);
             }
         });
     }
+    
+    // Ads loading method removed to prevent interference
 
     // Subscription loading method removed to fix compilation issues
+    
+    /**
+     * Check if network is available
+     */
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager != null) {
+            NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+            return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+        }
+        return false;
+    }
 }

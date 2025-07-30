@@ -997,7 +997,5 @@
       }
     }
   },
-  "ads_config": {
-    "enabled": false
-  }
+  "ads_config": null
 }
