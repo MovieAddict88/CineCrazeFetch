@@ -13,6 +13,7 @@ import my.cinemax.app.free.entity.Language;
 import my.cinemax.app.free.entity.Plan;
 import my.cinemax.app.free.entity.Poster;
 import my.cinemax.app.free.entity.Season;
+import my.cinemax.app.free.entity.JsonApiResponse;
 
 import java.util.List;
 

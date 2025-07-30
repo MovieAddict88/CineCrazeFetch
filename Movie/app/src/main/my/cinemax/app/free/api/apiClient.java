@@ -9,6 +9,7 @@ import my.cinemax.app.free.MyApplication;
 import my.cinemax.app.free.Provider.PrefManager;
 import my.cinemax.app.free.config.Global;
 import my.cinemax.app.free.entity.ApiResponse;
+import my.cinemax.app.free.entity.JsonApiResponse;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
