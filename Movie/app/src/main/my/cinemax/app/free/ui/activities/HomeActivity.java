@@ -940,17 +940,21 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
      * Load home data from the JSON API
      */
     private void loadHomeDataFromJson() {
+        Log.d("JSON_API", "Starting to load home data from JSON API...");
         apiClient.getHomeDataFromJson(new Callback<JsonApiResponse>() {
             @Override
             public void onResponse(Call<JsonApiResponse> call, Response<JsonApiResponse> response) {
+                Log.d("JSON_API", "Response received. Success: " + response.isSuccessful() + ", Code: " + response.code());
+                
                 if (response.isSuccessful() && response.body() != null) {
                     JsonApiResponse jsonResponse = response.body();
                     
                     // Log success
                     Log.d("JSON_API", "Successfully loaded home data from JSON API");
-                    Log.d("JSON_API", "Movies: " + jsonResponse.getMovies().size());
-                    Log.d("JSON_API", "Channels: " + jsonResponse.getChannels().size());
-                    Log.d("JSON_API", "Actors: " + jsonResponse.getActors().size());
+                    Log.d("JSON_API", "Movies: " + (jsonResponse.getMovies() != null ? jsonResponse.getMovies().size() : "null"));
+                    Log.d("JSON_API", "Channels: " + (jsonResponse.getChannels() != null ? jsonResponse.getChannels().size() : "null"));
+                    Log.d("JSON_API", "Actors: " + (jsonResponse.getActors() != null ? jsonResponse.getActors().size() : "null"));
+                    Log.d("JSON_API", "Home data: " + (jsonResponse.getHome() != null ? "available" : "null"));
                     
                     // You can now use this data in your fragments
                     // For example, pass it to HomeFragment
@@ -958,13 +962,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     
                 } else {
                     Log.e("JSON_API", "Failed to load home data: " + response.code());
-                    Toasty.error(HomeActivity.this, "Failed to load data from JSON API", Toast.LENGTH_SHORT).show();
+                    Log.e("JSON_API", "Error body: " + (response.errorBody() != null ? response.errorBody().string() : "null"));
+                    Toasty.error(HomeActivity.this, "Failed to load data from JSON API (Code: " + response.code() + ")", Toast.LENGTH_SHORT).show();
                 }
             }
             
             @Override
             public void onFailure(Call<JsonApiResponse> call, Throwable t) {
                 Log.e("JSON_API", "Error loading home data", t);
+                Log.e("JSON_API", "Error message: " + t.getMessage());
                 Toasty.error(HomeActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });

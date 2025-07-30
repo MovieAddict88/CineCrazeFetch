@@ -233,7 +233,7 @@ public class apiClient {
      */
     public static Retrofit getJsonApiClient() {
         return new Retrofit.Builder()
-                .baseUrl(Global.API_URL.replace("/free_movie_api.json", "/"))
+                .baseUrl("https://MovieAddict88.github.io/movie-api/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
     }
