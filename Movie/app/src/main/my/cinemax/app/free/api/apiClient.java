@@ -148,124 +148,16 @@ public class apiClient {
         };
     }
 
-    // ===== GITHUB JSON API METHODS =====
-    
-    /**
-     * Fetch all data from the GitHub JSON API
-     */
-    public static void getJsonApiData(Callback<JsonApiResponse> callback) {
-        Retrofit retrofit = getClient();
-        apiRest service = retrofit.create(apiRest.class);
-        Call<JsonApiResponse> call = service.getJsonApiData();
-        call.enqueue(callback);
-    }
-    
-    /**
-     * Fetch home data from the GitHub JSON API
-     */
-    public static void getHomeDataFromJson(Callback<JsonApiResponse> callback) {
-        getJsonApiData(callback);
-    }
-    
-    /**
-     * Fetch movies from the GitHub JSON API
-     */
-    public static void getMoviesFromJson(Callback<JsonApiResponse> callback) {
-        getJsonApiData(callback);
-    }
-    
-    /**
-     * Fetch channels from the GitHub JSON API
-     */
-    public static void getChannelsFromJson(Callback<JsonApiResponse> callback) {
-        getJsonApiData(callback);
-    }
-    
-    /**
-     * Fetch actors from the GitHub JSON API
-     */
-    public static void getActorsFromJson(Callback<JsonApiResponse> callback) {
-        getJsonApiData(callback);
-    }
-    
-    /**
-     * Fetch genres from the GitHub JSON API
-     */
-    public static void getGenresFromJson(Callback<JsonApiResponse> callback) {
-        getJsonApiData(callback);
-    }
-    
-    /**
-     * Get a specific movie by ID from the GitHub JSON API
-     */
-    public static void getMovieByIdFromJson(int movieId, Callback<JsonApiResponse> callback) {
-        getMoviesFromJson(new Callback<JsonApiResponse>() {
-            @Override
-            public void onResponse(Call<JsonApiResponse> call, retrofit2.Response<JsonApiResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    JsonApiResponse apiResponse = response.body();
-                    if (apiResponse.getMovies() != null) {
-                        // Find the movie by ID
-                        for (Poster movie : apiResponse.getMovies()) {
-                            if (movie.getId() == movieId) {
-                                // Create a new response with just this movie
-                                JsonApiResponse singleMovieResponse = new JsonApiResponse();
-                                java.util.List<Poster> singleMovieList = new java.util.ArrayList<>();
-                                singleMovieList.add(movie);
-                                singleMovieResponse.setMovies(singleMovieList);
-                                callback.onResponse(call, retrofit2.Response.success(singleMovieResponse));
-                                return;
-                            }
-                        }
-                    }
-                    callback.onFailure(call, new Exception("Movie not found"));
-                } else {
-                    callback.onFailure(call, new Exception("Failed to load movies"));
-                }
-            }
-            
-            @Override
-            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
-                callback.onFailure(call, t);
-            }
-        });
-    }
-    
-    /**
-     * Get video sources for a movie from the GitHub JSON API
-     */
-    public static void getMovieVideoSources(int movieId, Callback<JsonApiResponse> callback) {
-        getMovieByIdFromJson(movieId, callback);
-    }
-    
-    /**
-     * Get ads configuration from GitHub JSON API
-     */
-    public static void getAdsConfigFromJson(Callback<JsonApiResponse> callback) {
-        Retrofit adsRetrofit = new Retrofit.Builder()
-                .baseUrl(GITHUB_API_BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        
-        apiRest adsService = adsRetrofit.create(apiRest.class);
-        Call<JsonApiResponse> call = adsService.getAdsConfig();
-        
-        call.enqueue(new Callback<JsonApiResponse>() {
-            @Override
-            public void onResponse(Call<JsonApiResponse> call, retrofit2.Response<JsonApiResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    callback.onResponse(call, response);
-                } else {
-                    callback.onFailure(call, new Exception("Failed to load ads configuration"));
-                }
-            }
-            
-            @Override
-            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
-                callback.onFailure(call, t);
-            }
-        });
-    }
+    // Deprecated: Remove old monolithic JSON API methods
+    // public static void getJsonApiData(Callback<JsonApiResponse> callback) { ... }
+    // public static void getHomeDataFromJson(Callback<JsonApiResponse> callback) { ... }
+    // public static void getMoviesFromJson(Callback<JsonApiResponse> callback) { ... }
+    // public static void getChannelsFromJson(Callback<JsonApiResponse> callback) { ... }
+    // public static void getActorsFromJson(Callback<JsonApiResponse> callback) { ... }
+    // public static void getGenresFromJson(Callback<JsonApiResponse> callback) { ... }
+    // public static void getMovieByIdFromJson(int movieId, Callback<JsonApiResponse> callback) { ... }
+    // public static void getMovieVideoSources(int movieId, Callback<JsonApiResponse> callback) { ... }
+    // public static void getAdsConfigFromJson(Callback<JsonApiResponse> callback) { ... }
     
     /**
      * Get GitHub JSON API data with custom callback
