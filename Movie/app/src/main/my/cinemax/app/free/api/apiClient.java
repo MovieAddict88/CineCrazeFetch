@@ -49,8 +49,8 @@ public class apiClient {
     private static Retrofit githubRetrofit = null;
     private static final String CACHE_CONTROL = "Cache-Control";
     
-    // Use a working API endpoint that serves the JSON data
-    private static final String GITHUB_API_BASE_URL = "https://raw.githubusercontent.com/jsonmc/jsonmc/master/";
+    // Use the correct MovieAddict88 API endpoint
+    private static final String GITHUB_API_BASE_URL = "https://raw.githubusercontent.com/MovieAddict88/movie-api/main/";
 
     /**
      * Get the main GitHub API client for all movie data
@@ -176,8 +176,28 @@ public class apiClient {
      * Get GitHub JSON API data with custom callback
      */
     public static void getJsonApiData(JsonApiCallback callback) {
-        // Since external APIs are failing, provide working mock data
-        createMockJsonApiData(callback);
+        // Use the main complete JSON file
+        Retrofit retrofit = getClient();
+        apiRest service = retrofit.create(apiRest.class);
+        Call<JsonApiResponse> call = service.getCompleteJsonData();
+        
+        call.enqueue(new Callback<JsonApiResponse>() {
+            @Override
+            public void onResponse(Call<JsonApiResponse> call, retrofit2.Response<JsonApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    // Fallback to mock data if API fails
+                    createMockJsonApiData(callback);
+                }
+            }
+            
+            @Override
+            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
+                // Fallback to mock data if API fails
+                createMockJsonApiData(callback);
+            }
+        });
     }
     
     /**
@@ -555,10 +575,40 @@ public class apiClient {
     }
 
     /**
-     * Fetch slides from the modular JSON API with fallback to mock data
+     * Fetch slides from the complete JSON API with fallback to mock data
      */
     public static void getSlides(Callback<List<my.cinemax.app.free.entity.Slide>> callback) {
-        // Provide mock slides data directly since API endpoints are failing
+        // Get slides from the complete JSON file
+        Retrofit retrofit = getClient();
+        apiRest service = retrofit.create(apiRest.class);
+        Call<JsonApiResponse> call = service.getCompleteJsonData();
+        
+        call.enqueue(new Callback<JsonApiResponse>() {
+            @Override
+            public void onResponse(Call<JsonApiResponse> call, retrofit2.Response<JsonApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null && 
+                    response.body().getHome() != null && 
+                    response.body().getHome().getSlides() != null) {
+                    
+                    List<my.cinemax.app.free.entity.Slide> slides = response.body().getHome().getSlides();
+                    retrofit2.Response<List<my.cinemax.app.free.entity.Slide>> mockResponse = 
+                            retrofit2.Response.success(slides);
+                    callback.onResponse(call, mockResponse);
+                } else {
+                    // Fallback to mock data
+                    provideMockSlides(callback);
+                }
+            }
+            
+            @Override
+            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
+                // Fallback to mock data
+                provideMockSlides(callback);
+            }
+        });
+    }
+    
+    private static void provideMockSlides(Callback<List<my.cinemax.app.free.entity.Slide>> callback) {
         try {
             List<my.cinemax.app.free.entity.Slide> slides = createMockSlides();
             retrofit2.Response<List<my.cinemax.app.free.entity.Slide>> mockResponse = 
@@ -601,10 +651,39 @@ public class apiClient {
     }
 
     /**
-     * Fetch movies list from the modular JSON API with fallback to mock data
+     * Fetch movies list from the complete JSON API with fallback to mock data
      */
     public static void getMoviesList(Callback<List<my.cinemax.app.free.entity.Poster>> callback) {
-        // Provide mock movies data directly since API endpoints are failing
+        // Get movies from the complete JSON file
+        Retrofit retrofit = getClient();
+        apiRest service = retrofit.create(apiRest.class);
+        Call<JsonApiResponse> call = service.getCompleteJsonData();
+        
+        call.enqueue(new Callback<JsonApiResponse>() {
+            @Override
+            public void onResponse(Call<JsonApiResponse> call, retrofit2.Response<JsonApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null && 
+                    response.body().getMovies() != null) {
+                    
+                    List<my.cinemax.app.free.entity.Poster> movies = response.body().getMovies();
+                    retrofit2.Response<List<my.cinemax.app.free.entity.Poster>> mockResponse = 
+                            retrofit2.Response.success(movies);
+                    callback.onResponse(call, mockResponse);
+                } else {
+                    // Fallback to mock data
+                    provideMockMovies(callback);
+                }
+            }
+            
+            @Override
+            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
+                // Fallback to mock data
+                provideMockMovies(callback);
+            }
+        });
+    }
+    
+    private static void provideMockMovies(Callback<List<my.cinemax.app.free.entity.Poster>> callback) {
         try {
             List<my.cinemax.app.free.entity.Poster> movies = createMockMovies();
             retrofit2.Response<List<my.cinemax.app.free.entity.Poster>> mockResponse = 
@@ -647,30 +726,47 @@ public class apiClient {
     }
 
     /**
-     * Fetch channels list from the modular JSON API with fallback to complete JSON
+     * Fetch channels list from the complete JSON API with fallback to mock data
      */
     public static void getChannelsList(Callback<List<my.cinemax.app.free.entity.Channel>> callback) {
+        // Get channels from the complete JSON file
         Retrofit retrofit = getClient();
         apiRest service = retrofit.create(apiRest.class);
-        Call<List<my.cinemax.app.free.entity.Channel>> call = service.getChannelsList();
+        Call<JsonApiResponse> call = service.getCompleteJsonData();
         
-        call.enqueue(new Callback<List<my.cinemax.app.free.entity.Channel>>() {
+        call.enqueue(new Callback<JsonApiResponse>() {
             @Override
-            public void onResponse(Call<List<my.cinemax.app.free.entity.Channel>> call, retrofit2.Response<List<my.cinemax.app.free.entity.Channel>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    callback.onResponse(call, response);
+            public void onResponse(Call<JsonApiResponse> call, retrofit2.Response<JsonApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null && 
+                    response.body().getChannels() != null) {
+                    
+                    List<my.cinemax.app.free.entity.Channel> channels = response.body().getChannels();
+                    retrofit2.Response<List<my.cinemax.app.free.entity.Channel>> mockResponse = 
+                            retrofit2.Response.success(channels);
+                    callback.onResponse(null, mockResponse);
                 } else {
-                    // Fallback: try to get channels from complete JSON
-                    getChannelsFromCompleteJson(callback);
+                    // Fallback to mock data
+                    provideMockChannels(callback);
                 }
             }
             
             @Override
-            public void onFailure(Call<List<my.cinemax.app.free.entity.Channel>> call, Throwable t) {
-                // Fallback: try to get channels from complete JSON
-                getChannelsFromCompleteJson(callback);
+            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
+                // Fallback to mock data
+                provideMockChannels(callback);
             }
         });
+    }
+    
+    private static void provideMockChannels(Callback<List<my.cinemax.app.free.entity.Channel>> callback) {
+        try {
+            List<my.cinemax.app.free.entity.Channel> channels = createMockChannels();
+            retrofit2.Response<List<my.cinemax.app.free.entity.Channel>> mockResponse = 
+                    retrofit2.Response.success(channels);
+            callback.onResponse(null, mockResponse);
+        } catch (Exception e) {
+            callback.onFailure(null, e);
+        }
     }
     
     /**
