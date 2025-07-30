@@ -356,60 +356,60 @@ public class apiClient {
     /**
      * Fetch slides from the modular JSON API
      */
-    public static void getSlides(Callback<List<Object>> callback) {
+    public static void getSlides(Callback<List<my.cinemax.app.free.entity.Slide>> callback) {
         Retrofit retrofit = getClient();
         apiRest service = retrofit.create(apiRest.class);
-        Call<List<Object>> call = service.getSlides();
+        Call<List<my.cinemax.app.free.entity.Slide>> call = service.getSlides();
         call.enqueue(callback);
     }
 
     /**
      * Fetch movies list from the modular JSON API
      */
-    public static void getMoviesList(Callback<List<Object>> callback) {
+    public static void getMoviesList(Callback<List<my.cinemax.app.free.entity.Poster>> callback) {
         Retrofit retrofit = getClient();
         apiRest service = retrofit.create(apiRest.class);
-        Call<List<Object>> call = service.getMoviesList();
+        Call<List<my.cinemax.app.free.entity.Poster>> call = service.getMoviesList();
         call.enqueue(callback);
     }
 
     /**
      * Fetch channels list from the modular JSON API
      */
-    public static void getChannelsList(Callback<List<Object>> callback) {
+    public static void getChannelsList(Callback<List<my.cinemax.app.free.entity.Channel>> callback) {
         Retrofit retrofit = getClient();
         apiRest service = retrofit.create(apiRest.class);
-        Call<List<Object>> call = service.getChannelsList();
+        Call<List<my.cinemax.app.free.entity.Channel>> call = service.getChannelsList();
         call.enqueue(callback);
     }
 
     /**
      * Fetch movie detail by id from the modular JSON API
      */
-    public static void getMovieDetail(int id, Callback<Object> callback) {
+    public static void getMovieDetail(int id, Callback<my.cinemax.app.free.entity.Poster> callback) {
         Retrofit retrofit = getClient();
         apiRest service = retrofit.create(apiRest.class);
-        Call<Object> call = service.getMovieDetail(id);
+        Call<my.cinemax.app.free.entity.Poster> call = service.getMovieDetail(id);
         call.enqueue(callback);
     }
 
     /**
      * Fetch series detail by id from the modular JSON API
      */
-    public static void getSeriesDetail(int id, Callback<Object> callback) {
+    public static void getSeriesDetail(int id, Callback<my.cinemax.app.free.entity.Poster> callback) {
         Retrofit retrofit = getClient();
         apiRest service = retrofit.create(apiRest.class);
-        Call<Object> call = service.getSeriesDetail(id);
+        Call<my.cinemax.app.free.entity.Poster> call = service.getSeriesDetail(id);
         call.enqueue(callback);
     }
 
     /**
      * Fetch channel detail by id from the modular JSON API
      */
-    public static void getChannelDetail(int id, Callback<Object> callback) {
+    public static void getChannelDetail(int id, Callback<my.cinemax.app.free.entity.Channel> callback) {
         Retrofit retrofit = getClient();
         apiRest service = retrofit.create(apiRest.class);
-        Call<Object> call = service.getChannelDetail(id);
+        Call<my.cinemax.app.free.entity.Channel> call = service.getChannelDetail(id);
         call.enqueue(callback);
     }
 }

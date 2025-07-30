@@ -257,22 +257,22 @@ public interface apiRest {
     // Call<JsonApiResponse> getGenresFromJson();
 
     @GET("slides.json")
-    Call<List<Object>> getSlides();
+    Call<List<my.cinemax.app.free.entity.Slide>> getSlides();
 
     @GET("movies.json")
-    Call<List<Object>> getMoviesList();
+    Call<List<my.cinemax.app.free.entity.Poster>> getMoviesList();
 
     @GET("channels.json")
-    Call<List<Object>> getChannelsList();
+    Call<List<my.cinemax.app.free.entity.Channel>> getChannelsList();
 
     @GET("movie_details/{id}.json")
-    Call<Object> getMovieDetail(@Path("id") int id);
+    Call<my.cinemax.app.free.entity.Poster> getMovieDetail(@Path("id") int id);
 
     @GET("series_details/{id}.json")
-    Call<Object> getSeriesDetail(@Path("id") int id);
+    Call<my.cinemax.app.free.entity.Poster> getSeriesDetail(@Path("id") int id);
 
     @GET("channel_details/{id}.json")
-    Call<Object> getChannelDetail(@Path("id") int id);
+    Call<my.cinemax.app.free.entity.Channel> getChannelDetail(@Path("id") int id);
 
 }
 

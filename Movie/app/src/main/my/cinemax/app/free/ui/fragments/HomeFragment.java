@@ -83,13 +83,13 @@ public class HomeFragment extends Fragment {
     private void loadData() {
         showLoadingView();
         // Use modular GitHub JSON API for slides
-        apiClient.getSlides(new retrofit2.Callback<List<Slide>>() {
+        apiClient.getSlides(new Callback<List<my.cinemax.app.free.entity.Slide>>() {
             @Override
-            public void onResponse(Call<List<Slide>> call, Response<List<Slide>> response) {
+            public void onResponse(Call<List<my.cinemax.app.free.entity.Slide>> call, Response<List<my.cinemax.app.free.entity.Slide>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     dataList.clear();
                     dataList.add(new Data().setViewType(0));
-                    List<Slide> slides = response.body();
+                    List<my.cinemax.app.free.entity.Slide> slides = response.body();
                     if (slides != null && slides.size() > 0) {
                         Data slideData = new Data();
                         slideData.setSlides(slides);
@@ -102,7 +102,7 @@ public class HomeFragment extends Fragment {
                 }
             }
             @Override
-            public void onFailure(Call<List<Slide>> call, Throwable t) {
+            public void onFailure(Call<List<my.cinemax.app.free.entity.Slide>> call, Throwable t) {
                 showErrorView();
             }
         });
