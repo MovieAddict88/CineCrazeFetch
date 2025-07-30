@@ -97,7 +97,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import my.cinemax.app.free.entity.Actress;
-import my.cinemax.app.free.entity.VideoSources;
+// VideoSources is an inner class of JsonApiResponse, so we don't need to import it separately
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private final List<Fragment> mFragmentList = new ArrayList<>();
