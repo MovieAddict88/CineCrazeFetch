@@ -20,6 +20,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Cache;
@@ -458,5 +459,65 @@ public class apiClient {
     public interface JsonApiCallback {
         void onSuccess(JsonApiResponse jsonResponse);
         void onError(String error);
+    }
+
+    /**
+     * Fetch slides from the modular JSON API
+     */
+    public static void getSlides(Callback<List<Object>> callback) {
+        Retrofit retrofit = getClient();
+        apiRest service = retrofit.create(apiRest.class);
+        Call<List<Object>> call = service.getSlides();
+        call.enqueue(callback);
+    }
+
+    /**
+     * Fetch movies list from the modular JSON API
+     */
+    public static void getMoviesList(Callback<List<Object>> callback) {
+        Retrofit retrofit = getClient();
+        apiRest service = retrofit.create(apiRest.class);
+        Call<List<Object>> call = service.getMoviesList();
+        call.enqueue(callback);
+    }
+
+    /**
+     * Fetch channels list from the modular JSON API
+     */
+    public static void getChannelsList(Callback<List<Object>> callback) {
+        Retrofit retrofit = getClient();
+        apiRest service = retrofit.create(apiRest.class);
+        Call<List<Object>> call = service.getChannelsList();
+        call.enqueue(callback);
+    }
+
+    /**
+     * Fetch movie detail by id from the modular JSON API
+     */
+    public static void getMovieDetail(int id, Callback<Object> callback) {
+        Retrofit retrofit = getClient();
+        apiRest service = retrofit.create(apiRest.class);
+        Call<Object> call = service.getMovieDetail(id);
+        call.enqueue(callback);
+    }
+
+    /**
+     * Fetch series detail by id from the modular JSON API
+     */
+    public static void getSeriesDetail(int id, Callback<Object> callback) {
+        Retrofit retrofit = getClient();
+        apiRest service = retrofit.create(apiRest.class);
+        Call<Object> call = service.getSeriesDetail(id);
+        call.enqueue(callback);
+    }
+
+    /**
+     * Fetch channel detail by id from the modular JSON API
+     */
+    public static void getChannelDetail(int id, Callback<Object> callback) {
+        Retrofit retrofit = getClient();
+        apiRest service = retrofit.create(apiRest.class);
+        Call<Object> call = service.getChannelDetail(id);
+        call.enqueue(callback);
     }
 }

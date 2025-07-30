@@ -255,5 +255,23 @@ public interface apiRest {
     @GET("free_movie_api.json")
     Call<JsonApiResponse> getGenresFromJson();
 
+    @GET("slides.json")
+    Call<List<Object>> getSlides();
+
+    @GET("movies.json")
+    Call<List<Object>> getMoviesList();
+
+    @GET("channels.json")
+    Call<List<Object>> getChannelsList();
+
+    @GET("movie_details/{id}.json")
+    Call<Object> getMovieDetail(@Path("id") int id);
+
+    @GET("series_details/{id}.json")
+    Call<Object> getSeriesDetail(@Path("id") int id);
+
+    @GET("channel_details/{id}.json")
+    Call<Object> getChannelDetail(@Path("id") int id);
+
 }
 
