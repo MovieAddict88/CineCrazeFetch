@@ -982,7 +982,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         HomeFragment homeFragment = (HomeFragment) mFragmentList.get(0);
                         // Create a JsonApiResponse with slides data to use updateWithJsonData
                         JsonApiResponse jsonResponse = new JsonApiResponse();
-                        jsonResponse.setSlides(response.body());
+                        JsonApiResponse.HomeData homeData = new JsonApiResponse.HomeData();
+                        homeData.setSlides(response.body());
+                        jsonResponse.setHome(homeData);
                         homeFragment.updateWithJsonData(jsonResponse);
                     }
                 }

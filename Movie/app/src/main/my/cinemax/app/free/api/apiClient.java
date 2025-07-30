@@ -178,13 +178,15 @@ public class apiClient {
     public static void getJsonApiData(JsonApiCallback callback) {
         // Create a comprehensive JsonApiResponse by aggregating modular data
         JsonApiResponse jsonResponse = new JsonApiResponse();
+        JsonApiResponse.HomeData homeData = new JsonApiResponse.HomeData();
+        jsonResponse.setHome(homeData);
         
         // Get slides
         getSlides(new Callback<List<my.cinemax.app.free.entity.Slide>>() {
             @Override
             public void onResponse(Call<List<my.cinemax.app.free.entity.Slide>> call, retrofit2.Response<List<my.cinemax.app.free.entity.Slide>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    jsonResponse.setSlides(response.body());
+                    homeData.setSlides(response.body());
                 }
                 
                 // Get movies
