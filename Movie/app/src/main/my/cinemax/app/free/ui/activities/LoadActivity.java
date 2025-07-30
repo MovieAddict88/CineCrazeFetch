@@ -234,11 +234,11 @@ public class LoadActivity extends AppCompatActivity {
 
     public void getPoster(){
         // Use modular GitHub JSON API to get movie/series by ID
-        apiClient.getMovieDetail(id, new retrofit2.Callback<Object>() {
+        apiClient.getMovieDetail(id, new Callback<my.cinemax.app.free.entity.Poster>() {
             @Override
-            public void onResponse(Call<Object> call, Response<Object> response) {
+            public void onResponse(Call<my.cinemax.app.free.entity.Poster> call, Response<my.cinemax.app.free.entity.Poster> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Poster poster = (Poster) response.body();
+                    my.cinemax.app.free.entity.Poster poster = response.body();
                     if (poster.getType().equals("serie") || poster.getType().equals("series")) {
                         Intent in = new Intent(LoadActivity.this, SerieActivity.class);
                         in.putExtra("poster", poster);
@@ -255,18 +255,18 @@ public class LoadActivity extends AppCompatActivity {
                 }
             }
             @Override
-            public void onFailure(Call<Object> call, Throwable t) {
+            public void onFailure(Call<my.cinemax.app.free.entity.Poster> call, Throwable t) {
                 // Handle error
             }
         });
     }
     public void getChannel(){
         // Use modular GitHub JSON API to get channel by ID
-        apiClient.getChannelDetail(id, new retrofit2.Callback<Object>() {
+        apiClient.getChannelDetail(id, new Callback<my.cinemax.app.free.entity.Channel>() {
             @Override
-            public void onResponse(Call<Object> call, Response<Object> response) {
+            public void onResponse(Call<my.cinemax.app.free.entity.Channel> call, Response<my.cinemax.app.free.entity.Channel> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Channel channel = (Channel) response.body();
+                    my.cinemax.app.free.entity.Channel channel = response.body();
                     Intent in = new Intent(LoadActivity.this, ChannelActivity.class);
                     in.putExtra("channel", channel);
                     in.putExtra("from", "true");
@@ -275,7 +275,7 @@ public class LoadActivity extends AppCompatActivity {
                 }
             }
             @Override
-            public void onFailure(Call<Object> call, Throwable t) {
+            public void onFailure(Call<my.cinemax.app.free.entity.Channel> call, Throwable t) {
                 // Handle error
             }
         });
