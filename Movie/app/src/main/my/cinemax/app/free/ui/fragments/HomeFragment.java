@@ -27,6 +27,7 @@ import my.cinemax.app.free.entity.Data;
 import my.cinemax.app.free.entity.Genre;
 import my.cinemax.app.free.entity.JsonApiResponse;
 import my.cinemax.app.free.ui.Adapters.HomeAdapter;
+import my.cinemax.app.free.entity.Slide;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,73 +82,18 @@ public class HomeFragment extends Fragment {
 
     private void loadData() {
         showLoadingView();
-        // Use GitHub JSON API instead of old API
-        apiClient.getJsonApiData(new Callback<JsonApiResponse>() {
+        // Use modular GitHub JSON API for slides
+        apiClient.getSlides(new retrofit2.Callback<List<Slide>>() {
             @Override
-            public void onResponse(Call<JsonApiResponse> call, Response<JsonApiResponse> response) {
-                apiClient.FormatData(getActivity(), null); // Initialize format data
+            public void onResponse(Call<List<Slide>> call, Response<List<Slide>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     dataList.clear();
                     dataList.add(new Data().setViewType(0));
-                    
-                    JsonApiResponse apiResponse = response.body();
-                    
-                    // Load slides from GitHub JSON
-                    if (apiResponse.getHome() != null && apiResponse.getHome().getSlides() != null && 
-                        apiResponse.getHome().getSlides().size() > 0) {
+                    List<Slide> slides = response.body();
+                    if (slides != null && slides.size() > 0) {
                         Data slideData = new Data();
-                        slideData.setSlides(apiResponse.getHome().getSlides());
+                        slideData.setSlides(slides);
                         dataList.add(slideData);
-                    }
-                    
-                    // Load channels from GitHub JSON
-                    if (apiResponse.getHome() != null && apiResponse.getHome().getChannels() != null && 
-                        apiResponse.getHome().getChannels().size() > 0) {
-                        Data channelData = new Data();
-                        channelData.setChannels(apiResponse.getHome().getChannels());
-                        dataList.add(channelData);
-                    }
-                    
-                    // Load actors from GitHub JSON
-                    if (apiResponse.getHome() != null && apiResponse.getHome().getActors() != null && 
-                        apiResponse.getHome().getActors().size() > 0) {
-                        Data actorsData = new Data();
-                        actorsData.setActors(apiResponse.getHome().getActors());
-                        dataList.add(actorsData);
-                    }
-                    
-                    // Load genres from GitHub JSON
-                    if (apiResponse.getHome() != null && apiResponse.getHome().getGenres() != null && 
-                        apiResponse.getHome().getGenres().size() > 0) {
-                        if (my_genre_list != null) {
-                            Data genreDataMyList = new Data();
-                            genreDataMyList.setGenre(my_genre_list);
-                            dataList.add(genreDataMyList);
-                        }
-                        for (int i = 0; i < apiResponse.getHome().getGenres().size(); i++) {
-                            Data genreData = new Data();
-                            genreData.setGenre(apiResponse.getHome().getGenres().get(i));
-                            dataList.add(genreData);
-                            if (native_ads_enabled){
-                                item++;
-                                if (item == lines_beetween_ads ){
-                                    item= 0;
-                                    if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("FACEBOOK")) {
-                                        dataList.add(new Data().setViewType(5));
-                                    }else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("ADMOB")){
-                                        dataList.add(new Data().setViewType(6));
-                                    } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("BOTH")){
-                                        if (type_ads == 0) {
-                                            dataList.add(new Data().setViewType(5));
-                                            type_ads = 1;
-                                        }else if (type_ads == 1){
-                                            dataList.add(new Data().setViewType(6));
-                                            type_ads = 0;
-                                        }
-                                    }
-                                }
-                            }
-                        }
                     }
                     showListView();
                     homeAdapter.notifyDataSetChanged();
@@ -155,9 +101,8 @@ public class HomeFragment extends Fragment {
                     showErrorView();
                 }
             }
-
             @Override
-            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
+            public void onFailure(Call<List<Slide>> call, Throwable t) {
                 showErrorView();
             }
         });
