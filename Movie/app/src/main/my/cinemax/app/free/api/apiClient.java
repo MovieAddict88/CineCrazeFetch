@@ -399,6 +399,27 @@ public class apiClient {
     }
     
     /**
+     * Get JSON API data with custom callback
+     */
+    public static void getJsonApiData(JsonApiCallback callback) {
+        getJsonApiData(new Callback<JsonApiResponse>() {
+            @Override
+            public void onResponse(Call<JsonApiResponse> call, retrofit2.Response<JsonApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Failed to load data from JSON API");
+                }
+            }
+            
+            @Override
+            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
+                callback.onError("Network error: " + t.getMessage());
+            }
+        });
+    }
+
+    /**
      * Load ads configuration and update PrefManager
      */
     public static void loadAdsConfigAndUpdatePrefs(Activity activity, AdsConfigCallback callback) {
@@ -461,6 +482,12 @@ public class apiClient {
     // Callback interface for ads configuration
     public interface AdsConfigCallback {
         void onSuccess(String message);
+        void onError(String error);
+    }
+
+    // Callback interface for JSON API data
+    public interface JsonApiCallback {
+        void onSuccess(JsonApiResponse jsonResponse);
         void onError(String error);
     }
     
