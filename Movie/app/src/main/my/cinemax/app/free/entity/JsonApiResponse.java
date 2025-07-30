@@ -86,6 +86,34 @@ public class JsonApiResponse {
         this.movies = movies;
     }
     
+    public List<Poster> getSeries() {
+        if (movies == null) {
+            return new ArrayList<>();
+        }
+        
+        List<Poster> series = new ArrayList<>();
+        for (Poster item : movies) {
+            if ("series".equals(item.getType())) {
+                series.add(item);
+            }
+        }
+        return series;
+    }
+    
+    public List<Poster> getMoviesOnly() {
+        if (movies == null) {
+            return new ArrayList<>();
+        }
+        
+        List<Poster> moviesOnly = new ArrayList<>();
+        for (Poster item : movies) {
+            if ("movie".equals(item.getType())) {
+                moviesOnly.add(item);
+            }
+        }
+        return moviesOnly;
+    }
+    
     public List<Channel> getChannels() {
         return channels;
     }

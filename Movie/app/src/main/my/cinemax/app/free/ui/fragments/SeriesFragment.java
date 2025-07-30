@@ -99,8 +99,9 @@ public class SeriesFragment extends Fragment {
                 loaded=true;
                 page = 0;
                 loading = true;
-                getGenreList();
-                loadSeries();
+                // Don't load data here - it will be loaded by HomeActivity
+                // getGenreList();
+                // loadSeries();
             }
         }
     }
@@ -178,7 +179,8 @@ public class SeriesFragment extends Fragment {
                     movieList.clear();
                     movieList.add(new Poster().setTypeView(2));
                     adapter.notifyDataSetChanged();
-                    loadSeries();
+                    // Don't load data here - it will be loaded by HomeActivity
+                    // loadSeries();
                 }else{
                     firstLoadGenre = false;
                 }
@@ -220,7 +222,8 @@ public class SeriesFragment extends Fragment {
                     movieList.clear();
                     movieList.add(new Poster().setTypeView(2));
                     adapter.notifyDataSetChanged();
-                    loadSeries();
+                    // Don't load data here - it will be loaded by HomeActivity
+                    // loadSeries();
                 }else{
                     firstLoadOrder = false;
                 }
@@ -241,7 +244,8 @@ public class SeriesFragment extends Fragment {
                 movieList.clear();
                 movieList.add(new Poster().setTypeView(2));
                 adapter.notifyDataSetChanged();
-                loadSeries();
+                // Don't load data here - it will be loaded by HomeActivity
+                // loadSeries();
             }
         });
         button_try_again.setOnClickListener(new View.OnClickListener() {
@@ -253,7 +257,8 @@ public class SeriesFragment extends Fragment {
                 movieList.clear();
                 movieList.add(new Poster().setTypeView(2));
                 adapter.notifyDataSetChanged();
-                loadSeries();
+                // Don't load data here - it will be loaded by HomeActivity
+                // loadSeries();
             }
         });
         recycler_view_series_fragment.addOnScrollListener(new RecyclerView.OnScrollListener()
@@ -273,7 +278,8 @@ public class SeriesFragment extends Fragment {
                         if ( (visibleItemCount + pastVisiblesItems) >= totalItemCount)
                         {
                             loading = false;
-                            loadSeries();
+                            // Don't load data here - it will be loaded by HomeActivity
+                            // loadSeries();
                         }
                     }
                 }else{
@@ -448,5 +454,48 @@ public class SeriesFragment extends Fragment {
 
         //     }
         // });
+    }
+    
+    // Method to update fragment with JSON data
+    public void updateWithJsonData(List<Poster> series) {
+        if (series != null && series.size() > 0) {
+            // Clear existing data
+            movieList.clear();
+            page = 0;
+            item = 0;
+            
+            // Add series from JSON
+            for (int i = 0; i < series.size(); i++) {
+                movieList.add(series.get(i));
+                
+                if (native_ads_enabled) {
+                    item++;
+                    if (item == lines_beetween_ads) {
+                        item = 0;
+                        if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("FACEBOOK")) {
+                            movieList.add(new Poster().setTypeView(4));
+                        } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("ADMOB")) {
+                            movieList.add(new Poster().setTypeView(5));
+                        } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("BOTH")) {
+                            if (type_ads == 0) {
+                                movieList.add(new Poster().setTypeView(4));
+                                type_ads = 1;
+                            } else if (type_ads == 1) {
+                                movieList.add(new Poster().setTypeView(5));
+                                type_ads = 0;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Show the data
+            linear_layout_page_error_series_fragment.setVisibility(View.GONE);
+            recycler_view_series_fragment.setVisibility(View.VISIBLE);
+            image_view_empty_list.setVisibility(View.GONE);
+            linear_layout_load_series_fragment.setVisibility(View.GONE);
+            
+            adapter.notifyDataSetChanged();
+        }
     }
 }
