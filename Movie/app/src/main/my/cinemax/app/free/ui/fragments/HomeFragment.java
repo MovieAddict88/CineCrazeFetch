@@ -20,11 +20,14 @@ import android.widget.RelativeLayout;
 
 import my.cinemax.app.free.Provider.PrefManager;
 import my.cinemax.app.free.R;
-import my.cinemax.app.free.api.apiClient;
-import my.cinemax.app.free.api.apiRest;
+import my.cinemax.app.free.api.PlaylistApiClient;
+import my.cinemax.app.free.api.PlaylistApiRest;
 import my.cinemax.app.free.entity.Data;
 import my.cinemax.app.free.entity.Genre;
+import my.cinemax.app.free.entity.PlaylistData;
+import my.cinemax.app.free.entity.Poster;
 import my.cinemax.app.free.ui.Adapters.HomeAdapter;
+import my.cinemax.app.free.Utils.PlaylistDataConverter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,40 +81,72 @@ public class HomeFragment extends Fragment {
     private void loadData() {
 
         showLoadingView();
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
-        Call<Data> call = service.homeData();
-        call.enqueue(new Callback<Data>() {
+        Retrofit retrofit = PlaylistApiClient.getClient();
+        PlaylistApiRest service = retrofit.create(PlaylistApiRest.class);
+        Call<PlaylistData> call = service.getPlaylistData();
+        call.enqueue(new Callback<PlaylistData>() {
             @Override
-            public void onResponse(Call<Data> call, Response<Data> response) {
-                apiClient.FormatData(getActivity(),response);
-                if (response.isSuccessful()){
+            public void onResponse(Call<PlaylistData> call, Response<PlaylistData> response) {
+                if (response.isSuccessful() && response.body() != null){
+                    // Convert playlist data to app data format
+                    Data appData = PlaylistDataConverter.convertPlaylistDataToAppData(response.body());
+                    
                     dataList.clear();
                     dataList.add(new Data().setViewType(0));
-                    if (response.body().getSlides().size()>0){
-                        Data sliodeData =  new Data();
-                        sliodeData.setSlides(response.body().getSlides());
-                        dataList.add(sliodeData);
-                    }
-                    if (response.body().getChannels().size()>0){
+                    
+                    if (appData.getChannels() != null && appData.getChannels().size() > 0){
                        Data channelData = new Data();
-                       channelData.setChannels(response.body().getChannels());
+                       channelData.setChannels(appData.getChannels());
                         dataList.add(channelData);
                     }
-                    if (response.body().getActors().size()>0){
-                        Data actorsData = new Data();
-                        actorsData.setActors(response.body().getActors());
-                        dataList.add(actorsData);
+                    
+                    if (appData.getPosters() != null && appData.getPosters().size() > 0){
+                        // Group posters by type (movies and series)
+                        List<Poster> movies = new ArrayList<>();
+                        List<Poster> series = new ArrayList<>();
+                        
+                        for (Poster poster : appData.getPosters()) {
+                            if ("movie".equals(poster.getType())) {
+                                movies.add(poster);
+                            } else if ("serie".equals(poster.getType())) {
+                                series.add(poster);
+                            }
+                        }
+                        
+                        // Add movies section
+                        if (movies.size() > 0) {
+                            Genre movieGenre = new Genre();
+                            movieGenre.setId(-3);
+                            movieGenre.setTitle("Movies");
+                            movieGenre.setPosters(movies);
+                            
+                            Data movieData = new Data();
+                            movieData.setGenre(movieGenre);
+                            dataList.add(movieData);
+                        }
+                        
+                        // Add series section
+                        if (series.size() > 0) {
+                            Genre seriesGenre = new Genre();
+                            seriesGenre.setId(-4);
+                            seriesGenre.setTitle("TV Series");
+                            seriesGenre.setPosters(series);
+                            
+                            Data seriesData = new Data();
+                            seriesData.setGenre(seriesGenre);
+                            dataList.add(seriesData);
+                        }
                     }
-                    if (response.body().getGenres().size()>0){
+                    
+                    if (appData.getGenres() != null && appData.getGenres().size() > 0){
                         if (my_genre_list!=null){
                             Data genreDataMyList = new Data();
                             genreDataMyList.setGenre(my_genre_list);
                             dataList.add(genreDataMyList);
                         }
-                        for (int i = 0; i < response.body().getGenres().size(); i++) {
+                        for (int i = 0; i < appData.getGenres().size(); i++) {
                             Data genreData = new Data();
-                            genreData.setGenre(response.body().getGenres().get(i));
+                            genreData.setGenre(appData.getGenres().get(i));
                             dataList.add(genreData);
                             if (native_ads_enabled){
                                 item++;
@@ -142,7 +177,7 @@ public class HomeFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<Data> call, Throwable t) {
+            public void onFailure(Call<PlaylistData> call, Throwable t) {
                 showErrorView();
             }
         });

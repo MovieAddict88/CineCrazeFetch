@@ -26,7 +26,7 @@ import com.google.android.gms.ads.nativead.NativeAdView;
 import my.cinemax.app.free.Provider.PrefManager;
 import my.cinemax.app.free.R;
 import my.cinemax.app.free.entity.Data;
-import my.cinemax.app.free.ui.activities.ActorsActivity;
+// Removed ActorsActivity import to avoid bugs
 import my.cinemax.app.free.ui.activities.GenreActivity;
 import my.cinemax.app.free.ui.activities.HomeActivity;
 import my.cinemax.app.free.ui.activities.MyListActivity;
@@ -51,8 +51,7 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private SlideAdapter slide_adapter;
     private ChannelAdapter channelAdapter;
     private LinearLayoutManager linearLayoutManagerChannelAdapter;
-    private ActorAdapter actorAdapter;
-    private LinearLayoutManager linearLayoutManagerActorAdapter;
+    // Removed actor-related variables to avoid bugs
     private LinearLayoutManager linearLayoutManagerGenreAdapter;
     private PosterAdapter posterAdapter;
     private int slide_count = 0;
@@ -86,11 +85,7 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 viewHolder = new ChannelHolder(v2);
                 break;
             }
-            case 3: {
-                View v3 = inflater.inflate(R.layout.item_actors, parent, false);
-                viewHolder = new ActorHolder(v3);
-                break;
-            }
+            // Removed case 3 (actors) to avoid bugs
             case 4: {
                 View v4 = inflater.inflate(R.layout.item_genres, parent, false);
                 viewHolder = new GenreHolder(v4);
@@ -138,19 +133,7 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     ((HomeActivity) activity).goToTV();
                 });
                 break;
-            case 3:
-                final ActorHolder holder_actor = (ActorHolder) holder_parent;
-                this.linearLayoutManagerActorAdapter=  new LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false);
-                this.actorAdapter =new ActorAdapter(dataList.get(position).getActors(),activity);
-                holder_actor.recycle_view_actors_item_actors.setHasFixedSize(true);
-                holder_actor.recycle_view_actors_item_actors.setAdapter(actorAdapter);
-                holder_actor.recycle_view_actors_item_actors.setLayoutManager(linearLayoutManagerActorAdapter);
-                actorAdapter.notifyDataSetChanged();
-                holder_actor.image_view_item_actors_more.setOnClickListener(v -> {
-                    Intent intent  =  new Intent(activity.getApplicationContext(), ActorsActivity.class);
-                    (activity).startActivity(intent, ActivityOptionsCompat.makeScaleUpAnimation(v, (int) v.getX(), (int) v.getY(), v.getWidth(), v.getHeight()).toBundle());
-                });
-                break;
+            // Removed case 3 (actors) to avoid bugs
             case 4:
                 final GenreHolder holder_genres = (GenreHolder) holder_parent;
                 holder_genres.text_view_item_genre_title.setText(dataList.get(position).getGenre().getTitle());
@@ -208,9 +191,7 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if(dataList.get(position).getChannels() != null){
             type = 2;
         }
-        if(dataList.get(position).getActors() != null){
-            type = 3;
-        }
+        // Removed actor type (3) to avoid bugs
         if(dataList.get(position).getGenre() != null){
             type = 4;
         }
@@ -280,16 +261,7 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    private class ActorHolder extends RecyclerView.ViewHolder {
-        private final RecyclerView recycle_view_actors_item_actors;
-        private final ImageView image_view_item_actors_more;
-
-        public ActorHolder(View itemView) {
-            super(itemView);
-            this.recycle_view_actors_item_actors=  (RecyclerView) itemView.findViewById(R.id.recycle_view_actors_item_actors);
-            this.image_view_item_actors_more=  (ImageView) itemView.findViewById(R.id.image_view_item_actors_more);
-        }
-    }
+    // Removed ActorHolder class to avoid bugs
     private class GenreHolder extends RecyclerView.ViewHolder {
         private final RecyclerView recycle_view_posters_item_genre;
         private final TextView text_view_item_genre_title;

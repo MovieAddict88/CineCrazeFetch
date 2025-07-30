@@ -206,6 +206,9 @@
         <activity
             android:name="my.cinemax.app.free.ui.activities.RefundActivity"
             android:theme="@style/AppThemeNoAction" />
+        <activity
+            android:name="my.cinemax.app.free.ui.activities.TestPlaylistActivity"
+            android:theme="@style/AppThemeNoAction" />
     </application>
 
 </manifest>

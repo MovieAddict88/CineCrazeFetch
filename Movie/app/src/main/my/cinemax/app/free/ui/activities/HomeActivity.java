@@ -487,7 +487,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                     URL privacyUrl = null;
                                     try {
 // TODO: Replace with your app's privacy policy URL.
-                                        privacyUrl = new URL(Actress.actress.replace("/api/","/privacy_policy.html"));
+                                        privacyUrl = new URL("https://movie-fcs.fwh.is/privacy.html");
 
                                     } catch (MalformedURLException e) {
                                         e.printStackTrace();

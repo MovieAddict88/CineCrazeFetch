@@ -26,7 +26,7 @@ public class PolicyActivity extends AppCompatActivity {
 
 
         WebView webView=findViewById(R.id.web_view);
-        webView.loadUrl(Actress.actress.replace("/api/","/privacy_policy.html"));
+        webView.loadUrl("https://movie-fcs.fwh.is/policy.html");
 
     }
     @Override
