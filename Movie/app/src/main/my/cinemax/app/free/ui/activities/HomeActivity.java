@@ -360,7 +360,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         else if (id==R.id.nav_share){
 			//startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(MyApi.API_URL)));
             //final String appPackageName=getApplication().getPackageName();
-            String shareBody = MyApi.API_URL;
+            String shareBody = "https://raw.githubusercontent.com/MovieAddict88/movie-api/main/free_movie_api.json";
             Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
             sharingIntent.setType("text/plain");
             sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
