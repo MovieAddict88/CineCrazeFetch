@@ -980,7 +980,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 if (response.isSuccessful() && response.body() != null) {
                     if (mFragmentList.size() > 0 && mFragmentList.get(0) instanceof HomeFragment) {
                         HomeFragment homeFragment = (HomeFragment) mFragmentList.get(0);
-                        homeFragment.updateSlides(response.body());
+                        // Create a JsonApiResponse with slides data to use updateWithJsonData
+                        JsonApiResponse jsonResponse = new JsonApiResponse();
+                        jsonResponse.setSlides(response.body());
+                        homeFragment.updateWithJsonData(jsonResponse);
                     }
                 }
             }
@@ -1051,5 +1054,39 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             return activeNetworkInfo != null && activeNetworkInfo.isConnected();
         }
         return false;
+    }
+
+    /**
+     * Update home fragment with cached JSON data
+     */
+    private void updateHomeFragmentWithCachedData() {
+        if (cachedJsonResponse != null && mFragmentList.size() > 0 && mFragmentList.get(0) instanceof HomeFragment) {
+            HomeFragment homeFragment = (HomeFragment) mFragmentList.get(0);
+            homeFragment.updateWithJsonData(cachedJsonResponse);
+        }
+    }
+
+    /**
+     * Update movies fragment with cached JSON data
+     */
+    private void updateMoviesFragmentWithCachedData() {
+        if (cachedJsonResponse != null && mFragmentList.size() > 1 && mFragmentList.get(1) instanceof MoviesFragment) {
+            MoviesFragment moviesFragment = (MoviesFragment) mFragmentList.get(1);
+            if (cachedJsonResponse.getMovies() != null) {
+                moviesFragment.updateWithJsonData(cachedJsonResponse.getMovies());
+            }
+        }
+    }
+
+    /**
+     * Update TV fragment with cached JSON data
+     */
+    private void updateTvFragmentWithCachedData() {
+        if (cachedJsonResponse != null && mFragmentList.size() > 3 && mFragmentList.get(3) instanceof TvFragment) {
+            TvFragment tvFragment = (TvFragment) mFragmentList.get(3);
+            if (cachedJsonResponse.getChannels() != null) {
+                tvFragment.updateWithJsonData(cachedJsonResponse.getChannels());
+            }
+        }
     }
 }

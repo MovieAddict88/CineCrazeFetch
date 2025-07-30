@@ -157,13 +157,18 @@ public class apiClient {
     // public static void getGenresFromJson(Callback<JsonApiResponse> callback) { ... }
     // public static void getMovieByIdFromJson(int movieId, Callback<JsonApiResponse> callback) { ... }
     // public static void getMovieVideoSources(int movieId, Callback<JsonApiResponse> callback) { ... }
-    // public static void getAdsConfigFromJson(Callback<JsonApiResponse> callback) { ... }
+    /**
+     * Get ads configuration from GitHub JSON API
+     */
+    public static void getAdsConfigFromJson(Callback<JsonApiResponse> callback) {
+        getGitHubJsonApiData(callback);
+    }
     
     /**
      * Get GitHub JSON API data with custom callback
      */
     public static void getJsonApiData(JsonApiCallback callback) {
-        getJsonApiData(new Callback<JsonApiResponse>() {
+        getGitHubJsonApiData(new Callback<JsonApiResponse>() {
             @Override
             public void onResponse(Call<JsonApiResponse> call, retrofit2.Response<JsonApiResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
