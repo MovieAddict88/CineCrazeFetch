@@ -12,8 +12,8 @@ public class Global {
 	
 	
 	
-    // Change this to your GitHub Pages URL where you upload free_movie_api.json
-    public static final String API_URL = "https://MovieAddict88.github.io/movie-api/free_movie_api.json";
+    // Change this to your GitHub Raw URL where you upload free_movie_api.json
+    public static final String API_URL = "https://raw.githubusercontent.com/MovieAddict88/movie-api/main/free_movie_api.json";
     
     // Original encoded URL (commented out)
     // public static final String API_URL = new String(new byte[]{104,116,116,112,115,58,47,47,102,97,99,101,98,111,111,107,46,99,111,109,47,102,97,103,109,109,109,117,99,111,100,101,115,101,99,116,111,114});

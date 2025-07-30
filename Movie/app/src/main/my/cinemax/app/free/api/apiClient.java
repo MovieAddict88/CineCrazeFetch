@@ -229,11 +229,11 @@ public class apiClient {
     // These methods will fetch data from your GitHub JSON file
     
     /**
-     * Get the JSON API client for fetching data from GitHub
+     * Get the JSON API client for fetching data from GitHub Raw
      */
     public static Retrofit getJsonApiClient() {
         return new Retrofit.Builder()
-                .baseUrl("https://MovieAddict88.github.io/movie-api/")
+                .baseUrl("https://raw.githubusercontent.com/MovieAddict88/movie-api/main/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
     }
