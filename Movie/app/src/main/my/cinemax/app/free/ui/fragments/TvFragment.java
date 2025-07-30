@@ -99,9 +99,10 @@ public class TvFragment extends Fragment {
                 loaded=true;
                 page = 0;
                 loading = true;
-                getCountiesList();
-                getCategoriesList();
-                loadChannels();
+                // Don't load data here - it will be loaded by HomeActivity
+                // getCountiesList();
+                // getCategoriesList();
+                // loadChannels();
             }
         }
     }
@@ -120,71 +121,71 @@ public class TvFragment extends Fragment {
         return view;
     }
     private void getCountiesList() {
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
+        // Don't load countries from old API - they will be loaded from JSON data
+        // Retrofit retrofit = apiClient.getClient();
+        // apiRest service = retrofit.create(apiRest.class);
+        // Call<List<Country>> call = service.getCountiesList();
+        // call.enqueue(new Callback<List<Country>>() {
+        //     @Override
+        //     public void onResponse(Call<List<Country>> call, Response<List<Country>> response) {
+        //         if (response.isSuccessful()){
+        //             if (response.body().size()>0) {
+        //                 final String[] countryCodes = new String[response.body().size()+1];
+        //                 countryCodes[0] = "All countries";
+        //                 countriesList.add(new Country());
 
-        Call<List<Country>> call = service.getCountiesList();
-        call.enqueue(new Callback<List<Country>>() {
-            @Override
-            public void onResponse(Call<List<Country>> call, Response<List<Country>> response) {
-                if (response.isSuccessful()){
-                    if (response.body().size()>0) {
-                        final String[] countryCodes = new String[response.body().size()+1];
-                        countryCodes[0] = "All countries";
-                        countriesList.add(new Country());
+        //                 for (int i = 0; i < response.body().size(); i++) {
+        //                     countryCodes[i+1] = response.body().get(i).getTitle();
+        //                     countriesList.add(response.body().get(i));
+        //                 }
+        //                 ArrayAdapter<String> filtresAdapter = new ArrayAdapter<String>(getActivity(),
+        //                         R.layout.spinner_layout,R.id.textView,countryCodes);
 
-                        for (int i = 0; i < response.body().size(); i++) {
-                            countryCodes[i+1] = response.body().get(i).getTitle();
-                            countriesList.add(response.body().get(i));
-                        }
-                        ArrayAdapter<String> filtresAdapter = new ArrayAdapter<String>(getActivity(),
-                                R.layout.spinner_layout,R.id.textView,countryCodes);
-
-                        filtresAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
-                        spinner_fragement_channel_countries_list.setAdapter(filtresAdapter);
-                        relative_layout_frament_channel_countries.setVisibility(View.VISIBLE);
-                    }else{
-                        relative_layout_frament_channel_countries.setVisibility(View.GONE);
-                    }
-                }
-            }
-            @Override
-            public void onFailure(Call<List<Country>> call, Throwable t) {
-            }
-        });
+        //                 filtresAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+        //                 spinner_fragement_channel_countries_list.setAdapter(filtresAdapter);
+        //                 relative_layout_frament_channel_countries.setVisibility(View.VISIBLE);
+        //             }else{
+        //                 relative_layout_frament_channel_countries.setVisibility(View.GONE);
+        //             }
+        //         }
+        //     }
+        //     @Override
+        //     public void onFailure(Call<List<Country>> call, Throwable t) {
+        //     }
+        // });
     }
     private void getCategoriesList() {
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
+        // Don't load categories from old API - they will be loaded from JSON data
+        // Retrofit retrofit = apiClient.getClient();
+        // apiRest service = retrofit.create(apiRest.class);
+        // Call<List<Category>> call = service.getCategoriesList();
+        // call.enqueue(new Callback<List<Category>>() {
+        //     @Override
+        //     public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
+        //         if (response.isSuccessful()){
+        //             if (response.body().size()>0) {
+        //                 final String[] categoryCodes = new String[response.body().size()+1];
+        //                 categoryCodes[0] = "All categories";
+        //                 categoryList.add(new Category());
 
-        Call<List<Category>> call = service.getCategoriesList();
-        call.enqueue(new Callback<List<Category>>() {
-            @Override
-            public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
-                if (response.isSuccessful()){
-                    if (response.body().size()>0) {
-                        final String[] categoryCodes = new String[response.body().size()+1];
-                        categoryCodes[0] = "All categories";
-                        categoryList.add(new Category());
-
-                        for (int i = 0; i < response.body().size(); i++) {
-                            categoryCodes[i+1] = response.body().get(i).getTitle();
-                            categoryList.add(response.body().get(i));
-                        }
-                        ArrayAdapter<String> filtresAdapter = new ArrayAdapter<String>(getActivity(),
-                                R.layout.spinner_layout,R.id.textView,categoryCodes);
-                        filtresAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
-                        spinner_fragement_channel_categories_list.setAdapter(filtresAdapter);
-                        relative_layout_frament_channel_categories.setVisibility(View.VISIBLE);
-                    }else{
-                        relative_layout_frament_channel_categories.setVisibility(View.GONE);
-                    }
-                }
-            }
-            @Override
-            public void onFailure(Call<List<Category>> call, Throwable t) {
-            }
-        });
+        //                 for (int i = 0; i < response.body().size(); i++) {
+        //                     categoryCodes[i+1] = response.body().get(i).getTitle();
+        //                     categoryList.add(response.body().get(i));
+        //                 }
+        //                 ArrayAdapter<String> filtresAdapter = new ArrayAdapter<String>(getActivity(),
+        //                         R.layout.spinner_layout,R.id.textView,categoryCodes);
+        //                 filtresAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+        //                 spinner_fragement_channel_categories_list.setAdapter(filtresAdapter);
+        //                 relative_layout_frament_channel_categories.setVisibility(View.VISIBLE);
+        //             }else{
+        //                 relative_layout_frament_channel_categories.setVisibility(View.GONE);
+        //             }
+        //         }
+        //     }
+        //     @Override
+        //     public void onFailure(Call<List<Category>> call, Throwable t) {
+        //     }
+        // });
     }
 
     private void initActon() {
@@ -259,7 +260,8 @@ public class TvFragment extends Fragment {
                 channelList.clear();
                 channelList.add(new Channel().setTypeView(2));
                 adapter.notifyDataSetChanged();
-                loadChannels();
+                // Don't load data here - it will be loaded by HomeActivity
+                // loadChannels();
             }
         });
         button_try_again.setOnClickListener(new View.OnClickListener() {
@@ -271,7 +273,8 @@ public class TvFragment extends Fragment {
                 channelList.clear();
                 channelList.add(new Channel().setTypeView(2));
                 adapter.notifyDataSetChanged();
-                loadChannels();
+                // Don't load data here - it will be loaded by HomeActivity
+                // loadChannels();
             }
         });
         recycler_view_channel_fragment.addOnScrollListener(new RecyclerView.OnScrollListener()
@@ -291,7 +294,8 @@ public class TvFragment extends Fragment {
                         if ( (visibleItemCount + pastVisiblesItems) >= totalItemCount)
                         {
                             loading = false;
-                            loadChannels();
+                            // Don't load data here - it will be loaded by HomeActivity
+                            // loadChannels();
                         }
                     }
                 }else{
@@ -388,76 +392,119 @@ public class TvFragment extends Fragment {
 
     }
     private void loadChannels() {
-        if (page==0){
-            linear_layout_load_channel_fragment.setVisibility(View.VISIBLE);
-        }else{
-            relative_layout_load_more_channel_fragment.setVisibility(View.VISIBLE);
-        }
-        swipe_refresh_layout_channel_fragment.setRefreshing(false);
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
-        Call<List<Channel>> call = service.getChannelsByFiltres(categorySelected,countrySelected,page);
-        call.enqueue(new Callback<List<Channel>>() {
-            @Override
-            public void onResponse(Call<List<Channel>> call, final Response<List<Channel>> response) {
-                if (response.isSuccessful()){
-                    if (response.body().size()>0){
-                        for (int i = 0; i < response.body().size(); i++) {
-                            channelList.add(response.body().get(i));
-                            if (native_ads_enabled){
-                                item++;
-                                if (item == lines_beetween_ads ){
-                                    item= 0;
-                                    if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("FACEBOOK")) {
-                                        channelList.add(new Channel().setTypeView(3));
-                                    }else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("ADMOB")){
-                                        channelList.add(new Channel().setTypeView(4));
-                                    } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("BOTH")){
-                                        if (type_ads == 0) {
-                                            channelList.add(new Channel().setTypeView(3));
-                                            type_ads = 1;
-                                        }else if (type_ads == 1){
-                                            channelList.add(new Channel().setTypeView(4));
-                                            type_ads = 0;
-                                        }
-                                    }
-                                }
+        // Don't load channels from old API - they will be loaded from JSON data
+        // if (page==0){
+        //     linear_layout_load_channel_fragment.setVisibility(View.VISIBLE);
+        // }else{
+        //     relative_layout_load_more_channel_fragment.setVisibility(View.VISIBLE);
+        // }
+        // swipe_refresh_layout_channel_fragment.setRefreshing(false);
+        // Retrofit retrofit = apiClient.getClient();
+        // apiRest service = retrofit.create(apiRest.class);
+        // Call<List<Channel>> call = service.getChannelsByFiltres(categorySelected,countrySelected,page);
+        // call.enqueue(new Callback<List<Channel>>() {
+        //     @Override
+        //     public void onResponse(Call<List<Channel>> call, final Response<List<Channel>> response) {
+        //         if (response.isSuccessful()){
+        //             if (response.body().size()>0){
+        //                 for (int i = 0; i < response.body().size(); i++) {
+        //                     channelList.add(response.body().get(i));
+        //                     if (native_ads_enabled){
+        //                         item++;
+        //                         if (item == lines_beetween_ads ){
+        //                             item= 0;
+        //                             if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("FACEBOOK")) {
+        //                             channelList.add(new Channel().setTypeView(3));
+        //                         }else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("ADMOB")){
+        //                             channelList.add(new Channel().setTypeView(4));
+        //                         } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("BOTH")){
+        //                             if (type_ads == 0) {
+        //                                 channelList.add(new Channel().setTypeView(3));
+        //                                 type_ads = 1;
+        //                             }else if (type_ads == 1){
+        //                                 channelList.add(new Channel().setTypeView(4));
+        //                                 type_ads = 0;
+        //                             }
+        //                         }
+        //                     }
+        //                 }
+        //                 linear_layout_page_error_channel_fragment.setVisibility(View.GONE);
+        //                 recycler_view_channel_fragment.setVisibility(View.VISIBLE);
+        //                 image_view_empty_list.setVisibility(View.GONE);
+
+        //                 adapter.notifyDataSetChanged();
+        //                 page++;
+        //                 loading=true;
+        //             }else{
+        //                 if (page==0) {
+        //                     linear_layout_page_error_channel_fragment.setVisibility(View.GONE);
+        //                     recycler_view_channel_fragment.setVisibility(View.GONE);
+        //                     image_view_empty_list.setVisibility(View.VISIBLE);
+        //                 }
+        //             }
+        //         }else{
+        //             linear_layout_page_error_channel_fragment.setVisibility(View.VISIBLE);
+        //             recycler_view_channel_fragment.setVisibility(View.GONE);
+        //             image_view_empty_list.setVisibility(View.GONE);
+        //         }
+        //         relative_layout_load_more_channel_fragment.setVisibility(View.GONE);
+        //         swipe_refresh_layout_channel_fragment.setRefreshing(false);
+        //         linear_layout_load_channel_fragment.setVisibility(View.GONE);
+        //     }
+
+        //     @Override
+        //     public void onFailure(Call<List<Channel>> call, Throwable t) {
+        //         linear_layout_page_error_channel_fragment.setVisibility(View.VISIBLE);
+        //         recycler_view_channel_fragment.setVisibility(View.GONE);
+        //         image_view_empty_list.setVisibility(View.GONE);
+        //         relative_layout_load_more_channel_fragment.setVisibility(View.GONE);
+        //         swipe_refresh_layout_channel_fragment.setVisibility(View.GONE);
+        //         linear_layout_load_channel_fragment.setVisibility(View.GONE);
+
+        //     }
+        // });
+    }
+    
+    // Method to update fragment with JSON data
+    public void updateWithJsonData(List<Channel> channels) {
+        if (channels != null && channels.size() > 0) {
+            // Clear existing data
+            channelList.clear();
+            page = 0;
+            item = 0;
+            
+            // Add channels from JSON
+            for (int i = 0; i < channels.size(); i++) {
+                channelList.add(channels.get(i));
+                
+                if (native_ads_enabled) {
+                    item++;
+                    if (item == lines_beetween_ads) {
+                        item = 0;
+                        if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("FACEBOOK")) {
+                            channelList.add(new Channel().setTypeView(3));
+                        } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("ADMOB")) {
+                            channelList.add(new Channel().setTypeView(4));
+                        } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("BOTH")) {
+                            if (type_ads == 0) {
+                                channelList.add(new Channel().setTypeView(3));
+                                type_ads = 1;
+                            } else if (type_ads == 1) {
+                                channelList.add(new Channel().setTypeView(4));
+                                type_ads = 0;
                             }
                         }
-                        linear_layout_page_error_channel_fragment.setVisibility(View.GONE);
-                        recycler_view_channel_fragment.setVisibility(View.VISIBLE);
-                        image_view_empty_list.setVisibility(View.GONE);
-
-                        adapter.notifyDataSetChanged();
-                        page++;
-                        loading=true;
-                    }else{
-                        if (page==0) {
-                            linear_layout_page_error_channel_fragment.setVisibility(View.GONE);
-                            recycler_view_channel_fragment.setVisibility(View.GONE);
-                            image_view_empty_list.setVisibility(View.VISIBLE);
-                        }
                     }
-                }else{
-                    linear_layout_page_error_channel_fragment.setVisibility(View.VISIBLE);
-                    recycler_view_channel_fragment.setVisibility(View.GONE);
-                    image_view_empty_list.setVisibility(View.GONE);
                 }
-                relative_layout_load_more_channel_fragment.setVisibility(View.GONE);
-                swipe_refresh_layout_channel_fragment.setRefreshing(false);
-                linear_layout_load_channel_fragment.setVisibility(View.GONE);
             }
-
-            @Override
-            public void onFailure(Call<List<Channel>> call, Throwable t) {
-                linear_layout_page_error_channel_fragment.setVisibility(View.VISIBLE);
-                recycler_view_channel_fragment.setVisibility(View.GONE);
-                image_view_empty_list.setVisibility(View.GONE);
-                relative_layout_load_more_channel_fragment.setVisibility(View.GONE);
-                swipe_refresh_layout_channel_fragment.setVisibility(View.GONE);
-                linear_layout_load_channel_fragment.setVisibility(View.GONE);
-
-            }
-        });
+            
+            // Show the data
+            linear_layout_page_error_channel_fragment.setVisibility(View.GONE);
+            recycler_view_channel_fragment.setVisibility(View.VISIBLE);
+            image_view_empty_list.setVisibility(View.GONE);
+            linear_layout_load_channel_fragment.setVisibility(View.GONE);
+            
+            adapter.notifyDataSetChanged();
+        }
     }
 }

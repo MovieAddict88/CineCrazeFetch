@@ -120,37 +120,37 @@ public class SeriesFragment extends Fragment {
     }
 
     private void getGenreList() {
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
+        // Don't load genres from old API - they will be loaded from JSON data
+        // Retrofit retrofit = apiClient.getClient();
+        // apiRest service = retrofit.create(apiRest.class);
+        // Call<List<Genre>> call = service.getGenreList();
+        // call.enqueue(new Callback<List<Genre>>() {
+        //     @Override
+        //     public void onResponse(Call<List<Genre>> call, Response<List<Genre>> response) {
+        //         if (response.isSuccessful()){
+        //             if (response.body().size()>0) {
+        //                 final String[] countryCodes = new String[response.body().size()+1];
+        //                 countryCodes[0] = "All genres";
+        //                 genreList.add(new Genre());
 
-        Call<List<Genre>> call = service.getGenreList();
-        call.enqueue(new Callback<List<Genre>>() {
-            @Override
-            public void onResponse(Call<List<Genre>> call, Response<List<Genre>> response) {
-                if (response.isSuccessful()){
-                    if (response.body().size()>0) {
-                        final String[] countryCodes = new String[response.body().size()+1];
-                        countryCodes[0] = "All genres";
-                        genreList.add(new Genre());
-
-                        for (int i = 0; i < response.body().size(); i++) {
-                            countryCodes[i+1] = response.body().get(i).getTitle();
-                            genreList.add(response.body().get(i));
-                        }
-                        ArrayAdapter<String> filtresAdapter = new ArrayAdapter<String>(getActivity(),
-                                R.layout.spinner_layout,R.id.textView,countryCodes);
-                        filtresAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
-                        spinner_fragement_series_genre_list.setAdapter(filtresAdapter);
-                        relative_layout_frament_series_genres.setVisibility(View.VISIBLE);
-                    }else{
-                        relative_layout_frament_series_genres.setVisibility(View.GONE);
-                    }
-                }
-            }
-            @Override
-            public void onFailure(Call<List<Genre>> call, Throwable t) {
-            }
-        });
+        //                 for (int i = 0; i < response.body().size(); i++) {
+        //                     countryCodes[i+1] = response.body().get(i).getTitle();
+        //                     genreList.add(response.body().get(i));
+        //                 }
+        //                 ArrayAdapter<String> filtresAdapter = new ArrayAdapter<String>(getActivity(),
+        //                         R.layout.spinner_layout,R.id.textView,countryCodes);
+        //                 filtresAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+        //                 spinner_fragement_series_genre_list.setAdapter(filtresAdapter);
+        //                 relative_layout_frament_series_genres.setVisibility(View.VISIBLE);
+        //             }else{
+        //                 relative_layout_frament_series_genres.setVisibility(View.GONE);
+        //             }
+        //         }
+        //     }
+        //     @Override
+        //     public void onFailure(Call<List<Genre>> call, Throwable t) {
+        //     }
+        // });
     }
 
     private void initActon() {
@@ -375,78 +375,78 @@ public class SeriesFragment extends Fragment {
         spinner_fragement_series_orders_list.setAdapter(ordersAdapter);
     }
     private void loadSeries() {
-        if (page==0){
-            linear_layout_load_series_fragment.setVisibility(View.VISIBLE);
-        }else{
-            relative_layout_load_more_series_fragment.setVisibility(View.VISIBLE);
-        }
-        swipe_refresh_layout_series_fragment.setRefreshing(false);
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
-        Call<List<Poster>> call = service.getSeriesByFiltres(genreSelected,orderSelected,page);
-        call.enqueue(new Callback<List<Poster>>() {
-            @Override
-            public void onResponse(Call<List<Poster>> call, final Response<List<Poster>> response) {
-                if (response.isSuccessful()){
-                    if (response.body().size()>0){
-                        for (int i = 0; i < response.body().size(); i++) {
-                            movieList.add(response.body().get(i));
+        // Don't load series from old API - they will be loaded from JSON data
+        // if (page==0){
+        //     linear_layout_load_series_fragment.setVisibility(View.VISIBLE);
+        // }else{
+        //     relative_layout_load_more_series_fragment.setVisibility(View.VISIBLE);
+        // }
+        // swipe_refresh_layout_series_fragment.setRefreshing(false);
+        // Retrofit retrofit = apiClient.getClient();
+        // apiRest service = retrofit.create(apiRest.class);
+        // Call<List<Poster>> call = service.getSeriesByFiltres(genreSelected,orderSelected,page);
+        // call.enqueue(new Callback<List<Poster>>() {
+        //     @Override
+        //     public void onResponse(Call<List<Poster>> call, final Response<List<Poster>> response) {
+        //         if (response.isSuccessful()){
+        //             if (response.body().size()>0){
+        //                 for (int i = 0; i < response.body().size(); i++) {
+        //                     movieList.add(response.body().get(i));
 
-                            if (native_ads_enabled){
-                                item++;
-                                if (item == lines_beetween_ads ){
-                                    item= 0;
-                                    if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("FACEBOOK")) {
-                                        movieList.add(new Poster().setTypeView(4));
-                                    }else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("ADMOB")){
-                                        movieList.add(new Poster().setTypeView(5));
-                                    } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("BOTH")){
-                                        if (type_ads == 0) {
-                                            movieList.add(new Poster().setTypeView(4));
-                                            type_ads = 1;
-                                        }else if (type_ads == 1){
-                                            movieList.add(new Poster().setTypeView(5));
-                                            type_ads = 0;
-                                        }
-                                    }
-                                }
-                            }
+        //                     if (native_ads_enabled){
+        //                         item++;
+        //                         if (item == lines_beetween_ads ){
+        //                             item= 0;
+        //                             if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("FACEBOOK")) {
+        //                             movieList.add(new Poster().setTypeView(4));
+        //                         }else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("ADMOB")){
+        //                             movieList.add(new Poster().setTypeView(5));
+        //                         } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("BOTH")){
+        //                             if (type_ads == 0) {
+        //                                 movieList.add(new Poster().setTypeView(4));
+        //                                 type_ads = 1;
+        //                             }else if (type_ads == 1){
+        //                                 movieList.add(new Poster().setTypeView(5));
+        //                                 type_ads = 0;
+        //                             }
+        //                         }
+        //                     }
 
-                        }
-                        linear_layout_page_error_series_fragment.setVisibility(View.GONE);
-                        recycler_view_series_fragment.setVisibility(View.VISIBLE);
-                        image_view_empty_list.setVisibility(View.GONE);
+        //                 }
+        //                 linear_layout_page_error_series_fragment.setVisibility(View.GONE);
+        //                 recycler_view_series_fragment.setVisibility(View.VISIBLE);
+        //                 image_view_empty_list.setVisibility(View.GONE);
 
-                        adapter.notifyDataSetChanged();
-                        page++;
-                        loading=true;
-                    }else{
-                        if (page==0) {
-                            linear_layout_page_error_series_fragment.setVisibility(View.GONE);
-                            recycler_view_series_fragment.setVisibility(View.GONE);
-                            image_view_empty_list.setVisibility(View.VISIBLE);
-                        }
-                    }
-                }else{
-                    linear_layout_page_error_series_fragment.setVisibility(View.VISIBLE);
-                    recycler_view_series_fragment.setVisibility(View.GONE);
-                    image_view_empty_list.setVisibility(View.GONE);
-                }
-                relative_layout_load_more_series_fragment.setVisibility(View.GONE);
-                swipe_refresh_layout_series_fragment.setRefreshing(false);
-                linear_layout_load_series_fragment.setVisibility(View.GONE);
-            }
+        //                 adapter.notifyDataSetChanged();
+        //                 page++;
+        //                 loading=true;
+        //             }else{
+        //                 if (page==0) {
+        //                     linear_layout_page_error_series_fragment.setVisibility(View.GONE);
+        //                     recycler_view_series_fragment.setVisibility(View.GONE);
+        //                     image_view_empty_list.setVisibility(View.VISIBLE);
+        //                 }
+        //             }
+        //         }else{
+        //             linear_layout_page_error_series_fragment.setVisibility(View.VISIBLE);
+        //             recycler_view_series_fragment.setVisibility(View.GONE);
+        //             image_view_empty_list.setVisibility(View.GONE);
+        //         }
+        //         relative_layout_load_more_series_fragment.setVisibility(View.GONE);
+        //         swipe_refresh_layout_series_fragment.setRefreshing(false);
+        //         linear_layout_load_series_fragment.setVisibility(View.GONE);
+        //     }
 
-            @Override
-            public void onFailure(Call<List<Poster>> call, Throwable t) {
-                linear_layout_page_error_series_fragment.setVisibility(View.VISIBLE);
-                recycler_view_series_fragment.setVisibility(View.GONE);
-                image_view_empty_list.setVisibility(View.GONE);
-                relative_layout_load_more_series_fragment.setVisibility(View.GONE);
-                swipe_refresh_layout_series_fragment.setVisibility(View.GONE);
-                linear_layout_load_series_fragment.setVisibility(View.GONE);
+        //     @Override
+        //     public void onFailure(Call<List<Poster>> call, Throwable t) {
+        //         linear_layout_page_error_series_fragment.setVisibility(View.VISIBLE);
+        //         recycler_view_series_fragment.setVisibility(View.GONE);
+        //         image_view_empty_list.setVisibility(View.GONE);
+        //         relative_layout_load_more_series_fragment.setVisibility(View.GONE);
+        //         swipe_refresh_layout_series_fragment.setVisibility(View.GONE);
+        //         linear_layout_load_series_fragment.setVisibility(View.GONE);
 
-            }
-        });
+        //     }
+        // });
     }
 }

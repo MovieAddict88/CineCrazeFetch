@@ -6,6 +6,8 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class Plan implements Parcelable {
         @SerializedName("id")
         @Expose
@@ -29,7 +31,23 @@ public class Plan implements Parcelable {
 
         @SerializedName("duration")
         @Expose
-        private int duration;
+        private String duration;
+
+        @SerializedName("enabled")
+        @Expose
+        private boolean enabled = true;
+
+        @SerializedName("billing_type")
+        @Expose
+        private String billingType = "monthly";
+
+        @SerializedName("currency")
+        @Expose
+        private String currency = "USD";
+
+        @SerializedName("features")
+        @Expose
+        private List<String> features;
 
         public Plan() {
 
@@ -45,7 +63,11 @@ public class Plan implements Parcelable {
         description = in.readString();
         discount = in.readString();
         price = in.readDouble();
-        duration = in.readInt();
+        duration = in.readString();
+        enabled = in.readByte() != 0;
+        billingType = in.readString();
+        currency = in.readString();
+        features = in.createStringArrayList();
     }
 
     public static final Creator<Plan> CREATOR = new Creator<Plan>() {
@@ -80,7 +102,7 @@ public class Plan implements Parcelable {
             this.price = price;
         }
 
-        public void setDuration(int duration) {
+        public void setDuration(String duration) {
             this.duration = duration;
         }
 
@@ -104,8 +126,40 @@ public class Plan implements Parcelable {
             return price;
         }
 
-        public int getDuration() {
+        public String getDuration() {
             return duration;
+        }
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
+
+        public String getBillingType() {
+            return billingType;
+        }
+
+        public void setBillingType(String billingType) {
+            this.billingType = billingType;
+        }
+
+        public String getCurrency() {
+            return currency;
+        }
+
+        public void setCurrency(String currency) {
+            this.currency = currency;
+        }
+
+        public List<String> getFeatures() {
+            return features;
+        }
+
+        public void setFeatures(List<String> features) {
+            this.features = features;
         }
 
         @Override
@@ -123,8 +177,12 @@ public class Plan implements Parcelable {
             }
             dest.writeString(title);
             dest.writeString(description);
-            dest.writeString(discount);
-            dest.writeDouble(price);
-            dest.writeInt(duration);
+                    dest.writeString(discount);
+        dest.writeDouble(price);
+        dest.writeString(duration);
+        dest.writeByte((byte) (enabled ? 1 : 0));
+        dest.writeString(billingType);
+        dest.writeString(currency);
+        dest.writeStringList(features);
         }
 }

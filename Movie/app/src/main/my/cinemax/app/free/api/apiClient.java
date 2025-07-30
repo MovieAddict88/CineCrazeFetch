@@ -9,6 +9,8 @@ import my.cinemax.app.free.MyApplication;
 import my.cinemax.app.free.Provider.PrefManager;
 import my.cinemax.app.free.config.Global;
 import my.cinemax.app.free.entity.ApiResponse;
+import my.cinemax.app.free.entity.JsonApiResponse;
+import my.cinemax.app.free.entity.Poster;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -166,7 +168,7 @@ public class apiClient {
             Picasso.setSingletonInstance(picasso);
 
             retrofit = new Retrofit.Builder()
-				.baseUrl(Actress.actress)
+				.baseUrl("https://raw.githubusercontent.com/MovieAddict88/movie-api/main/")
                     .client(okHttpClient)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
@@ -222,6 +224,132 @@ public class apiClient {
         };
     }
     public static String retrofit_id = "aHR0cDovL2xpY2Vuc2UudmlybWFuYS5jb20vYXBpLw==";
+    
+    // ===== JSON API CLIENT METHODS =====
+    // These methods will fetch data from your GitHub JSON file
+    
+    /**
+     * Get the JSON API client for fetching data from GitHub Raw
+     */
+    public static Retrofit getJsonApiClient() {
+        return new Retrofit.Builder()
+                .baseUrl("https://raw.githubusercontent.com/MovieAddict88/movie-api/main/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+    }
+    
+    /**
+     * Fetch all data from the JSON API
+     */
+    public static void getJsonApiData(Callback<JsonApiResponse> callback) {
+        Retrofit retrofit = getJsonApiClient();
+        apiRest service = retrofit.create(apiRest.class);
+        Call<JsonApiResponse> call = service.getJsonApiData();
+        call.enqueue(callback);
+    }
+    
+    /**
+     * Fetch home data from the JSON API
+     */
+    public static void getHomeDataFromJson(Callback<JsonApiResponse> callback) {
+        Retrofit retrofit = getJsonApiClient();
+        apiRest service = retrofit.create(apiRest.class);
+        Call<JsonApiResponse> call = service.getHomeDataFromJson();
+        call.enqueue(callback);
+    }
+    
+    /**
+     * Fetch movies from the JSON API
+     */
+    public static void getMoviesFromJson(Callback<JsonApiResponse> callback) {
+        Retrofit retrofit = getJsonApiClient();
+        apiRest service = retrofit.create(apiRest.class);
+        Call<JsonApiResponse> call = service.getMoviesFromJson();
+        call.enqueue(callback);
+    }
+    
+    /**
+     * Fetch channels from the JSON API
+     */
+    public static void getChannelsFromJson(Callback<JsonApiResponse> callback) {
+        Retrofit retrofit = getJsonApiClient();
+        apiRest service = retrofit.create(apiRest.class);
+        Call<JsonApiResponse> call = service.getChannelsFromJson();
+        call.enqueue(callback);
+    }
+    
+    /**
+     * Fetch actors from the JSON API
+     */
+    public static void getActorsFromJson(Callback<JsonApiResponse> callback) {
+        Retrofit retrofit = getJsonApiClient();
+        apiRest service = retrofit.create(apiRest.class);
+        Call<JsonApiResponse> call = service.getActorsFromJson();
+        call.enqueue(callback);
+    }
+    
+    /**
+     * Fetch genres from the JSON API
+     */
+    public static void getGenresFromJson(Callback<JsonApiResponse> callback) {
+        Retrofit retrofit = getJsonApiClient();
+        apiRest service = retrofit.create(apiRest.class);
+        Call<JsonApiResponse> call = service.getGenresFromJson();
+        call.enqueue(callback);
+    }
+    
+    /**
+     * Get a specific movie by ID from the JSON API
+     */
+    public static void getMovieByIdFromJson(int movieId, Callback<JsonApiResponse> callback) {
+        getMoviesFromJson(new Callback<JsonApiResponse>() {
+            @Override
+            public void onResponse(Call<JsonApiResponse> call, retrofit2.Response<JsonApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Find the movie by ID
+                    for (Poster movie : response.body().getMovies()) {
+                        if (movie.getId() == movieId) {
+                            // Create a new response with just this movie
+                            JsonApiResponse singleMovieResponse = new JsonApiResponse();
+                            // You can customize this response as needed
+                            callback.onResponse(call, retrofit2.Response.success(singleMovieResponse));
+                            return;
+                        }
+                    }
+                    callback.onFailure(call, new Exception("Movie not found"));
+                } else {
+                    callback.onFailure(call, new Exception("Failed to load movies"));
+                }
+            }
+            
+            @Override
+            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
+                callback.onFailure(call, t);
+            }
+        });
+    }
+    
+    /**
+     * Get video sources for a movie from the JSON API
+     */
+    public static void getMovieVideoSources(int movieId, Callback<JsonApiResponse> callback) {
+        getMovieByIdFromJson(movieId, new Callback<JsonApiResponse>() {
+            @Override
+            public void onResponse(Call<JsonApiResponse> call, retrofit2.Response<JsonApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Return video sources from the JSON
+                    callback.onResponse(call, response);
+                } else {
+                    callback.onFailure(call, new Exception("Failed to load video sources"));
+                }
+            }
+            
+            @Override
+            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
+                callback.onFailure(call, t);
+            }
+        });
+    }
     public static Interceptor provideOfflineCacheInterceptor ()
     {
         return new Interceptor()
@@ -242,6 +370,134 @@ public class apiClient {
                 return chain.proceed( request );
             }
         };
+        }
+    
+    /**
+     * Get ads configuration from separate JSON API
+     */
+    public static void getAdsConfigFromJson(Callback<JsonApiResponse> callback) {
+        // Create a separate Retrofit client for ads config
+        Retrofit adsRetrofit = new Retrofit.Builder()
+                .baseUrl("https://raw.githubusercontent.com/MovieAddict88/movie-api/main/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        
+        apiRest adsService = adsRetrofit.create(apiRest.class);
+        Call<JsonApiResponse> call = adsService.getAdsConfig();
+        
+        call.enqueue(new Callback<JsonApiResponse>() {
+            @Override
+            public void onResponse(Call<JsonApiResponse> call, retrofit2.Response<JsonApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    JsonApiResponse.AdsConfig adsConfig = response.body().getAdsConfig();
+                    if (adsConfig != null) {
+                        callback.onResponse(call, response);
+                    } else {
+                        callback.onFailure(call, new Exception("No ads configuration found"));
+                    }
+                } else {
+                    callback.onFailure(call, new Exception("Failed to load ads configuration"));
+                }
+            }
+            
+            @Override
+            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
+                callback.onFailure(call, t);
+            }
+        });
+    }
+    
+    /**
+     * Get JSON API data with custom callback
+     */
+    public static void getJsonApiData(JsonApiCallback callback) {
+        getJsonApiData(new Callback<JsonApiResponse>() {
+            @Override
+            public void onResponse(Call<JsonApiResponse> call, retrofit2.Response<JsonApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Failed to load data from JSON API");
+                }
+            }
+            
+            @Override
+            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
+                callback.onError("Network error: " + t.getMessage());
+            }
+        });
     }
 
+    /**
+     * Load ads configuration and update PrefManager
+     */
+    public static void loadAdsConfigAndUpdatePrefs(Activity activity, AdsConfigCallback callback) {
+        getAdsConfigFromJson(new Callback<JsonApiResponse>() {
+            @Override
+            public void onResponse(Call<JsonApiResponse> call, retrofit2.Response<JsonApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    JsonApiResponse.AdsConfig adsConfig = response.body().getAdsConfig();
+                    if (adsConfig != null) {
+                        PrefManager prefManager = new PrefManager(activity.getApplicationContext());
+                        
+                        // Update AdMob IDs
+                        if (adsConfig.getAdmob() != null) {
+                            prefManager.setString("ADMIN_BANNER_ADMOB_ID", adsConfig.getAdmob().getBannerId());
+                            prefManager.setString("ADMIN_INTERSTITIAL_ADMOB_ID", adsConfig.getAdmob().getInterstitialId());
+                            prefManager.setString("ADMIN_REWARDED_ADMOB_ID", adsConfig.getAdmob().getRewardedId());
+                            prefManager.setString("ADMIN_NATIVE_ADMOB_ID", adsConfig.getAdmob().getNativeId());
+                        }
+                        
+                        // Update Facebook IDs
+                        if (adsConfig.getFacebook() != null) {
+                            prefManager.setString("ADMIN_BANNER_FACEBOOK_ID", adsConfig.getFacebook().getBannerId());
+                            prefManager.setString("ADMIN_INTERSTITIAL_FACEBOOK_ID", adsConfig.getFacebook().getInterstitialId());
+                            prefManager.setString("ADMIN_REWARDED_FACEBOOK_ID", adsConfig.getFacebook().getRewardedId());
+                            prefManager.setString("ADMIN_NATIVE_FACEBOOK_ID", adsConfig.getFacebook().getNativeId());
+                        }
+                        
+                        // Update settings
+                        if (adsConfig.getSettings() != null) {
+                            JsonApiResponse.AdsSettings settings = adsConfig.getSettings();
+                            
+                            prefManager.setString("ADMIN_BANNER_TYPE", settings.getBannerType());
+                            prefManager.setString("ADMIN_INTERSTITIAL_TYPE", settings.getInterstitialType());
+                            prefManager.setString("ADMIN_NATIVE_TYPE", settings.getNativeType());
+                            prefManager.setInt("ADMIN_INTERSTITIAL_CLICKS", settings.getInterstitialClicks());
+                            prefManager.setString("ADMIN_NATIVE_LINES", String.valueOf(settings.getNativeLines()));
+                            
+                            // Enable/disable ads
+                            prefManager.setString("ADMIN_BANNER_TYPE", settings.isBannerEnabled() ? settings.getBannerType() : "FALSE");
+                            prefManager.setString("ADMIN_INTERSTITIAL_TYPE", settings.isInterstitialEnabled() ? settings.getInterstitialType() : "FALSE");
+                            prefManager.setString("ADMIN_NATIVE_TYPE", settings.isNativeEnabled() ? settings.getNativeType() : "FALSE");
+                        }
+                        
+                        callback.onSuccess("Ads configuration updated successfully");
+                    } else {
+                        callback.onError("No ads configuration found");
+                    }
+                } else {
+                    callback.onError("Failed to load ads configuration");
+                }
+            }
+            
+            @Override
+            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
+                callback.onError("Failed to load ads config: " + t.getMessage());
+            }
+        });
+    }
+    
+    // Callback interface for ads configuration
+    public interface AdsConfigCallback {
+        void onSuccess(String message);
+        void onError(String error);
+    }
+
+    // Callback interface for JSON API data
+    public interface JsonApiCallback {
+        void onSuccess(JsonApiResponse jsonResponse);
+        void onError(String error);
+    }
+    
 }

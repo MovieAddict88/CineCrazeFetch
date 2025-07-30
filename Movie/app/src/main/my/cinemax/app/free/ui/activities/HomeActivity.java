@@ -64,6 +64,9 @@ import my.cinemax.app.free.api.apiRest;
 import my.cinemax.app.free.config.Global;
 import my.cinemax.app.free.entity.ApiResponse;
 import my.cinemax.app.free.entity.Genre;
+import my.cinemax.app.free.entity.JsonApiResponse;
+import my.cinemax.app.free.entity.Poster;
+import my.cinemax.app.free.entity.Channel;
 import my.cinemax.app.free.ui.fragments.DownloadsFragment;
 import my.cinemax.app.free.ui.fragments.HomeFragment;
 import my.cinemax.app.free.ui.fragments.MoviesFragment;
@@ -71,10 +74,15 @@ import my.cinemax.app.free.ui.fragments.SeriesFragment;
 import my.cinemax.app.free.ui.fragments.TvFragment;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import android.os.Handler;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.content.Context;
 
 import androidx.appcompat.widget.Toolbar;
 
@@ -94,6 +102,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private final List<Fragment> mFragmentList = new ArrayList<>();
     private ViewPager viewPager;
     private ViewPagerAdapter adapter;
+    private JsonApiResponse cachedJsonResponse = null;
+    private boolean dataLoaded = false;
     private NavigationView navigationView;
     private TextView text_view_name_nave_header;
     private CircleImageView circle_image_view_profile_nav_header;
@@ -122,12 +132,16 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        getGenreList();
+        // Don't call old API - getGenreList();
         initViews();
         initActions();
         firebaseSubscribe();
         initGDPR();
         initBuy();
+        
+        // ===== LOAD DATA FROM JSON API =====
+        // Load data from your GitHub JSON
+        loadAllDataFromJson();
     }
 
     BillingSubs billingSubs;
@@ -231,6 +245,21 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onPageSelected(int i) {
                 bubbleNavigationLinearView.setCurrentActiveItem(i);
+                
+                // Update fragments with cached data when switching pages
+                if (dataLoaded && cachedJsonResponse != null) {
+                    switch (i) {
+                        case 0: // Home
+                            updateHomeFragmentWithCachedData();
+                            break;
+                        case 1: // Movies
+                            updateMoviesFragmentWithCachedData();
+                            break;
+                        case 3: // TV/Live
+                            updateTvFragmentWithCachedData();
+                            break;
+                    }
+                }
             }
 
             @Override
@@ -428,23 +457,24 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        Retrofit retrofit = apiClient.getClient();
-                        apiRest service = retrofit.create(apiRest.class);
-                        String unique_id = Settings.Secure.getString(getApplicationContext().getContentResolver(),Settings.Secure.ANDROID_ID);
+                        // Don't call old API for device registration
+                        // Retrofit retrofit = apiClient.getClient();
+                        // apiRest service = retrofit.create(apiRest.class);
+                        // String unique_id = Settings.Secure.getString(getApplicationContext().getContentResolver(),Settings.Secure.ANDROID_ID);
 
-                        Call<ApiResponse> call = service.addDevice(unique_id);
-                        call.enqueue(new Callback<ApiResponse>() {
-                            @Override
-                            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
-                                if (response.isSuccessful())
-                                    Log.v("HomeActivity","Added : "+response.body().getMessage());
-                            }
+                        // Call<ApiResponse> call = service.addDevice(unique_id);
+                        // call.enqueue(new Callback<ApiResponse>() {
+                        //     @Override
+                        //     public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                        //         if (response.isSuccessful())
+                        //             Log.v("HomeActivity","Added : "+response.body().getMessage());
+                        //     }
 
-                            @Override
-                            public void onFailure(Call<ApiResponse> call, Throwable t) {
-                                Log.v("HomeActivity","onFailure : "+ t.getMessage().toString());
-                            }
-                        });
+                        //     @Override
+                        //     public void onFailure(Call<ApiResponse> call, Throwable t) {
+                        //         Log.v("HomeActivity","onFailure : "+ t.getMessage().toString());
+                        //     }
+                        // });
                     }
                 });
 
@@ -597,32 +627,39 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View v) {
                 prf.setString("NOT_RATE_APP", "TRUE");
-                Retrofit retrofit = apiClient.getClient();
-                apiRest service = retrofit.create(apiRest.class);
-                Call<ApiResponse> call = service.addSupport("Application rating feedback",AppCompatRatingBar_dialog_rating_app.getRating()+" star(s) Rating".toString(),edit_text_feed_back.getText().toString());
-                call.enqueue(new Callback<ApiResponse>() {
-                    @Override
-                    public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
-                        if(response.isSuccessful()){
-                            Toasty.success(getApplicationContext(), getResources().getString(R.string.rating_done), Toast.LENGTH_SHORT).show();
-                        }else{
-                            Toasty.error(getApplicationContext(), getString(R.string.error_server), Toast.LENGTH_SHORT).show();
-                        }
-                        rateDialog.dismiss();
+                // Don't call old API for rating feedback
+                // Retrofit retrofit = apiClient.getClient();
+                // apiRest service = retrofit.create(apiRest.class);
+                // Call<ApiResponse> call = service.addSupport("Application rating feedback",AppCompatRatingBar_dialog_rating_app.getRating()+" star(s) Rating".toString(),edit_text_feed_back.getText().toString());
+                // call.enqueue(new Callback<ApiResponse>() {
+                //     @Override
+                //     public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                //         if(response.isSuccessful()){
+                //             Toasty.success(getApplicationContext(), getResources().getString(R.string.rating_done), Toast.LENGTH_SHORT).show();
+                //         }else{
+                //             Toasty.error(getApplicationContext(), getString(R.string.error_server), Toast.LENGTH_SHORT).show();
+                //         }
+                //         rateDialog.dismiss();
 
-                        if (close)
-                            finish();
+                //         if (close)
+                //             finish();
 
-                    }
-                    @Override
-                    public void onFailure(Call<ApiResponse> call, Throwable t) {
-                        Toasty.error(getApplicationContext(), getString(R.string.error_server), Toast.LENGTH_SHORT).show();
-                        rateDialog.dismiss();
+                //     }
+                //     @Override
+                //     public void onFailure(Call<ApiResponse> call, Throwable t) {
+                //         Toasty.error(getApplicationContext(), getString(R.string.error_server), Toast.LENGTH_SHORT).show();
+                //         rateDialog.dismiss();
 
-                        if (close)
-                            finish();
-                    }
-                });
+                //         if (close)
+                //             finish();
+                //     }
+                // });
+                
+                // Just dismiss the dialog without API call
+                Toasty.success(getApplicationContext(), getResources().getString(R.string.rating_done), Toast.LENGTH_SHORT).show();
+                rateDialog.dismiss();
+                if (close)
+                    finish();
             }
         });
         AppCompatRatingBar_dialog_rating_app.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
@@ -741,19 +778,19 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         viewPager.setCurrentItem(3);
     }
     private void getGenreList() {
-        Retrofit retrofit = apiClient.getClient();
-        apiRest service = retrofit.create(apiRest.class);
+        // Don't load genres from old API - they will be loaded from JSON data
+        // Retrofit retrofit = apiClient.getClient();
+        // apiRest service = retrofit.create(apiRest.class);
+        // Call<List<Genre>> call = service.getGenreList();
+        // call.enqueue(new Callback<List<Genre>>() {
+        //     @Override
+        //     public void onResponse(Call<List<Genre>> call, Response<List<Genre>> response) {
 
-        Call<List<Genre>> call = service.getGenreList();
-        call.enqueue(new Callback<List<Genre>>() {
-            @Override
-            public void onResponse(Call<List<Genre>> call, Response<List<Genre>> response) {
-
-            }
-            @Override
-            public void onFailure(Call<List<Genre>> call, Throwable t) {
-            }
-        });
+        //     }
+        //     @Override
+        //     public void onFailure(Call<List<Genre>> call, Throwable t) {
+        //     }
+        // });
     }
     public void showDialog(){
         this.dialog = new Dialog(this,
@@ -924,5 +961,246 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             return false;
         }
         return true;
+    }
+    
+    // ===== JSON API INTEGRATION =====
+    // These methods will load data from your GitHub JSON file
+    
+    // Individual loading methods removed to prevent conflicts and instability
+    
+    /**
+     * Get video sources for a movie from JSON API
+     */
+    public void getMovieVideoSourcesFromJson(int movieId, VideoSourcesCallback callback) {
+        apiClient.getMovieVideoSources(movieId, new Callback<JsonApiResponse>() {
+            @Override
+            public void onResponse(Call<JsonApiResponse> call, Response<JsonApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Get video sources from the JSON response
+                    JsonApiResponse.VideoSources videoSources = response.body().getVideoSources();
+                    
+                    if (videoSources != null) {
+                        // Return Big Buck Bunny or Elephants Dream URLs
+                        if (videoSources.getBigBuckBunny() != null) {
+                            callback.onSuccess(videoSources.getBigBuckBunny().getUrls().getP1080());
+                        } else if (videoSources.getElephantsDream() != null) {
+                            callback.onSuccess(videoSources.getElephantsDream().getUrls().getP1080());
+                        } else {
+                            callback.onError("No video sources available");
+                        }
+                    } else {
+                        callback.onError("No video sources found");
+                    }
+                } else {
+                    callback.onError("Failed to load video sources");
+                }
+            }
+            
+            @Override
+            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
+                callback.onError("Network error: " + t.getMessage());
+            }
+        });
+    }
+    
+    /**
+     * Get live stream URL from JSON API
+     */
+    public void getLiveStreamFromJson(LiveStreamCallback callback) {
+        apiClient.getJsonApiData(new Callback<JsonApiResponse>() {
+            @Override
+            public void onResponse(Call<JsonApiResponse> call, Response<JsonApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    JsonApiResponse.VideoSources videoSources = response.body().getVideoSources();
+                    
+                    if (videoSources != null && videoSources.getLiveStreams() != null) {
+                        JsonApiResponse.LiveStream liveStream = videoSources.getLiveStreams().getTestHls();
+                        if (liveStream != null) {
+                            callback.onSuccess(liveStream.getUrl());
+                        } else {
+                            callback.onError("No live stream available");
+                        }
+                    } else {
+                        callback.onError("No live streams found");
+                    }
+                } else {
+                    callback.onError("Failed to load live streams");
+                }
+            }
+            
+            @Override
+            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
+                callback.onError("Network error: " + t.getMessage());
+            }
+        });
+    }
+    
+    // Helper methods to update fragments with JSON data
+    private void updateHomeFragmentWithJsonData(JsonApiResponse jsonResponse) {
+        // Update HomeFragment with the JSON data
+        Log.d("JSON_API", "Updating HomeFragment with JSON data");
+        
+        // Get the HomeFragment and update it
+        if (mFragmentList.size() > 0 && mFragmentList.get(0) instanceof HomeFragment) {
+            HomeFragment homeFragment = (HomeFragment) mFragmentList.get(0);
+            // Pass the JSON data to the fragment
+            homeFragment.updateWithJsonData(jsonResponse);
+        }
+    }
+    
+    private void updateHomeFragmentWithCachedData() {
+        if (cachedJsonResponse != null && dataLoaded) {
+            Log.d("JSON_API", "Updating HomeFragment with cached data");
+            updateHomeFragmentWithJsonData(cachedJsonResponse);
+        }
+    }
+    
+    private void updateMoviesFragmentWithJsonData(List<Poster> movies) {
+        // Update MoviesFragment with the JSON data
+        Log.d("JSON_API", "Updating MoviesFragment with " + movies.size() + " movies");
+        
+        // Get the MoviesFragment and update it
+        if (mFragmentList.size() > 1 && mFragmentList.get(1) instanceof MoviesFragment) {
+            MoviesFragment moviesFragment = (MoviesFragment) mFragmentList.get(1);
+            // Pass the movies data to the fragment
+            moviesFragment.updateWithJsonData(movies);
+        }
+    }
+    
+    private void updateMoviesFragmentWithCachedData() {
+        if (cachedJsonResponse != null && dataLoaded && cachedJsonResponse.getMovies() != null) {
+            Log.d("JSON_API", "Updating MoviesFragment with cached data");
+            updateMoviesFragmentWithJsonData(cachedJsonResponse.getMovies());
+        }
+    }
+    
+    private void updateTvFragmentWithJsonData(List<Channel> channels) {
+        // Update TvFragment with the JSON data
+        Log.d("JSON_API", "Updating TvFragment with " + channels.size() + " channels");
+        
+        // Get the TvFragment and update it
+        if (mFragmentList.size() > 3 && mFragmentList.get(3) instanceof TvFragment) {
+            TvFragment tvFragment = (TvFragment) mFragmentList.get(3);
+            // Pass the channels data to the fragment
+            tvFragment.updateWithJsonData(channels);
+        }
+    }
+    
+    private void updateTvFragmentWithCachedData() {
+        if (cachedJsonResponse != null && dataLoaded && cachedJsonResponse.getChannels() != null) {
+            Log.d("JSON_API", "Updating TvFragment with cached data");
+            updateTvFragmentWithJsonData(cachedJsonResponse.getChannels());
+        }
+    }
+    
+    private void updateAllFragmentsWithCachedData() {
+        if (cachedJsonResponse != null && dataLoaded) {
+            Log.d("JSON_API", "Updating all fragments with cached data");
+            updateHomeFragmentWithCachedData();
+            updateMoviesFragmentWithCachedData();
+            updateTvFragmentWithCachedData();
+        }
+    }
+    
+    // Callback interfaces for video sources
+    public interface VideoSourcesCallback {
+        void onSuccess(String videoUrl);
+        void onError(String error);
+    }
+    
+    public interface LiveStreamCallback {
+        void onSuccess(String streamUrl);
+        void onError(String error);
+    }
+    
+    /**
+     * Load all data from JSON API when app starts
+     */
+    private void loadAllDataFromJson() {
+        Log.d("JSON_API", "Loading all data from JSON API...");
+        
+        // Check if data is already loaded
+        if (dataLoaded && cachedJsonResponse != null) {
+            Log.d("JSON_API", "Data already loaded, using cached data");
+            updateAllFragmentsWithCachedData();
+            return;
+        }
+        
+        // Check if we have internet connection
+        if (!isNetworkAvailable()) {
+            Log.e("JSON_API", "No network connection");
+            Toasty.error(HomeActivity.this, "No internet connection", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        // Load everything in one call to prevent conflicts
+        apiClient.getJsonApiData(new apiClient.JsonApiCallback() {
+            @Override
+            public void onSuccess(JsonApiResponse jsonResponse) {
+                if (jsonResponse != null) {
+                    Log.d("JSON_API", "Successfully loaded all data");
+                    
+                    // Cache the response
+                    cachedJsonResponse = jsonResponse;
+                    dataLoaded = true;
+                    
+                    try {
+                        // Update all fragments at once with error handling
+                        if (jsonResponse.getHome() != null) {
+                            updateHomeFragmentWithJsonData(jsonResponse);
+                        }
+                        
+                        if (jsonResponse.getMovies() != null && !jsonResponse.getMovies().isEmpty()) {
+                            updateMoviesFragmentWithJsonData(jsonResponse.getMovies());
+                        }
+                        
+                        if (jsonResponse.getChannels() != null && !jsonResponse.getChannels().isEmpty()) {
+                            updateTvFragmentWithJsonData(jsonResponse.getChannels());
+                        }
+                        
+                        // Show success message
+                        Toasty.success(HomeActivity.this, "Content loaded successfully", Toast.LENGTH_SHORT).show();
+                        
+                    } catch (Exception e) {
+                        Log.e("JSON_API", "Error updating fragments: " + e.getMessage());
+                        Toasty.error(HomeActivity.this, "Error displaying content", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Log.e("JSON_API", "JSON response is null");
+                    Toasty.error(HomeActivity.this, "Failed to load content", Toast.LENGTH_SHORT).show();
+                }
+            }
+            
+            @Override
+            public void onError(String error) {
+                Log.e("JSON_API", "Error loading data: " + error);
+                Toasty.error(HomeActivity.this, "Network error: " + error, Toast.LENGTH_SHORT).show();
+                
+                // Retry after 3 seconds
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d("JSON_API", "Retrying data load...");
+                        loadAllDataFromJson();
+                    }
+                }, 3000);
+            }
+        });
+    }
+    
+    // Ads loading method removed to prevent interference
+
+    // Subscription loading method removed to fix compilation issues
+    
+    /**
+     * Check if network is available
+     */
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager != null) {
+            NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+            return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+        }
+        return false;
     }
 }
