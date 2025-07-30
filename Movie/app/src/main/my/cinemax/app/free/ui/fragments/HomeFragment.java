@@ -75,8 +75,8 @@ public class HomeFragment extends Fragment {
 
         initViews();
         initActions();
-        // Don't load data here - it will be loaded by HomeActivity
-        // loadData();
+        // Load data as fallback if not loaded by HomeActivity
+        loadData();
         return view;
     }
 

@@ -256,6 +256,9 @@ public interface apiRest {
     // @GET("free_movie_api.json")
     // Call<JsonApiResponse> getGenresFromJson();
 
+    @GET("free_movie_api.json")
+    Call<my.cinemax.app.free.entity.JsonApiResponse> getCompleteJsonData();
+
     @GET("slides.json")
     Call<List<my.cinemax.app.free.entity.Slide>> getSlides();
 

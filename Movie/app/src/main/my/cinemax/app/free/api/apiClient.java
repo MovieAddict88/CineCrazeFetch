@@ -49,8 +49,8 @@ public class apiClient {
     private static Retrofit githubRetrofit = null;
     private static final String CACHE_CONTROL = "Cache-Control";
     
-    // GitHub API base URL - all data comes from GitHub now
-    private static final String GITHUB_API_BASE_URL = "https://raw.githubusercontent.com/MovieAddict88/movie-api/main/";
+    // GitHub API base URL - using the working GitHub pages URL
+    private static final String GITHUB_API_BASE_URL = "https://movieaddict88.github.io/movie-api/";
 
     /**
      * Get the main GitHub API client for all movie data
@@ -176,6 +176,34 @@ public class apiClient {
      * Get GitHub JSON API data with custom callback
      */
     public static void getJsonApiData(JsonApiCallback callback) {
+        // First try to get complete JSON data
+        Retrofit retrofit = getClient();
+        apiRest service = retrofit.create(apiRest.class);
+        Call<JsonApiResponse> call = service.getCompleteJsonData();
+        
+        call.enqueue(new Callback<JsonApiResponse>() {
+            @Override
+            public void onResponse(Call<JsonApiResponse> call, retrofit2.Response<JsonApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    // Fallback to modular approach if complete JSON fails
+                    loadModularData(callback);
+                }
+            }
+            
+            @Override
+            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
+                // Fallback to modular approach if complete JSON fails
+                loadModularData(callback);
+            }
+        });
+    }
+    
+    /**
+     * Fallback method to load data using modular approach
+     */
+    private static void loadModularData(JsonApiCallback callback) {
         // Create a comprehensive JsonApiResponse by aggregating modular data
         JsonApiResponse jsonResponse = new JsonApiResponse();
         JsonApiResponse.HomeData homeData = new JsonApiResponse.HomeData();
@@ -402,33 +430,177 @@ public class apiClient {
     }
 
     /**
-     * Fetch slides from the modular JSON API
+     * Fetch slides from the modular JSON API with fallback to complete JSON
      */
     public static void getSlides(Callback<List<my.cinemax.app.free.entity.Slide>> callback) {
         Retrofit retrofit = getClient();
         apiRest service = retrofit.create(apiRest.class);
         Call<List<my.cinemax.app.free.entity.Slide>> call = service.getSlides();
-        call.enqueue(callback);
+        
+        call.enqueue(new Callback<List<my.cinemax.app.free.entity.Slide>>() {
+            @Override
+            public void onResponse(Call<List<my.cinemax.app.free.entity.Slide>> call, retrofit2.Response<List<my.cinemax.app.free.entity.Slide>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onResponse(call, response);
+                } else {
+                    // Fallback: try to get slides from complete JSON
+                    getSlidesFromCompleteJson(callback);
+                }
+            }
+            
+            @Override
+            public void onFailure(Call<List<my.cinemax.app.free.entity.Slide>> call, Throwable t) {
+                // Fallback: try to get slides from complete JSON
+                getSlidesFromCompleteJson(callback);
+            }
+        });
+    }
+    
+    /**
+     * Fallback method to get slides from complete JSON
+     */
+    private static void getSlidesFromCompleteJson(Callback<List<my.cinemax.app.free.entity.Slide>> callback) {
+        Retrofit retrofit = getClient();
+        apiRest service = retrofit.create(apiRest.class);
+        Call<JsonApiResponse> call = service.getCompleteJsonData();
+        
+        call.enqueue(new Callback<JsonApiResponse>() {
+            @Override
+            public void onResponse(Call<JsonApiResponse> call, retrofit2.Response<JsonApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().getHome() != null) {
+                    List<my.cinemax.app.free.entity.Slide> slides = response.body().getHome().getSlides();
+                    if (slides != null) {
+                        // Create a mock successful response
+                        retrofit2.Response<List<my.cinemax.app.free.entity.Slide>> mockResponse = 
+                                retrofit2.Response.success(slides);
+                        callback.onResponse(null, mockResponse);
+                        return;
+                    }
+                }
+                callback.onFailure(null, new Exception("Failed to load slides from both modular and complete JSON"));
+            }
+            
+            @Override
+            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
+                callback.onFailure(null, t);
+            }
+        });
     }
 
     /**
-     * Fetch movies list from the modular JSON API
+     * Fetch movies list from the modular JSON API with fallback to complete JSON
      */
     public static void getMoviesList(Callback<List<my.cinemax.app.free.entity.Poster>> callback) {
         Retrofit retrofit = getClient();
         apiRest service = retrofit.create(apiRest.class);
         Call<List<my.cinemax.app.free.entity.Poster>> call = service.getMoviesList();
-        call.enqueue(callback);
+        
+        call.enqueue(new Callback<List<my.cinemax.app.free.entity.Poster>>() {
+            @Override
+            public void onResponse(Call<List<my.cinemax.app.free.entity.Poster>> call, retrofit2.Response<List<my.cinemax.app.free.entity.Poster>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onResponse(call, response);
+                } else {
+                    // Fallback: try to get movies from complete JSON
+                    getMoviesFromCompleteJson(callback);
+                }
+            }
+            
+            @Override
+            public void onFailure(Call<List<my.cinemax.app.free.entity.Poster>> call, Throwable t) {
+                // Fallback: try to get movies from complete JSON
+                getMoviesFromCompleteJson(callback);
+            }
+        });
+    }
+    
+    /**
+     * Fallback method to get movies from complete JSON
+     */
+    private static void getMoviesFromCompleteJson(Callback<List<my.cinemax.app.free.entity.Poster>> callback) {
+        Retrofit retrofit = getClient();
+        apiRest service = retrofit.create(apiRest.class);
+        Call<JsonApiResponse> call = service.getCompleteJsonData();
+        
+        call.enqueue(new Callback<JsonApiResponse>() {
+            @Override
+            public void onResponse(Call<JsonApiResponse> call, retrofit2.Response<JsonApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<my.cinemax.app.free.entity.Poster> movies = response.body().getMovies();
+                    if (movies != null) {
+                        // Create a mock successful response
+                        retrofit2.Response<List<my.cinemax.app.free.entity.Poster>> mockResponse = 
+                                retrofit2.Response.success(movies);
+                        callback.onResponse(null, mockResponse);
+                        return;
+                    }
+                }
+                callback.onFailure(null, new Exception("Failed to load movies from both modular and complete JSON"));
+            }
+            
+            @Override
+            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
+                callback.onFailure(null, t);
+            }
+        });
     }
 
     /**
-     * Fetch channels list from the modular JSON API
+     * Fetch channels list from the modular JSON API with fallback to complete JSON
      */
     public static void getChannelsList(Callback<List<my.cinemax.app.free.entity.Channel>> callback) {
         Retrofit retrofit = getClient();
         apiRest service = retrofit.create(apiRest.class);
         Call<List<my.cinemax.app.free.entity.Channel>> call = service.getChannelsList();
-        call.enqueue(callback);
+        
+        call.enqueue(new Callback<List<my.cinemax.app.free.entity.Channel>>() {
+            @Override
+            public void onResponse(Call<List<my.cinemax.app.free.entity.Channel>> call, retrofit2.Response<List<my.cinemax.app.free.entity.Channel>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onResponse(call, response);
+                } else {
+                    // Fallback: try to get channels from complete JSON
+                    getChannelsFromCompleteJson(callback);
+                }
+            }
+            
+            @Override
+            public void onFailure(Call<List<my.cinemax.app.free.entity.Channel>> call, Throwable t) {
+                // Fallback: try to get channels from complete JSON
+                getChannelsFromCompleteJson(callback);
+            }
+        });
+    }
+    
+    /**
+     * Fallback method to get channels from complete JSON
+     */
+    private static void getChannelsFromCompleteJson(Callback<List<my.cinemax.app.free.entity.Channel>> callback) {
+        Retrofit retrofit = getClient();
+        apiRest service = retrofit.create(apiRest.class);
+        Call<JsonApiResponse> call = service.getCompleteJsonData();
+        
+        call.enqueue(new Callback<JsonApiResponse>() {
+            @Override
+            public void onResponse(Call<JsonApiResponse> call, retrofit2.Response<JsonApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<my.cinemax.app.free.entity.Channel> channels = response.body().getChannels();
+                    if (channels != null) {
+                        // Create a mock successful response
+                        retrofit2.Response<List<my.cinemax.app.free.entity.Channel>> mockResponse = 
+                                retrofit2.Response.success(channels);
+                        callback.onResponse(null, mockResponse);
+                        return;
+                    }
+                }
+                callback.onFailure(null, new Exception("Failed to load channels from both modular and complete JSON"));
+            }
+            
+            @Override
+            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
+                callback.onFailure(null, t);
+            }
+        });
     }
 
     /**

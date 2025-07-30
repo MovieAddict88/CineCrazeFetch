@@ -99,10 +99,10 @@ public class TvFragment extends Fragment {
                 loaded=true;
                 page = 0;
                 loading = true;
-                // Don't load data here - it will be loaded by HomeActivity
-                // getCountiesList();
-                // getCategoriesList();
-                // loadChannels();
+                // Load data as fallback if not loaded by HomeActivity
+                // getCountiesList(); // Skip for now
+                // getCategoriesList(); // Skip for now
+                loadChannels();
             }
         }
     }

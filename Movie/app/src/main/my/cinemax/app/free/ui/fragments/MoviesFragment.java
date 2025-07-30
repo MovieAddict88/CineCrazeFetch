@@ -98,9 +98,9 @@ public class MoviesFragment extends Fragment {
                 loaded=true;
                 page = 0;
                 loading = true;
-                // Don't load data here - it will be loaded by HomeActivity
-                // getGenreList();
-                // loadMovies();
+                // Load data as fallback if not loaded by HomeActivity
+                // getGenreList(); // Skip genre loading for now
+                loadMovies();
             }
         }
     }
@@ -253,8 +253,8 @@ public class MoviesFragment extends Fragment {
                 movieList.clear();
                 movieList.add(new Poster().setTypeView(2));
                 adapter.notifyDataSetChanged();
-                // Don't load data here - it will be loaded by HomeActivity
-                // loadMovies();
+                // Load data as fallback if not loaded by HomeActivity
+                loadMovies();
 
             }
         });
@@ -275,8 +275,8 @@ public class MoviesFragment extends Fragment {
                         if ( (visibleItemCount + pastVisiblesItems) >= totalItemCount)
                         {
                             loading = false;
-                            // Don't load data here - it will be loaded by HomeActivity
-                            // loadMovies();
+                            // Load more data for pagination
+                            loadMovies();
                         }
                     }
                 }else{
