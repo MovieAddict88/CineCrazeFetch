@@ -237,6 +237,9 @@ public interface apiRest {
     @GET("free_movie_api.json")
     Call<JsonApiResponse> getJsonApiData();
     
+    @GET("ads_config.json")
+    Call<JsonApiResponse> getAdsConfig();
+    
     @GET("free_movie_api.json")
     Call<JsonApiResponse> getHomeDataFromJson();
     

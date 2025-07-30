@@ -1164,8 +1164,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         // Load channels
         loadChannelsFromJson();
         
-        // Load ads configuration
-        loadAdsConfigFromJson();
+        // Load ads configuration - DISABLED TO PREVENT INTERFERENCE
+        // loadAdsConfigFromJson();
         
         // Subscription loading removed to fix compilation issues
     }

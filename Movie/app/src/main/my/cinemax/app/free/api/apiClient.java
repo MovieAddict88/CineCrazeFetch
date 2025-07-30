@@ -373,10 +373,19 @@ public class apiClient {
         }
     
     /**
-     * Get ads configuration from JSON API
+     * Get ads configuration from separate JSON API
      */
     public static void getAdsConfigFromJson(Callback<JsonApiResponse> callback) {
-        getJsonApiData(new Callback<JsonApiResponse>() {
+        // Create a separate Retrofit client for ads config
+        Retrofit adsRetrofit = new Retrofit.Builder()
+                .baseUrl("https://raw.githubusercontent.com/MovieAddict88/movie-api/main/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        
+        apiRest adsService = adsRetrofit.create(apiRest.class);
+        Call<JsonApiResponse> call = adsService.getAdsConfig();
+        
+        call.enqueue(new Callback<JsonApiResponse>() {
             @Override
             public void onResponse(Call<JsonApiResponse> call, retrofit2.Response<JsonApiResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
