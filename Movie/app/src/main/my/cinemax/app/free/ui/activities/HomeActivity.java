@@ -128,6 +128,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         firebaseSubscribe();
         initGDPR();
         initBuy();
+        
+        // ===== LOAD DATA FROM JSON API =====
+        // Uncomment the line below to load data from your GitHub JSON
+        // loadAllDataFromJson();
     }
 
     BillingSubs billingSubs;
@@ -924,5 +928,205 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             return false;
         }
         return true;
+    }
+    
+    // ===== JSON API INTEGRATION =====
+    // These methods will load data from your GitHub JSON file
+    
+    /**
+     * Load home data from the JSON API
+     */
+    private void loadHomeDataFromJson() {
+        apiClient.getHomeDataFromJson(new Callback<JsonApiResponse>() {
+            @Override
+            public void onResponse(Call<JsonApiResponse> call, Response<JsonApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    JsonApiResponse jsonResponse = response.body();
+                    
+                    // Log success
+                    Log.d("JSON_API", "Successfully loaded home data from JSON API");
+                    Log.d("JSON_API", "Movies: " + jsonResponse.getMovies().size());
+                    Log.d("JSON_API", "Channels: " + jsonResponse.getChannels().size());
+                    Log.d("JSON_API", "Actors: " + jsonResponse.getActors().size());
+                    
+                    // You can now use this data in your fragments
+                    // For example, pass it to HomeFragment
+                    updateHomeFragmentWithJsonData(jsonResponse);
+                    
+                } else {
+                    Log.e("JSON_API", "Failed to load home data: " + response.code());
+                    Toasty.error(HomeActivity.this, "Failed to load data from JSON API", Toast.LENGTH_SHORT).show();
+                }
+            }
+            
+            @Override
+            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
+                Log.e("JSON_API", "Error loading home data", t);
+                Toasty.error(HomeActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    
+    /**
+     * Load movies from the JSON API
+     */
+    private void loadMoviesFromJson() {
+        apiClient.getMoviesFromJson(new Callback<JsonApiResponse>() {
+            @Override
+            public void onResponse(Call<JsonApiResponse> call, Response<JsonApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Poster> movies = response.body().getMovies();
+                    Log.d("JSON_API", "Loaded " + movies.size() + " movies from JSON API");
+                    
+                    // Update your movies fragment with this data
+                    updateMoviesFragmentWithJsonData(movies);
+                    
+                } else {
+                    Log.e("JSON_API", "Failed to load movies: " + response.code());
+                }
+            }
+            
+            @Override
+            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
+                Log.e("JSON_API", "Error loading movies", t);
+            }
+        });
+    }
+    
+    /**
+     * Load channels from the JSON API
+     */
+    private void loadChannelsFromJson() {
+        apiClient.getChannelsFromJson(new Callback<JsonApiResponse>() {
+            @Override
+            public void onResponse(Call<JsonApiResponse> call, Response<JsonApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Channel> channels = response.body().getChannels();
+                    Log.d("JSON_API", "Loaded " + channels.size() + " channels from JSON API");
+                    
+                    // Update your TV fragment with this data
+                    updateTvFragmentWithJsonData(channels);
+                    
+                } else {
+                    Log.e("JSON_API", "Failed to load channels: " + response.code());
+                }
+            }
+            
+            @Override
+            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
+                Log.e("JSON_API", "Error loading channels", t);
+            }
+        });
+    }
+    
+    /**
+     * Get video sources for a movie from JSON API
+     */
+    public void getMovieVideoSourcesFromJson(int movieId, VideoSourcesCallback callback) {
+        apiClient.getMovieVideoSources(movieId, new Callback<JsonApiResponse>() {
+            @Override
+            public void onResponse(Call<JsonApiResponse> call, Response<JsonApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Get video sources from the JSON response
+                    JsonApiResponse.VideoSources videoSources = response.body().getVideoSources();
+                    
+                    if (videoSources != null) {
+                        // Return Big Buck Bunny or Elephants Dream URLs
+                        if (videoSources.getBigBuckBunny() != null) {
+                            callback.onSuccess(videoSources.getBigBuckBunny().getUrls().getP1080());
+                        } else if (videoSources.getElephantsDream() != null) {
+                            callback.onSuccess(videoSources.getElephantsDream().getUrls().getP1080());
+                        } else {
+                            callback.onError("No video sources available");
+                        }
+                    } else {
+                        callback.onError("No video sources found");
+                    }
+                } else {
+                    callback.onError("Failed to load video sources");
+                }
+            }
+            
+            @Override
+            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
+                callback.onError("Network error: " + t.getMessage());
+            }
+        });
+    }
+    
+    /**
+     * Get live stream URL from JSON API
+     */
+    public void getLiveStreamFromJson(LiveStreamCallback callback) {
+        apiClient.getJsonApiData(new Callback<JsonApiResponse>() {
+            @Override
+            public void onResponse(Call<JsonApiResponse> call, Response<JsonApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    JsonApiResponse.VideoSources videoSources = response.body().getVideoSources();
+                    
+                    if (videoSources != null && videoSources.getLiveStreams() != null) {
+                        JsonApiResponse.LiveStream liveStream = videoSources.getLiveStreams().getTestHls();
+                        if (liveStream != null) {
+                            callback.onSuccess(liveStream.getUrl());
+                        } else {
+                            callback.onError("No live stream available");
+                        }
+                    } else {
+                        callback.onError("No live streams found");
+                    }
+                } else {
+                    callback.onError("Failed to load live streams");
+                }
+            }
+            
+            @Override
+            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
+                callback.onError("Network error: " + t.getMessage());
+            }
+        });
+    }
+    
+    // Helper methods to update fragments (you'll need to implement these based on your fragment structure)
+    private void updateHomeFragmentWithJsonData(JsonApiResponse jsonResponse) {
+        // Update your HomeFragment with the JSON data
+        // This depends on how your HomeFragment is structured
+        Log.d("JSON_API", "Updating HomeFragment with JSON data");
+    }
+    
+    private void updateMoviesFragmentWithJsonData(List<Poster> movies) {
+        // Update your MoviesFragment with the JSON data
+        Log.d("JSON_API", "Updating MoviesFragment with " + movies.size() + " movies");
+    }
+    
+    private void updateTvFragmentWithJsonData(List<Channel> channels) {
+        // Update your TvFragment with the JSON data
+        Log.d("JSON_API", "Updating TvFragment with " + channels.size() + " channels");
+    }
+    
+    // Callback interfaces for video sources
+    public interface VideoSourcesCallback {
+        void onSuccess(String videoUrl);
+        void onError(String error);
+    }
+    
+    public interface LiveStreamCallback {
+        void onSuccess(String streamUrl);
+        void onError(String error);
+    }
+    
+    /**
+     * Example: Load all data from JSON API when app starts
+     */
+    private void loadAllDataFromJson() {
+        Log.d("JSON_API", "Loading all data from JSON API...");
+        
+        // Load home data
+        loadHomeDataFromJson();
+        
+        // Load movies
+        loadMoviesFromJson();
+        
+        // Load channels
+        loadChannelsFromJson();
     }
 }

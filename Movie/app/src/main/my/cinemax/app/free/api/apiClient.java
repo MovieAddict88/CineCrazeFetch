@@ -222,6 +222,132 @@ public class apiClient {
         };
     }
     public static String retrofit_id = "aHR0cDovL2xpY2Vuc2UudmlybWFuYS5jb20vYXBpLw==";
+    
+    // ===== JSON API CLIENT METHODS =====
+    // These methods will fetch data from your GitHub JSON file
+    
+    /**
+     * Get the JSON API client for fetching data from GitHub
+     */
+    public static Retrofit getJsonApiClient() {
+        return new Retrofit.Builder()
+                .baseUrl(Global.API_URL.replace("/free_movie_api.json", "/"))
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+    }
+    
+    /**
+     * Fetch all data from the JSON API
+     */
+    public static void getJsonApiData(Callback<JsonApiResponse> callback) {
+        Retrofit retrofit = getJsonApiClient();
+        apiRest service = retrofit.create(apiRest.class);
+        Call<JsonApiResponse> call = service.getJsonApiData();
+        call.enqueue(callback);
+    }
+    
+    /**
+     * Fetch home data from the JSON API
+     */
+    public static void getHomeDataFromJson(Callback<JsonApiResponse> callback) {
+        Retrofit retrofit = getJsonApiClient();
+        apiRest service = retrofit.create(apiRest.class);
+        Call<JsonApiResponse> call = service.getHomeDataFromJson();
+        call.enqueue(callback);
+    }
+    
+    /**
+     * Fetch movies from the JSON API
+     */
+    public static void getMoviesFromJson(Callback<JsonApiResponse> callback) {
+        Retrofit retrofit = getJsonApiClient();
+        apiRest service = retrofit.create(apiRest.class);
+        Call<JsonApiResponse> call = service.getMoviesFromJson();
+        call.enqueue(callback);
+    }
+    
+    /**
+     * Fetch channels from the JSON API
+     */
+    public static void getChannelsFromJson(Callback<JsonApiResponse> callback) {
+        Retrofit retrofit = getJsonApiClient();
+        apiRest service = retrofit.create(apiRest.class);
+        Call<JsonApiResponse> call = service.getChannelsFromJson();
+        call.enqueue(callback);
+    }
+    
+    /**
+     * Fetch actors from the JSON API
+     */
+    public static void getActorsFromJson(Callback<JsonApiResponse> callback) {
+        Retrofit retrofit = getJsonApiClient();
+        apiRest service = retrofit.create(apiRest.class);
+        Call<JsonApiResponse> call = service.getActorsFromJson();
+        call.enqueue(callback);
+    }
+    
+    /**
+     * Fetch genres from the JSON API
+     */
+    public static void getGenresFromJson(Callback<JsonApiResponse> callback) {
+        Retrofit retrofit = getJsonApiClient();
+        apiRest service = retrofit.create(apiRest.class);
+        Call<JsonApiResponse> call = service.getGenresFromJson();
+        call.enqueue(callback);
+    }
+    
+    /**
+     * Get a specific movie by ID from the JSON API
+     */
+    public static void getMovieByIdFromJson(int movieId, Callback<JsonApiResponse> callback) {
+        getMoviesFromJson(new Callback<JsonApiResponse>() {
+            @Override
+            public void onResponse(Call<JsonApiResponse> call, retrofit2.Response<JsonApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Find the movie by ID
+                    for (Poster movie : response.body().getMovies()) {
+                        if (movie.getId() == movieId) {
+                            // Create a new response with just this movie
+                            JsonApiResponse singleMovieResponse = new JsonApiResponse();
+                            // You can customize this response as needed
+                            callback.onResponse(call, retrofit2.Response.success(singleMovieResponse));
+                            return;
+                        }
+                    }
+                    callback.onFailure(call, new Exception("Movie not found"));
+                } else {
+                    callback.onFailure(call, new Exception("Failed to load movies"));
+                }
+            }
+            
+            @Override
+            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
+                callback.onFailure(call, t);
+            }
+        });
+    }
+    
+    /**
+     * Get video sources for a movie from the JSON API
+     */
+    public static void getMovieVideoSources(int movieId, Callback<JsonApiResponse> callback) {
+        getMovieByIdFromJson(movieId, new Callback<JsonApiResponse>() {
+            @Override
+            public void onResponse(Call<JsonApiResponse> call, retrofit2.Response<JsonApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Return video sources from the JSON
+                    callback.onResponse(call, response);
+                } else {
+                    callback.onFailure(call, new Exception("Failed to load video sources"));
+                }
+            }
+            
+            @Override
+            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
+                callback.onFailure(call, t);
+            }
+        });
+    }
     public static Interceptor provideOfflineCacheInterceptor ()
     {
         return new Interceptor()

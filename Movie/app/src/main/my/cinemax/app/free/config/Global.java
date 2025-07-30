@@ -12,7 +12,11 @@ public class Global {
 	
 	
 	
-    public static final String API_URL = new String(new byte[]{104,116,116,112,115,58,47,47,102,97,99,101,98,111,111,107,46,99,111,109,47,102,97,103,109,109,109,117,99,111,100,101,115,101,99,116,111,114});
+    // Change this to your GitHub Pages URL where you upload free_movie_api.json
+    public static final String API_URL = "https://your-username.github.io/movie-api/free_movie_api.json";
+    
+    // Original encoded URL (commented out)
+    // public static final String API_URL = new String(new byte[]{104,116,116,112,115,58,47,47,102,97,99,101,98,111,111,107,46,99,111,109,47,102,97,103,109,109,109,117,99,111,100,101,115,101,99,116,111,114});
     public static final String SECURE_KEY = "4F5A9C3D9A86FA54EACEDDD635185";
 
     public static final String Youtube_Key = "AIzaSyAephi0fVTEBXgphX7Z_WVSW8iPusDibtg"; // get it from this link  https://console.developers.google.com/apis/credentials

@@ -230,5 +230,26 @@ public interface apiRest {
     @POST("check/mylist/"+ Global.SECURE_KEY+"/"+ Global.ITEM_PURCHASE_CODE+"/")
     Call<Integer> CheckMyList(@Field("id")  Integer id,@Field("user")  Integer user,@Field("key")  String key,@Field("type")  String type);
 
+    // ===== NEW JSON API ENDPOINTS =====
+    // These endpoints will fetch data from your GitHub JSON file
+    
+    @GET("free_movie_api.json")
+    Call<JsonApiResponse> getJsonApiData();
+    
+    @GET("free_movie_api.json")
+    Call<JsonApiResponse> getHomeDataFromJson();
+    
+    @GET("free_movie_api.json")
+    Call<JsonApiResponse> getMoviesFromJson();
+    
+    @GET("free_movie_api.json")
+    Call<JsonApiResponse> getChannelsFromJson();
+    
+    @GET("free_movie_api.json")
+    Call<JsonApiResponse> getActorsFromJson();
+    
+    @GET("free_movie_api.json")
+    Call<JsonApiResponse> getGenresFromJson();
+
 }
 
