@@ -122,16 +122,31 @@ public class PosterAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder
             case 1:
 
                 final PosterHolder holder = (PosterHolder) viewHolder;
-                Picasso.with(activity).load(posterList.get(position).getImage()).placeholder(R.drawable.poster_placeholder).into(holder.image_view_item_poster_image);
+                
+                // Add null checks to prevent crashes
+                if (posterList == null || position >= posterList.size() || posterList.get(position) == null) {
+                    Log.e("PosterAdapter", "Poster is null at position " + position + " in onBindViewHolder");
+                    return;
+                }
+                
+                Poster currentPoster = posterList.get(position);
+                
+                // Load image with null check
+                if (currentPoster.getImage() != null) {
+                    Picasso.with(activity).load(currentPoster.getImage()).placeholder(R.drawable.poster_placeholder).into(holder.image_view_item_poster_image);
+                } else {
+                    Picasso.with(activity).load(R.drawable.poster_placeholder).into(holder.image_view_item_poster_image);
+                }
+                
                 if (deletable)
                     holder.relative_layout_item_poster_delete.setVisibility(View.VISIBLE);
                 else
                     holder.relative_layout_item_poster_delete.setVisibility(View.GONE);
 
 
-                if (posterList.get(position).getLabel() != null){
-                    if (posterList.get(position).getLabel().length()>0) {
-                        holder.text_view_item_poster_label.setText(posterList.get(position).getLabel());
+                if (currentPoster.getLabel() != null){
+                    if (currentPoster.getLabel().length()>0) {
+                        holder.text_view_item_poster_label.setText(currentPoster.getLabel());
                         holder.text_view_item_poster_label.setVisibility(View.VISIBLE);
                     }else{
                         holder.text_view_item_poster_label.setVisibility(View.GONE);
@@ -141,9 +156,9 @@ public class PosterAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 }
 
 
-                if (posterList.get(position).getSublabel() != null){
-                    if (posterList.get(position).getSublabel().length()>0) {
-                        holder.text_view_item_poster_sub_label.setText(posterList.get(position).getSublabel());
+                if (currentPoster.getSublabel() != null){
+                    if (currentPoster.getSublabel().length()>0) {
+                        holder.text_view_item_poster_sub_label.setText(currentPoster.getSublabel());
                         holder.text_view_item_poster_sub_label.setVisibility(View.VISIBLE);
                     }else{
                         holder.text_view_item_poster_sub_label.setVisibility(View.GONE);
@@ -156,6 +171,7 @@ public class PosterAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                     // Add null check to prevent NullPointerException
                     if (posterList == null || position >= posterList.size() || posterList.get(position) == null) {
+                        Log.e("PosterAdapter", "Poster is null at position " + position);
                         return;
                     }
 
@@ -168,10 +184,14 @@ public class PosterAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     
                     if ("movie".equals(posterType)) {
                         intent = new Intent(activity, MovieActivity.class);
-                    } else if ("serie".equals(posterType)) {
+                    } else if ("serie".equals(posterType) || "series".equals(posterType)) {
                         intent = new Intent(activity, SerieActivity.class);
                     }
-                    intent.putExtra("poster", posterList.get(holder.getAdapterPosition()));
+                    
+                    // Add null check before putting extra
+                    if (poster != null) {
+                        intent.putExtra("poster", poster);
+                    }
                     final Intent intent1 = intent;
 
                     PrefManager prefManager= new PrefManager(activity);
@@ -209,6 +229,7 @@ public class PosterAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 holder.image_view_item_poster_delete.setOnClickListener(v->{
                     // Add null check to prevent NullPointerException
                     if (posterList == null || position >= posterList.size() || posterList.get(position) == null) {
+                        Log.e("PosterAdapter", "Poster is null at position " + position + " for delete");
                         return;
                     }
                     
@@ -237,7 +258,6 @@ public class PosterAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     posterList.remove(position);
                     notifyItemRemoved(position);
                     notifyDataSetChanged();
-
                 });
                 break;
             case 2:

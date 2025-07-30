@@ -99,8 +99,9 @@ public class SeriesFragment extends Fragment {
                 loaded=true;
                 page = 0;
                 loading = true;
-                getGenreList();
-                loadSeries();
+                // Don't load data here - it will be loaded by HomeActivity
+                // getGenreList();
+                // loadSeries();
             }
         }
     }
@@ -448,5 +449,44 @@ public class SeriesFragment extends Fragment {
 
         //     }
         // });
+    }
+    
+    /**
+     * Update the fragment with series data from JSON
+     */
+    public void updateWithJsonData(List<Poster> series) {
+        if (series != null && !series.isEmpty()) {
+            // Clear existing data
+            movieList.clear();
+            movieList.add(new Poster().setTypeView(2)); // Header item
+            
+            // Add series data
+            for (Poster poster : series) {
+                if ("serie".equals(poster.getType())) {
+                    movieList.add(poster);
+                }
+            }
+            
+            // Update UI
+            linear_layout_page_error_series_fragment.setVisibility(View.GONE);
+            recycler_view_series_fragment.setVisibility(View.VISIBLE);
+            image_view_empty_list.setVisibility(View.GONE);
+            linear_layout_load_series_fragment.setVisibility(View.GONE);
+            
+            // Notify adapter
+            if (adapter != null) {
+                adapter.notifyDataSetChanged();
+            }
+            
+            // Mark as loaded
+            loaded = true;
+            loading = false;
+        } else {
+            // Show empty state
+            linear_layout_page_error_series_fragment.setVisibility(View.GONE);
+            recycler_view_series_fragment.setVisibility(View.GONE);
+            image_view_empty_list.setVisibility(View.VISIBLE);
+            linear_layout_load_series_fragment.setVisibility(View.GONE);
+        }
     }
 }

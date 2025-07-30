@@ -97,7 +97,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import my.cinemax.app.free.entity.Actress;
-import my.cinemax.app.free.*;
+import my.cinemax.app.free.entity.VideoSources;
+
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private final List<Fragment> mFragmentList = new ArrayList<>();
     private ViewPager viewPager;
@@ -1093,11 +1094,40 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
     }
     
+    private void updateSeriesFragmentWithJsonData(List<Poster> series) {
+        // Update SeriesFragment with the JSON data
+        Log.d("JSON_API", "Updating SeriesFragment with " + series.size() + " series");
+        
+        // Get the SeriesFragment and update it
+        if (mFragmentList.size() > 2 && mFragmentList.get(2) instanceof SeriesFragment) {
+            SeriesFragment seriesFragment = (SeriesFragment) mFragmentList.get(2);
+            // Pass the series data to the fragment
+            seriesFragment.updateWithJsonData(series);
+        }
+    }
+    
+    private void updateSeriesFragmentWithCachedData() {
+        if (cachedJsonResponse != null && dataLoaded && cachedJsonResponse.getMovies() != null) {
+            // Filter series from movies array
+            List<Poster> series = new ArrayList<>();
+            for (Poster poster : cachedJsonResponse.getMovies()) {
+                if ("series".equals(poster.getType())) {
+                    series.add(poster);
+                }
+            }
+            if (!series.isEmpty()) {
+                Log.d("JSON_API", "Updating SeriesFragment with cached data");
+                updateSeriesFragmentWithJsonData(series);
+            }
+        }
+    }
+    
     private void updateAllFragmentsWithCachedData() {
         if (cachedJsonResponse != null && dataLoaded) {
             Log.d("JSON_API", "Updating all fragments with cached data");
             updateHomeFragmentWithCachedData();
             updateMoviesFragmentWithCachedData();
+            updateSeriesFragmentWithCachedData();
             updateTvFragmentWithCachedData();
         }
     }
@@ -1152,6 +1182,17 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         
                         if (jsonResponse.getMovies() != null && !jsonResponse.getMovies().isEmpty()) {
                             updateMoviesFragmentWithJsonData(jsonResponse.getMovies());
+                            
+                            // Filter series from movies array
+                            List<Poster> series = new ArrayList<>();
+                            for (Poster poster : jsonResponse.getMovies()) {
+                                if ("series".equals(poster.getType())) {
+                                    series.add(poster);
+                                }
+                            }
+                            if (!series.isEmpty()) {
+                                updateSeriesFragmentWithJsonData(series);
+                            }
                         }
                         
                         if (jsonResponse.getChannels() != null && !jsonResponse.getChannels().isEmpty()) {
