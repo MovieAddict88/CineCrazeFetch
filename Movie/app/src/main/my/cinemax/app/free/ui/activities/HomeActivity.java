@@ -74,6 +74,7 @@ import my.cinemax.app.free.ui.fragments.SeriesFragment;
 import my.cinemax.app.free.ui.fragments.TvFragment;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -962,7 +963,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     
                 } else {
                     Log.e("JSON_API", "Failed to load home data: " + response.code());
-                    Log.e("JSON_API", "Error body: " + (response.errorBody() != null ? response.errorBody().string() : "null"));
+                    try {
+                        String errorBody = response.errorBody() != null ? response.errorBody().string() : "null";
+                        Log.e("JSON_API", "Error body: " + errorBody);
+                    } catch (IOException e) {
+                        Log.e("JSON_API", "Error reading error body: " + e.getMessage());
+                    }
                     Toasty.error(HomeActivity.this, "Failed to load data from JSON API (Code: " + response.code() + ")", Toast.LENGTH_SHORT).show();
                 }
             }
