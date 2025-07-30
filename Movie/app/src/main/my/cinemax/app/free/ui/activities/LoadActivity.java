@@ -152,6 +152,7 @@ public class LoadActivity extends AppCompatActivity {
             
             // Skip the API call and go directly to success
             // Call<ApiResponse> call = service.check(version,id_user);
+            Call<ApiResponse> call = apiRest.someApiMethod();
             call.enqueue(new Callback<ApiResponse>() {
                 @Override
                 public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {

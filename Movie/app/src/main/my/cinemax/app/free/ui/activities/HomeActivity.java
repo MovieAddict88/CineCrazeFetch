@@ -97,7 +97,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import my.cinemax.app.free.entity.Actress;
-import my.cinemax.app.free.entity.VideoSources;
+import my.cinemax.app.free.entity.Source;
+import my.cinemax.app.free.MyApi;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private final List<Fragment> mFragmentList = new ArrayList<>();
