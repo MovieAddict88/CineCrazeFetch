@@ -383,45 +383,42 @@ public class MoviesFragment extends Fragment {
             relative_layout_load_more_movies_fragment.setVisibility(View.VISIBLE);
         }
         swipe_refresh_layout_movies_fragment.setRefreshing(false);
-        
-        // Use GitHub JSON API to load movies
-        apiClient.getJsonApiData(new retrofit2.Callback<my.cinemax.app.free.entity.JsonApiResponse>() {
+        // Use modular GitHub JSON API to load movies
+        apiClient.getMoviesList(new retrofit2.Callback<List<Poster>>() {
             @Override
-            public void onResponse(Call<my.cinemax.app.free.entity.JsonApiResponse> call, retrofit2.Response<my.cinemax.app.free.entity.JsonApiResponse> response) {
+            public void onResponse(Call<List<Poster>> call, Response<List<Poster>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    my.cinemax.app.free.entity.JsonApiResponse apiResponse = response.body();
-                    
-                    if (apiResponse.getMovies() != null && apiResponse.getMovies().size() > 0) {
-                        for (int i = 0; i < apiResponse.getMovies().size(); i++) {
-                            // Filter by type to only include movies (not series)
-                            if (apiResponse.getMovies().get(i).getType().equals("movie")) {
-                                movieList.add(apiResponse.getMovies().get(i));
-                                
-                                if (native_ads_enabled) {
-                                    item++;
-                                    if (item == lines_beetween_ads) {
-                                        item = 0;
-                                        if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("FACEBOOK")) {
+                    List<Poster> allPosters = response.body();
+                    movieList.clear();
+                    item = 0;
+                    for (Poster poster : allPosters) {
+                        if ("movie".equals(poster.getType())) {
+                            movieList.add(poster);
+                            if (native_ads_enabled) {
+                                item++;
+                                if (item == lines_beetween_ads) {
+                                    item = 0;
+                                    if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("FACEBOOK")) {
+                                        movieList.add(new Poster().setTypeView(4));
+                                    } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("ADMOB")) {
+                                        movieList.add(new Poster().setTypeView(5));
+                                    } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("BOTH")) {
+                                        if (type_ads == 0) {
                                             movieList.add(new Poster().setTypeView(4));
-                                        } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("ADMOB")) {
+                                            type_ads = 1;
+                                        } else if (type_ads == 1) {
                                             movieList.add(new Poster().setTypeView(5));
-                                        } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("BOTH")) {
-                                            if (type_ads == 0) {
-                                                movieList.add(new Poster().setTypeView(4));
-                                                type_ads = 1;
-                                            } else if (type_ads == 1) {
-                                                movieList.add(new Poster().setTypeView(5));
-                                                type_ads = 0;
-                                            }
+                                            type_ads = 0;
                                         }
                                     }
                                 }
                             }
                         }
+                    }
+                    if (movieList.size() > 0) {
                         linear_layout_page_error_movies_fragment.setVisibility(View.GONE);
                         recycler_view_movies_fragment.setVisibility(View.VISIBLE);
                         image_view_empty_list.setVisibility(View.GONE);
-
                         adapter.notifyDataSetChanged();
                         page++;
                         loading = true;
@@ -441,9 +438,8 @@ public class MoviesFragment extends Fragment {
                 swipe_refresh_layout_movies_fragment.setRefreshing(false);
                 linear_layout_load_movies_fragment.setVisibility(View.GONE);
             }
-
             @Override
-            public void onFailure(Call<my.cinemax.app.free.entity.JsonApiResponse> call, Throwable t) {
+            public void onFailure(Call<List<Poster>> call, Throwable t) {
                 linear_layout_page_error_movies_fragment.setVisibility(View.VISIBLE);
                 recycler_view_movies_fragment.setVisibility(View.GONE);
                 image_view_empty_list.setVisibility(View.GONE);
