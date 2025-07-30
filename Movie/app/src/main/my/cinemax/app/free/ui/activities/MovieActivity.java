@@ -496,7 +496,7 @@ public class MovieActivity extends AppCompatActivity {
         if (poster.getTrailer()!=null){
             linear_layout_movie_activity_trailer.setVisibility(View.VISIBLE);
         }
-        if (poster.getComment()){
+        if (poster.getComment() != null && poster.getComment()){
             floating_action_button_activity_movie_comment.setVisibility(View.VISIBLE);
         }else{
             floating_action_button_activity_movie_comment.setVisibility(View.GONE);
@@ -887,7 +887,7 @@ public class MovieActivity extends AppCompatActivity {
         }
         if (downloadableList.size()==1){
             if (checkSUBSCRIBED()) {
-                if (!downloadableList.get(0).getExternal()) {
+                if (downloadableList.get(0).getExternal() == null || !downloadableList.get(0).getExternal()) {
                     DownloadSource(downloadableList.get(0));
                 } else {
                     openDownloadLink(0);
@@ -901,7 +901,7 @@ public class MovieActivity extends AppCompatActivity {
                     current_position_download = 0;
                     showDialog(true);
                 } else {
-                    if (!downloadableList.get(0).getExternal()) {
+                    if (downloadableList.get(0).getExternal() == null || !downloadableList.get(0).getExternal()) {
                         DownloadSource(downloadableList.get(0));
                     } else {
                         openDownloadLink(0);
@@ -960,7 +960,7 @@ public class MovieActivity extends AppCompatActivity {
         }
         if (playSources.size()==1) {
             if (checkSUBSCRIBED()) {
-                if (playSources.get(0).getExternal()) {
+                if (playSources.get(0).getExternal() != null && playSources.get(0).getExternal()) {
                     openLink(0);
                 } else {
                     playSource(0);
@@ -973,7 +973,7 @@ public class MovieActivity extends AppCompatActivity {
                     current_position_play = 0;
                     showDialog(true);
                 } else {
-                    if (playSources.get(0).getExternal()) {
+                    if (playSources.get(0).getExternal() != null && playSources.get(0).getExternal()) {
                         openLink(0);
                     } else {
                         playSource(0);

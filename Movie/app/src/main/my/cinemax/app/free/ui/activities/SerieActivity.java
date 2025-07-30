@@ -547,7 +547,7 @@ public class SerieActivity extends AppCompatActivity implements PlaylistDownload
         if (poster.getTrailer()!=null){
             linear_layout_serie_activity_trailer.setVisibility(View.VISIBLE);
         }
-        if (poster.getComment()){
+        if (poster.getComment() != null && poster.getComment()){
             floating_action_button_activity_serie_comment.setVisibility(View.VISIBLE);
         }else{
             floating_action_button_activity_serie_comment.setVisibility(View.GONE);
@@ -995,7 +995,7 @@ public class SerieActivity extends AppCompatActivity implements PlaylistDownload
         }
         if (downloadableList.size()==1){
             if (checkSUBSCRIBED()) {
-                if (!downloadableList.get(0).getExternal()) {
+                if (downloadableList.get(0).getExternal() == null || !downloadableList.get(0).getExternal()) {
                     DownloadSource(downloadableList.get(0));
                 } else {
                     openDownloadLink(0);
@@ -1008,7 +1008,7 @@ public class SerieActivity extends AppCompatActivity implements PlaylistDownload
                     current_position_download = 0;
                     showDialog(true);
                 } else {
-                    if (!downloadableList.get(0).getExternal()) {
+                    if (downloadableList.get(0).getExternal() == null || !downloadableList.get(0).getExternal()) {
                         DownloadSource(downloadableList.get(0));
                     } else {
                         openDownloadLink(0);
@@ -1066,7 +1066,7 @@ public class SerieActivity extends AppCompatActivity implements PlaylistDownload
         }
         if (playableList.size()==1){
             if (checkSUBSCRIBED()) {
-                if (!playableList.get(0).getExternal()) {
+                if (playableList.get(0).getExternal() == null || !playableList.get(0).getExternal()) {
                     playSource(0);
                 } else {
                     openLink(0);
@@ -1079,7 +1079,7 @@ public class SerieActivity extends AppCompatActivity implements PlaylistDownload
                     current_position_play = 0;
                     showDialog(true);
                 } else {
-                    if (!playableList.get(0).getExternal()) {
+                    if (playableList.get(0).getExternal() == null || !playableList.get(0).getExternal()) {
                         playSource(0);
                     } else {
                         openLink(0);
