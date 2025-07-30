@@ -459,25 +459,22 @@ public class SeriesFragment extends Fragment {
             // Clear existing data
             movieList.clear();
             movieList.add(new Poster().setTypeView(2)); // Header item
-            
-            // Add series data
+            // Add series data (accept both 'series' and 'serie')
             for (Poster poster : series) {
-                if ("serie".equals(poster.getType())) {
+                String type = poster.getType();
+                if ("series".equals(type) || "serie".equals(type)) {
                     movieList.add(poster);
                 }
             }
-            
             // Update UI
             linear_layout_page_error_series_fragment.setVisibility(View.GONE);
             recycler_view_series_fragment.setVisibility(View.VISIBLE);
             image_view_empty_list.setVisibility(View.GONE);
             linear_layout_load_series_fragment.setVisibility(View.GONE);
-            
             // Notify adapter
             if (adapter != null) {
                 adapter.notifyDataSetChanged();
             }
-            
             // Mark as loaded
             loaded = true;
             loading = false;
