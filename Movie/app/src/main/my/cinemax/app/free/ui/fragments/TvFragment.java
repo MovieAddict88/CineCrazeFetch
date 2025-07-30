@@ -460,4 +460,47 @@ public class TvFragment extends Fragment {
             }
         });
     }
+    
+    // Method to update fragment with JSON data
+    public void updateWithJsonData(List<Channel> channels) {
+        if (channels != null && channels.size() > 0) {
+            // Clear existing data
+            channelList.clear();
+            page = 0;
+            item = 0;
+            
+            // Add channels from JSON
+            for (int i = 0; i < channels.size(); i++) {
+                channelList.add(channels.get(i));
+                
+                if (native_ads_enabled) {
+                    item++;
+                    if (item == lines_beetween_ads) {
+                        item = 0;
+                        if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("FACEBOOK")) {
+                            channelList.add(new Channel().setTypeView(3));
+                        } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("ADMOB")) {
+                            channelList.add(new Channel().setTypeView(4));
+                        } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("BOTH")) {
+                            if (type_ads == 0) {
+                                channelList.add(new Channel().setTypeView(3));
+                                type_ads = 1;
+                            } else if (type_ads == 1) {
+                                channelList.add(new Channel().setTypeView(4));
+                                type_ads = 0;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Show the data
+            linear_layout_page_error_channel_fragment.setVisibility(View.GONE);
+            recycler_view_channel_fragment.setVisibility(View.VISIBLE);
+            image_view_empty_list.setVisibility(View.GONE);
+            linear_layout_load_channel_fragment.setVisibility(View.GONE);
+            
+            adapter.notifyDataSetChanged();
+        }
+    }
 }

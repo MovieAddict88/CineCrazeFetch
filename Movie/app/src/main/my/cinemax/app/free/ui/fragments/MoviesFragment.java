@@ -446,4 +446,47 @@ public class MoviesFragment extends Fragment {
             }
         });
     }
+    
+    // Method to update fragment with JSON data
+    public void updateWithJsonData(List<Poster> movies) {
+        if (movies != null && movies.size() > 0) {
+            // Clear existing data
+            movieList.clear();
+            page = 0;
+            item = 0;
+            
+            // Add movies from JSON
+            for (int i = 0; i < movies.size(); i++) {
+                movieList.add(movies.get(i));
+                
+                if (native_ads_enabled) {
+                    item++;
+                    if (item == lines_beetween_ads) {
+                        item = 0;
+                        if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("FACEBOOK")) {
+                            movieList.add(new Poster().setTypeView(4));
+                        } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("ADMOB")) {
+                            movieList.add(new Poster().setTypeView(5));
+                        } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("BOTH")) {
+                            if (type_ads == 0) {
+                                movieList.add(new Poster().setTypeView(4));
+                                type_ads = 1;
+                            } else if (type_ads == 1) {
+                                movieList.add(new Poster().setTypeView(5));
+                                type_ads = 0;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Show the data
+            linear_layout_page_error_movies_fragment.setVisibility(View.GONE);
+            recycler_view_movies_fragment.setVisibility(View.VISIBLE);
+            image_view_empty_list.setVisibility(View.GONE);
+            linear_layout_load_movies_fragment.setVisibility(View.GONE);
+            
+            adapter.notifyDataSetChanged();
+        }
+    }
 }

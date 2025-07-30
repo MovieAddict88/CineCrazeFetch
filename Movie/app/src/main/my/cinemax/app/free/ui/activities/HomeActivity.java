@@ -133,8 +133,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         initBuy();
         
         // ===== LOAD DATA FROM JSON API =====
-        // Uncomment the line below to load data from your GitHub JSON
-        // loadAllDataFromJson();
+        // Load data from your GitHub JSON
+        loadAllDataFromJson();
     }
 
     BillingSubs billingSubs;
@@ -1089,21 +1089,41 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         });
     }
     
-    // Helper methods to update fragments (you'll need to implement these based on your fragment structure)
+    // Helper methods to update fragments with JSON data
     private void updateHomeFragmentWithJsonData(JsonApiResponse jsonResponse) {
-        // Update your HomeFragment with the JSON data
-        // This depends on how your HomeFragment is structured
+        // Update HomeFragment with the JSON data
         Log.d("JSON_API", "Updating HomeFragment with JSON data");
+        
+        // Get the HomeFragment and update it
+        if (mFragmentList.size() > 0 && mFragmentList.get(0) instanceof HomeFragment) {
+            HomeFragment homeFragment = (HomeFragment) mFragmentList.get(0);
+            // Pass the JSON data to the fragment
+            homeFragment.updateWithJsonData(jsonResponse);
+        }
     }
     
     private void updateMoviesFragmentWithJsonData(List<Poster> movies) {
-        // Update your MoviesFragment with the JSON data
+        // Update MoviesFragment with the JSON data
         Log.d("JSON_API", "Updating MoviesFragment with " + movies.size() + " movies");
+        
+        // Get the MoviesFragment and update it
+        if (mFragmentList.size() > 1 && mFragmentList.get(1) instanceof MoviesFragment) {
+            MoviesFragment moviesFragment = (MoviesFragment) mFragmentList.get(1);
+            // Pass the movies data to the fragment
+            moviesFragment.updateWithJsonData(movies);
+        }
     }
     
     private void updateTvFragmentWithJsonData(List<Channel> channels) {
-        // Update your TvFragment with the JSON data
+        // Update TvFragment with the JSON data
         Log.d("JSON_API", "Updating TvFragment with " + channels.size() + " channels");
+        
+        // Get the TvFragment and update it
+        if (mFragmentList.size() > 3 && mFragmentList.get(3) instanceof TvFragment) {
+            TvFragment tvFragment = (TvFragment) mFragmentList.get(3);
+            // Pass the channels data to the fragment
+            tvFragment.updateWithJsonData(channels);
+        }
     }
     
     // Callback interfaces for video sources

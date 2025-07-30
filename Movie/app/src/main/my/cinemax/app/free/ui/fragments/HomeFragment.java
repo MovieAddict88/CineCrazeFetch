@@ -24,6 +24,7 @@ import my.cinemax.app.free.api.apiClient;
 import my.cinemax.app.free.api.apiRest;
 import my.cinemax.app.free.entity.Data;
 import my.cinemax.app.free.entity.Genre;
+import my.cinemax.app.free.entity.JsonApiResponse;
 import my.cinemax.app.free.ui.Adapters.HomeAdapter;
 
 import java.util.ArrayList;
@@ -208,6 +209,76 @@ public class HomeFragment extends Fragment {
         recycler_view_home_fragment.setHasFixedSize(true);
         recycler_view_home_fragment.setAdapter(homeAdapter);
         recycler_view_home_fragment.setLayoutManager(gridLayoutManager);
+    }
+    
+    // Method to update fragment with JSON data
+    public void updateWithJsonData(my.cinemax.app.free.entity.JsonApiResponse jsonResponse) {
+        if (jsonResponse != null) {
+            showLoadingView();
+            
+            // Clear existing data
+            dataList.clear();
+            dataList.add(new Data().setViewType(0));
+            
+            // Add slides if available
+            if (jsonResponse.getSlides() != null && jsonResponse.getSlides().size() > 0) {
+                Data slideData = new Data();
+                slideData.setSlides(jsonResponse.getSlides());
+                dataList.add(slideData);
+            }
+            
+            // Add channels if available
+            if (jsonResponse.getChannels() != null && jsonResponse.getChannels().size() > 0) {
+                Data channelData = new Data();
+                channelData.setChannels(jsonResponse.getChannels());
+                dataList.add(channelData);
+            }
+            
+            // Add actors if available
+            if (jsonResponse.getActors() != null && jsonResponse.getActors().size() > 0) {
+                Data actorsData = new Data();
+                actorsData.setActors(jsonResponse.getActors());
+                dataList.add(actorsData);
+            }
+            
+            // Add genres if available
+            if (jsonResponse.getGenres() != null && jsonResponse.getGenres().size() > 0) {
+                if (my_genre_list != null) {
+                    Data genreDataMyList = new Data();
+                    genreDataMyList.setGenre(my_genre_list);
+                    dataList.add(genreDataMyList);
+                }
+                
+                for (int i = 0; i < jsonResponse.getGenres().size(); i++) {
+                    Data genreData = new Data();
+                    genreData.setGenre(jsonResponse.getGenres().get(i));
+                    dataList.add(genreData);
+                    
+                    if (native_ads_enabled) {
+                        item++;
+                        if (item == lines_beetween_ads) {
+                            item = 0;
+                            if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("FACEBOOK")) {
+                                dataList.add(new Data().setViewType(5));
+                            } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("ADMOB")) {
+                                dataList.add(new Data().setViewType(6));
+                            } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("BOTH")) {
+                                if (type_ads == 0) {
+                                    dataList.add(new Data().setViewType(5));
+                                    type_ads = 1;
+                                } else if (type_ads == 1) {
+                                    dataList.add(new Data().setViewType(6));
+                                    type_ads = 0;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            showListView();
+            homeAdapter.notifyDataSetChanged();
+        }
     }
 
 }
