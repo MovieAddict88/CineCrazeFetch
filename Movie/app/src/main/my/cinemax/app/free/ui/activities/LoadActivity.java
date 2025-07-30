@@ -119,14 +119,39 @@ public class LoadActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         if (version!=-1){
-            Integer id_user = 0;
-
-            if (prf.getString("LOGGED").toString().equals("TRUE")) {
-                id_user = Integer.parseInt(prf.getString("ID_USER"));
-            }
-            Retrofit retrofit = apiClient.getClient();
-            apiRest service = retrofit.create(apiRest.class);
-            Call<ApiResponse> call = service.check(version,id_user);
+            // Skip old API call - use JSON configuration instead
+            // Integer id_user = 0;
+            // if (prf.getString("LOGGED").toString().equals("TRUE")) {
+            //     id_user = Integer.parseInt(prf.getString("ID_USER"));
+            // }
+            // Retrofit retrofit = apiClient.getClient();
+            // apiRest service = retrofit.create(apiRest.class);
+            // Call<ApiResponse> call = service.check(version,id_user);
+            
+            // Set default values for ads configuration
+            prf.setString("ADMIN_REWARDED_ADMOB_ID", "ca-app-pub-3940256099942544/5224354917");
+            prf.setString("ADMIN_INTERSTITIAL_ADMOB_ID", "ca-app-pub-3940256099942544/1033173712");
+            prf.setString("ADMIN_INTERSTITIAL_FACEBOOK_ID", "IMG_16_9_APP_INSTALL#YOUR_PLACEMENT_ID");
+            prf.setString("ADMIN_INTERSTITIAL_TYPE", "ADMOB");
+            prf.setInt("ADMIN_INTERSTITIAL_CLICKS", 3);
+            prf.setString("ADMIN_BANNER_ADMOB_ID", "ca-app-pub-3940256099942544/6300978111");
+            prf.setString("ADMIN_BANNER_FACEBOOK_ID", "IMG_16_9_APP_INSTALL#YOUR_PLACEMENT_ID");
+            prf.setString("ADMIN_BANNER_TYPE", "ADMOB");
+            prf.setString("ADMIN_NATIVE_FACEBOOK_ID", "IMG_16_9_APP_INSTALL#YOUR_PLACEMENT_ID");
+            prf.setString("ADMIN_NATIVE_ADMOB_ID", "ca-app-pub-3940256099942544/2247696110");
+            prf.setString("ADMIN_NATIVE_LINES", "6");
+            prf.setString("ADMIN_NATIVE_TYPE", "ADMOB");
+            prf.setString("APP_CURRENCY", "USD");
+            prf.setString("APP_CASH_ACCOUNT", "test@example.com");
+            prf.setString("APP_STRIPE_PUBLIC_KEY", "pk_test_51H1234567890");
+            prf.setString("APP_CASH_ENABLED", "FALSE");
+            prf.setString("APP_PAYPAL_ENABLED", "FALSE");
+            prf.setString("APP_STRIPE_ENABLED", "FALSE");
+            prf.setString("APP_LOGIN_REQUIRED", "FALSE");
+            prf.setString("NEW_SUBSCRIBE_ENABLED", "FALSE");
+            
+            // Skip the API call and go directly to success
+            // Call<ApiResponse> call = service.check(version,id_user);
             call.enqueue(new Callback<ApiResponse>() {
                 @Override
                 public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {

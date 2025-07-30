@@ -207,7 +207,10 @@ public class PosterAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     if(checkSUBSCRIBED()){
                         activity.startActivity(intent1, activityOptionsCompat.toBundle());
                     }else{
-                        if( !prefManager.getString("ADMIN_INTERSTITIAL_TYPE").equals("FALSE")){
+                        String interstitialType = prefManager.getString("ADMIN_INTERSTITIAL_TYPE");
+                        if (interstitialType == null) interstitialType = "FALSE";
+                        
+                        if(!interstitialType.equals("FALSE")){
 
                             requestAdmobInterstitial();
                             if(prefManager.getInt("ADMIN_INTERSTITIAL_CLICKS")==prefManager.getInt("ADMOB_INTERSTITIAL_COUNT_CLICKS")){
@@ -562,7 +565,14 @@ public class PosterAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
     public boolean checkSUBSCRIBED(){
         PrefManager prefManager= new PrefManager(activity);
-        if (!prefManager.getString("SUBSCRIBED").equals("TRUE") && !prefManager.getString("NEW_SUBSCRIBE_ENABLED").equals("TRUE")) {
+        String subscribed = prefManager.getString("SUBSCRIBED");
+        String newSubscribeEnabled = prefManager.getString("NEW_SUBSCRIBE_ENABLED");
+        
+        // Add null checks to prevent NullPointerException
+        if (subscribed == null) subscribed = "FALSE";
+        if (newSubscribeEnabled == null) newSubscribeEnabled = "FALSE";
+        
+        if (!subscribed.equals("TRUE") && !newSubscribeEnabled.equals("TRUE")) {
             return false;
         }
         return true;
