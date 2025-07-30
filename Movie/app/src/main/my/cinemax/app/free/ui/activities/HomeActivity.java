@@ -1167,8 +1167,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         // Load ads configuration
         loadAdsConfigFromJson();
         
-        // Load subscription configuration - DISABLED FOR NOW
-        // loadSubscriptionConfigFromJson();
+        // Subscription loading removed to fix compilation issues
     }
     
     /**
@@ -1190,11 +1189,5 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    /**
-     * Load subscription configuration from JSON API
-     */
-    private void loadSubscriptionConfigFromJson() {
-        // Simplified subscription loading - just log that it's disabled
-        Log.d("JSON_API", "Subscription system is disabled");
-    }
+    // Subscription loading method removed to fix compilation issues
 }
