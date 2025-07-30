@@ -102,6 +102,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private final List<Fragment> mFragmentList = new ArrayList<>();
     private ViewPager viewPager;
     private ViewPagerAdapter adapter;
+    private JsonApiResponse cachedJsonResponse = null;
+    private boolean dataLoaded = false;
     private NavigationView navigationView;
     private TextView text_view_name_nave_header;
     private CircleImageView circle_image_view_profile_nav_header;
@@ -243,6 +245,21 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onPageSelected(int i) {
                 bubbleNavigationLinearView.setCurrentActiveItem(i);
+                
+                // Update fragments with cached data when switching pages
+                if (dataLoaded && cachedJsonResponse != null) {
+                    switch (i) {
+                        case 0: // Home
+                            updateHomeFragmentWithCachedData();
+                            break;
+                        case 1: // Movies
+                            updateMoviesFragmentWithCachedData();
+                            break;
+                        case 3: // TV/Live
+                            updateTvFragmentWithCachedData();
+                            break;
+                    }
+                }
             }
 
             @Override
@@ -1023,6 +1040,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
     }
     
+    private void updateHomeFragmentWithCachedData() {
+        if (cachedJsonResponse != null && dataLoaded) {
+            Log.d("JSON_API", "Updating HomeFragment with cached data");
+            updateHomeFragmentWithJsonData(cachedJsonResponse);
+        }
+    }
+    
     private void updateMoviesFragmentWithJsonData(List<Poster> movies) {
         // Update MoviesFragment with the JSON data
         Log.d("JSON_API", "Updating MoviesFragment with " + movies.size() + " movies");
@@ -1035,6 +1059,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
     }
     
+    private void updateMoviesFragmentWithCachedData() {
+        if (cachedJsonResponse != null && dataLoaded && cachedJsonResponse.getMovies() != null) {
+            Log.d("JSON_API", "Updating MoviesFragment with cached data");
+            updateMoviesFragmentWithJsonData(cachedJsonResponse.getMovies());
+        }
+    }
+    
     private void updateTvFragmentWithJsonData(List<Channel> channels) {
         // Update TvFragment with the JSON data
         Log.d("JSON_API", "Updating TvFragment with " + channels.size() + " channels");
@@ -1044,6 +1075,22 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             TvFragment tvFragment = (TvFragment) mFragmentList.get(3);
             // Pass the channels data to the fragment
             tvFragment.updateWithJsonData(channels);
+        }
+    }
+    
+    private void updateTvFragmentWithCachedData() {
+        if (cachedJsonResponse != null && dataLoaded && cachedJsonResponse.getChannels() != null) {
+            Log.d("JSON_API", "Updating TvFragment with cached data");
+            updateTvFragmentWithJsonData(cachedJsonResponse.getChannels());
+        }
+    }
+    
+    private void updateAllFragmentsWithCachedData() {
+        if (cachedJsonResponse != null && dataLoaded) {
+            Log.d("JSON_API", "Updating all fragments with cached data");
+            updateHomeFragmentWithCachedData();
+            updateMoviesFragmentWithCachedData();
+            updateTvFragmentWithCachedData();
         }
     }
     
@@ -1064,6 +1111,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private void loadAllDataFromJson() {
         Log.d("JSON_API", "Loading all data from JSON API...");
         
+        // Check if data is already loaded
+        if (dataLoaded && cachedJsonResponse != null) {
+            Log.d("JSON_API", "Data already loaded, using cached data");
+            updateAllFragmentsWithCachedData();
+            return;
+        }
+        
         // Check if we have internet connection
         if (!isNetworkAvailable()) {
             Log.e("JSON_API", "No network connection");
@@ -1077,6 +1131,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             public void onSuccess(JsonApiResponse jsonResponse) {
                 if (jsonResponse != null) {
                     Log.d("JSON_API", "Successfully loaded all data");
+                    
+                    // Cache the response
+                    cachedJsonResponse = jsonResponse;
+                    dataLoaded = true;
                     
                     try {
                         // Update all fragments at once with error handling
