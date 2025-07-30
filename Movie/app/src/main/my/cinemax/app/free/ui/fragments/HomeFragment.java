@@ -220,55 +220,59 @@ public class HomeFragment extends Fragment {
             dataList.clear();
             dataList.add(new Data().setViewType(0));
             
-            // Add slides if available
-            if (jsonResponse.getSlides() != null && jsonResponse.getSlides().size() > 0) {
-                Data slideData = new Data();
-                slideData.setSlides(jsonResponse.getSlides());
-                dataList.add(slideData);
-            }
-            
-            // Add channels if available
-            if (jsonResponse.getChannels() != null && jsonResponse.getChannels().size() > 0) {
-                Data channelData = new Data();
-                channelData.setChannels(jsonResponse.getChannels());
-                dataList.add(channelData);
-            }
-            
-            // Add actors if available
-            if (jsonResponse.getActors() != null && jsonResponse.getActors().size() > 0) {
-                Data actorsData = new Data();
-                actorsData.setActors(jsonResponse.getActors());
-                dataList.add(actorsData);
-            }
-            
-            // Add genres if available
-            if (jsonResponse.getGenres() != null && jsonResponse.getGenres().size() > 0) {
-                if (my_genre_list != null) {
-                    Data genreDataMyList = new Data();
-                    genreDataMyList.setGenre(my_genre_list);
-                    dataList.add(genreDataMyList);
+            // Get home data
+            JsonApiResponse.HomeData homeData = jsonResponse.getHome();
+            if (homeData != null) {
+                // Add slides if available
+                if (homeData.getSlides() != null && homeData.getSlides().size() > 0) {
+                    Data slideData = new Data();
+                    slideData.setSlides(homeData.getSlides());
+                    dataList.add(slideData);
                 }
                 
-                for (int i = 0; i < jsonResponse.getGenres().size(); i++) {
-                    Data genreData = new Data();
-                    genreData.setGenre(jsonResponse.getGenres().get(i));
-                    dataList.add(genreData);
+                // Add channels if available
+                if (homeData.getChannels() != null && homeData.getChannels().size() > 0) {
+                    Data channelData = new Data();
+                    channelData.setChannels(homeData.getChannels());
+                    dataList.add(channelData);
+                }
+                
+                // Add actors if available
+                if (homeData.getActors() != null && homeData.getActors().size() > 0) {
+                    Data actorsData = new Data();
+                    actorsData.setActors(homeData.getActors());
+                    dataList.add(actorsData);
+                }
+                
+                // Add genres if available
+                if (homeData.getGenres() != null && homeData.getGenres().size() > 0) {
+                    if (my_genre_list != null) {
+                        Data genreDataMyList = new Data();
+                        genreDataMyList.setGenre(my_genre_list);
+                        dataList.add(genreDataMyList);
+                    }
                     
-                    if (native_ads_enabled) {
-                        item++;
-                        if (item == lines_beetween_ads) {
-                            item = 0;
-                            if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("FACEBOOK")) {
-                                dataList.add(new Data().setViewType(5));
-                            } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("ADMOB")) {
-                                dataList.add(new Data().setViewType(6));
-                            } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("BOTH")) {
-                                if (type_ads == 0) {
+                    for (int i = 0; i < homeData.getGenres().size(); i++) {
+                        Data genreData = new Data();
+                        genreData.setGenre(homeData.getGenres().get(i));
+                        dataList.add(genreData);
+                        
+                        if (native_ads_enabled) {
+                            item++;
+                            if (item == lines_beetween_ads) {
+                                item = 0;
+                                if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("FACEBOOK")) {
                                     dataList.add(new Data().setViewType(5));
-                                    type_ads = 1;
-                                } else if (type_ads == 1) {
+                                } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("ADMOB")) {
                                     dataList.add(new Data().setViewType(6));
-                                    type_ads = 0;
+                                } else if (prefManager.getString("ADMIN_NATIVE_TYPE").equals("BOTH")) {
+                                    if (type_ads == 0) {
+                                        dataList.add(new Data().setViewType(5));
+                                        type_ads = 1;
+                                    } else if (type_ads == 1) {
+                                        dataList.add(new Data().setViewType(6));
+                                        type_ads = 0;
+                                    }
                                 }
                             }
                         }
