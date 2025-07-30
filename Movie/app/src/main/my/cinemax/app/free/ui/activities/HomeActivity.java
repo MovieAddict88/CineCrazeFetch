@@ -964,266 +964,75 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
     
     // ===== JSON API INTEGRATION =====
-    // These methods will load data from your GitHub JSON file
-    
-    // Individual loading methods removed to prevent conflicts and instability
-    
-    /**
-     * Get video sources for a movie from JSON API
-     */
-    public void getMovieVideoSourcesFromJson(int movieId, VideoSourcesCallback callback) {
-        apiClient.getMovieVideoSources(movieId, new Callback<JsonApiResponse>() {
-            @Override
-            public void onResponse(Call<JsonApiResponse> call, Response<JsonApiResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    // Get video sources from the JSON response
-                    JsonApiResponse.VideoSources videoSources = response.body().getVideoSources();
-                    
-                    if (videoSources != null) {
-                        // Return Big Buck Bunny or Elephants Dream URLs
-                        if (videoSources.getBigBuckBunny() != null) {
-                            callback.onSuccess(videoSources.getBigBuckBunny().getUrls().getP1080());
-                        } else if (videoSources.getElephantsDream() != null) {
-                            callback.onSuccess(videoSources.getElephantsDream().getUrls().getP1080());
-                        } else {
-                            callback.onError("No video sources available");
-                        }
-                    } else {
-                        callback.onError("No video sources found");
-                    }
-                } else {
-                    callback.onError("Failed to load video sources");
-                }
-            }
-            
-            @Override
-            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
-                callback.onError("Network error: " + t.getMessage());
-            }
-        });
-    }
-    
-    /**
-     * Get live stream URL from JSON API
-     */
-    public void getLiveStreamFromJson(LiveStreamCallback callback) {
-        apiClient.getJsonApiData(new Callback<JsonApiResponse>() {
-            @Override
-            public void onResponse(Call<JsonApiResponse> call, Response<JsonApiResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    JsonApiResponse.VideoSources videoSources = response.body().getVideoSources();
-                    
-                    if (videoSources != null && videoSources.getLiveStreams() != null) {
-                        JsonApiResponse.LiveStream liveStream = videoSources.getLiveStreams().getTestHls();
-                        if (liveStream != null) {
-                            callback.onSuccess(liveStream.getUrl());
-                        } else {
-                            callback.onError("No live stream available");
-                        }
-                    } else {
-                        callback.onError("No live streams found");
-                    }
-                } else {
-                    callback.onError("Failed to load live streams");
-                }
-            }
-            
-            @Override
-            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
-                callback.onError("Network error: " + t.getMessage());
-            }
-        });
-    }
-    
-    // Helper methods to update fragments with JSON data
-    private void updateHomeFragmentWithJsonData(JsonApiResponse jsonResponse) {
-        // Update HomeFragment with the JSON data
-        Log.d("JSON_API", "Updating HomeFragment with JSON data");
-        
-        // Get the HomeFragment and update it
-        if (mFragmentList.size() > 0 && mFragmentList.get(0) instanceof HomeFragment) {
-            HomeFragment homeFragment = (HomeFragment) mFragmentList.get(0);
-            // Pass the JSON data to the fragment
-            homeFragment.updateWithJsonData(jsonResponse);
-        }
-    }
-    
-    private void updateHomeFragmentWithCachedData() {
-        if (cachedJsonResponse != null && dataLoaded) {
-            Log.d("JSON_API", "Updating HomeFragment with cached data");
-            updateHomeFragmentWithJsonData(cachedJsonResponse);
-        }
-    }
-    
-    private void updateMoviesFragmentWithJsonData(List<Poster> movies) {
-        // Update MoviesFragment with the JSON data
-        Log.d("JSON_API", "Updating MoviesFragment with " + movies.size() + " movies");
-        
-        // Get the MoviesFragment and update it
-        if (mFragmentList.size() > 1 && mFragmentList.get(1) instanceof MoviesFragment) {
-            MoviesFragment moviesFragment = (MoviesFragment) mFragmentList.get(1);
-            // Pass the movies data to the fragment
-            moviesFragment.updateWithJsonData(movies);
-        }
-    }
-    
-    private void updateMoviesFragmentWithCachedData() {
-        if (cachedJsonResponse != null && dataLoaded && cachedJsonResponse.getMovies() != null) {
-            Log.d("JSON_API", "Updating MoviesFragment with cached data");
-            updateMoviesFragmentWithJsonData(cachedJsonResponse.getMovies());
-        }
-    }
-    
-    private void updateTvFragmentWithJsonData(List<Channel> channels) {
-        // Update TvFragment with the JSON data
-        Log.d("JSON_API", "Updating TvFragment with " + channels.size() + " channels");
-        
-        // Get the TvFragment and update it
-        if (mFragmentList.size() > 3 && mFragmentList.get(3) instanceof TvFragment) {
-            TvFragment tvFragment = (TvFragment) mFragmentList.get(3);
-            // Pass the channels data to the fragment
-            tvFragment.updateWithJsonData(channels);
-        }
-    }
-    
-    private void updateTvFragmentWithCachedData() {
-        if (cachedJsonResponse != null && dataLoaded && cachedJsonResponse.getChannels() != null) {
-            Log.d("JSON_API", "Updating TvFragment with cached data");
-            updateTvFragmentWithJsonData(cachedJsonResponse.getChannels());
-        }
-    }
-    
-    private void updateSeriesFragmentWithJsonData(List<Poster> series) {
-        // Update SeriesFragment with the JSON data
-        Log.d("JSON_API", "Updating SeriesFragment with " + series.size() + " series");
-        
-        // Get the SeriesFragment and update it
-        if (mFragmentList.size() > 2 && mFragmentList.get(2) instanceof SeriesFragment) {
-            SeriesFragment seriesFragment = (SeriesFragment) mFragmentList.get(2);
-            // Pass the series data to the fragment
-            seriesFragment.updateWithJsonData(series);
-        }
-    }
-    
-    private void updateSeriesFragmentWithCachedData() {
-        if (cachedJsonResponse != null && dataLoaded && cachedJsonResponse.getMovies() != null) {
-            // Filter series from movies array
-            List<Poster> series = new ArrayList<>();
-            for (Poster poster : cachedJsonResponse.getMovies()) {
-                if ("series".equals(poster.getType())) {
-                    series.add(poster);
-                }
-            }
-            if (!series.isEmpty()) {
-                Log.d("JSON_API", "Updating SeriesFragment with cached data");
-                updateSeriesFragmentWithJsonData(series);
-            }
-        }
-    }
-    
-    private void updateAllFragmentsWithCachedData() {
-        if (cachedJsonResponse != null && dataLoaded) {
-            Log.d("JSON_API", "Updating all fragments with cached data");
-            updateHomeFragmentWithCachedData();
-            updateMoviesFragmentWithCachedData();
-            updateSeriesFragmentWithCachedData();
-            updateTvFragmentWithCachedData();
-        }
-    }
-    
-    // Callback interfaces for video sources
-    public interface VideoSourcesCallback {
-        void onSuccess(String videoUrl);
-        void onError(String error);
-    }
-    
-    public interface LiveStreamCallback {
-        void onSuccess(String streamUrl);
-        void onError(String error);
-    }
-    
-    /**
-     * Load all data from JSON API when app starts
-     */
+    // All old monolithic API methods removed. Use modular API methods only.
+
     private void loadAllDataFromJson() {
-        Log.d("JSON_API", "Loading all data from JSON API...");
-        
-        // Check if data is already loaded
-        if (dataLoaded && cachedJsonResponse != null) {
-            Log.d("JSON_API", "Data already loaded, using cached data");
-            updateAllFragmentsWithCachedData();
-            return;
-        }
-        
-        // Check if we have internet connection
+        Log.d("JSON_API", "Loading all data from modular JSON API...");
         if (!isNetworkAvailable()) {
             Log.e("JSON_API", "No network connection");
             Toasty.error(HomeActivity.this, "No internet connection", Toast.LENGTH_SHORT).show();
             return;
         }
-        
-        // Load everything in one call to prevent conflicts
-        apiClient.getJsonApiData(new apiClient.JsonApiCallback() {
+        // Load slides
+        apiClient.getSlides(new Callback<List<my.cinemax.app.free.entity.Slide>>() {
             @Override
-            public void onSuccess(JsonApiResponse jsonResponse) {
-                if (jsonResponse != null) {
-                    Log.d("JSON_API", "Successfully loaded all data");
-                    
-                    // Cache the response
-                    cachedJsonResponse = jsonResponse;
-                    dataLoaded = true;
-                    
-                    try {
-                        // Update all fragments at once with error handling
-                        if (jsonResponse.getHome() != null) {
-                            updateHomeFragmentWithJsonData(jsonResponse);
-                        }
-                        
-                        if (jsonResponse.getMovies() != null && !jsonResponse.getMovies().isEmpty()) {
-                            updateMoviesFragmentWithJsonData(jsonResponse.getMovies());
-                            
-                            // Filter series from movies array
-                            List<Poster> series = new ArrayList<>();
-                            for (Poster poster : jsonResponse.getMovies()) {
-                                if ("series".equals(poster.getType())) {
-                                    series.add(poster);
-                                }
-                            }
-                            if (!series.isEmpty()) {
-                                updateSeriesFragmentWithJsonData(series);
-                            }
-                        }
-                        
-                        if (jsonResponse.getChannels() != null && !jsonResponse.getChannels().isEmpty()) {
-                            updateTvFragmentWithJsonData(jsonResponse.getChannels());
-                        }
-                        
-                        // Show success message
-                        Toasty.success(HomeActivity.this, "Content loaded successfully", Toast.LENGTH_SHORT).show();
-                        
-                    } catch (Exception e) {
-                        Log.e("JSON_API", "Error updating fragments: " + e.getMessage());
-                        Toasty.error(HomeActivity.this, "Error displaying content", Toast.LENGTH_SHORT).show();
+            public void onResponse(Call<List<my.cinemax.app.free.entity.Slide>> call, Response<List<my.cinemax.app.free.entity.Slide>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    if (mFragmentList.size() > 0 && mFragmentList.get(0) instanceof HomeFragment) {
+                        HomeFragment homeFragment = (HomeFragment) mFragmentList.get(0);
+                        homeFragment.updateSlides(response.body());
                     }
-                } else {
-                    Log.e("JSON_API", "JSON response is null");
-                    Toasty.error(HomeActivity.this, "Failed to load content", Toast.LENGTH_SHORT).show();
                 }
             }
-            
             @Override
-            public void onError(String error) {
-                Log.e("JSON_API", "Error loading data: " + error);
-                Toasty.error(HomeActivity.this, "Network error: " + error, Toast.LENGTH_SHORT).show();
-                
-                // Retry after 3 seconds
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.d("JSON_API", "Retrying data load...");
-                        loadAllDataFromJson();
+            public void onFailure(Call<List<my.cinemax.app.free.entity.Slide>> call, Throwable t) {
+                Toasty.error(HomeActivity.this, "Failed to load slides", Toast.LENGTH_SHORT).show();
+            }
+        });
+        // Load movies
+        apiClient.getMoviesList(new Callback<List<my.cinemax.app.free.entity.Poster>>() {
+            @Override
+            public void onResponse(Call<List<my.cinemax.app.free.entity.Poster>> call, Response<List<my.cinemax.app.free.entity.Poster>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<my.cinemax.app.free.entity.Poster> allPosters = response.body();
+                    List<my.cinemax.app.free.entity.Poster> movies = new ArrayList<>();
+                    List<my.cinemax.app.free.entity.Poster> series = new ArrayList<>();
+                    for (my.cinemax.app.free.entity.Poster poster : allPosters) {
+                        if ("movie".equals(poster.getType())) {
+                            movies.add(poster);
+                        } else if ("series".equals(poster.getType()) || "serie".equals(poster.getType())) {
+                            series.add(poster);
+                        }
                     }
-                }, 3000);
+                    if (mFragmentList.size() > 1 && mFragmentList.get(1) instanceof MoviesFragment) {
+                        MoviesFragment moviesFragment = (MoviesFragment) mFragmentList.get(1);
+                        moviesFragment.updateWithJsonData(movies);
+                    }
+                    if (mFragmentList.size() > 2 && mFragmentList.get(2) instanceof SeriesFragment) {
+                        SeriesFragment seriesFragment = (SeriesFragment) mFragmentList.get(2);
+                        seriesFragment.updateWithJsonData(series);
+                    }
+                }
+            }
+            @Override
+            public void onFailure(Call<List<my.cinemax.app.free.entity.Poster>> call, Throwable t) {
+                Toasty.error(HomeActivity.this, "Failed to load movies/series", Toast.LENGTH_SHORT).show();
+            }
+        });
+        // Load channels
+        apiClient.getChannelsList(new Callback<List<my.cinemax.app.free.entity.Channel>>() {
+            @Override
+            public void onResponse(Call<List<my.cinemax.app.free.entity.Channel>> call, Response<List<my.cinemax.app.free.entity.Channel>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    if (mFragmentList.size() > 3 && mFragmentList.get(3) instanceof TvFragment) {
+                        TvFragment tvFragment = (TvFragment) mFragmentList.get(3);
+                        tvFragment.updateWithJsonData(response.body());
+                    }
+                }
+            }
+            @Override
+            public void onFailure(Call<List<my.cinemax.app.free.entity.Channel>> call, Throwable t) {
+                Toasty.error(HomeActivity.this, "Failed to load channels", Toast.LENGTH_SHORT).show();
             }
         });
     }
