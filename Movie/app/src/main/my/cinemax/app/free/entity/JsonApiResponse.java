@@ -3,6 +3,7 @@ package my.cinemax.app.free.entity;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,6 +47,10 @@ public class JsonApiResponse {
     @SerializedName("subscription_plans")
     @Expose
     private List<Plan> subscriptionPlans;
+
+    @SerializedName("subscription_config")
+    @Expose
+    private SubscriptionConfig subscriptionConfig;
     
     @SerializedName("video_sources")
     @Expose
@@ -126,6 +131,14 @@ public class JsonApiResponse {
     
     public void setSubscriptionPlans(List<Plan> subscriptionPlans) {
         this.subscriptionPlans = subscriptionPlans;
+    }
+
+    public SubscriptionConfig getSubscriptionConfig() {
+        return subscriptionConfig;
+    }
+
+    public void setSubscriptionConfig(SubscriptionConfig subscriptionConfig) {
+        this.subscriptionConfig = subscriptionConfig;
     }
     
     public VideoSources getVideoSources() {
@@ -527,5 +540,108 @@ public class JsonApiResponse {
         
         public String getNativeType() { return nativeType; }
         public void setNativeType(String nativeType) { this.nativeType = nativeType; }
+    }
+
+    public static class SubscriptionConfig {
+        @SerializedName("enabled")
+        @Expose
+        private boolean enabled = true;
+
+        @SerializedName("monthly_billing_enabled")
+        @Expose
+        private boolean monthlyBillingEnabled = true;
+
+        @SerializedName("free_trial_days")
+        @Expose
+        private int freeTrialDays = 7;
+
+        @SerializedName("grace_period_days")
+        @Expose
+        private int gracePeriodDays = 3;
+
+        @SerializedName("auto_renewal_enabled")
+        @Expose
+        private boolean autoRenewalEnabled = true;
+
+        @SerializedName("payment_methods")
+        @Expose
+        private List<String> paymentMethods;
+
+        @SerializedName("currency_default")
+        @Expose
+        private String currencyDefault = "USD";
+
+        @SerializedName("subscription_required_for")
+        @Expose
+        private List<String> subscriptionRequiredFor;
+
+        public SubscriptionConfig() {
+            paymentMethods = new ArrayList<>();
+            subscriptionRequiredFor = new ArrayList<>();
+        }
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
+
+        public boolean isMonthlyBillingEnabled() {
+            return monthlyBillingEnabled;
+        }
+
+        public void setMonthlyBillingEnabled(boolean monthlyBillingEnabled) {
+            this.monthlyBillingEnabled = monthlyBillingEnabled;
+        }
+
+        public int getFreeTrialDays() {
+            return freeTrialDays;
+        }
+
+        public void setFreeTrialDays(int freeTrialDays) {
+            this.freeTrialDays = freeTrialDays;
+        }
+
+        public int getGracePeriodDays() {
+            return gracePeriodDays;
+        }
+
+        public void setGracePeriodDays(int gracePeriodDays) {
+            this.gracePeriodDays = gracePeriodDays;
+        }
+
+        public boolean isAutoRenewalEnabled() {
+            return autoRenewalEnabled;
+        }
+
+        public void setAutoRenewalEnabled(boolean autoRenewalEnabled) {
+            this.autoRenewalEnabled = autoRenewalEnabled;
+        }
+
+        public List<String> getPaymentMethods() {
+            return paymentMethods;
+        }
+
+        public void setPaymentMethods(List<String> paymentMethods) {
+            this.paymentMethods = paymentMethods;
+        }
+
+        public String getCurrencyDefault() {
+            return currencyDefault;
+        }
+
+        public void setCurrencyDefault(String currencyDefault) {
+            this.currencyDefault = currencyDefault;
+        }
+
+        public List<String> getSubscriptionRequiredFor() {
+            return subscriptionRequiredFor;
+        }
+
+        public void setSubscriptionRequiredFor(List<String> subscriptionRequiredFor) {
+            this.subscriptionRequiredFor = subscriptionRequiredFor;
+        }
     }
 }

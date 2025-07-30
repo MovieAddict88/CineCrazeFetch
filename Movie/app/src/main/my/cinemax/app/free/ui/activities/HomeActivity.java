@@ -67,6 +67,8 @@ import my.cinemax.app.free.entity.Genre;
 import my.cinemax.app.free.entity.JsonApiResponse;
 import my.cinemax.app.free.entity.Poster;
 import my.cinemax.app.free.entity.Channel;
+import my.cinemax.app.free.entity.Plan;
+import my.cinemax.app.free.utils.SubscriptionManager;
 import my.cinemax.app.free.ui.fragments.DownloadsFragment;
 import my.cinemax.app.free.ui.fragments.HomeFragment;
 import my.cinemax.app.free.ui.fragments.MoviesFragment;
@@ -1166,6 +1168,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         
         // Load ads configuration
         loadAdsConfigFromJson();
+        
+        // Load subscription configuration
+        loadSubscriptionConfigFromJson();
     }
     
     /**
@@ -1183,6 +1188,51 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             public void onError(String error) {
                 Log.e("JSON_API", "Ads config error: " + error);
                 Toasty.error(HomeActivity.this, "Ads config error: " + error, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    /**
+     * Load subscription configuration from JSON API
+     */
+    private void loadSubscriptionConfigFromJson() {
+        apiClient.getJsonApiData(new apiClient.JsonApiCallback() {
+            @Override
+            public void onSuccess(JsonApiResponse jsonResponse) {
+                if (jsonResponse != null && jsonResponse.getSubscriptionConfig() != null) {
+                    SubscriptionManager subscriptionManager = new SubscriptionManager(HomeActivity.this);
+                    subscriptionManager.loadConfig(jsonResponse);
+                    
+                    Log.d("JSON_API", "Subscription config loaded successfully");
+                    Log.d("JSON_API", "Config summary: " + subscriptionManager.getConfigSummary());
+                    
+                    // Check if subscription is enabled
+                    if (subscriptionManager.isSubscriptionEnabled()) {
+                        Log.d("JSON_API", "Subscription system is enabled");
+                        
+                        // Get enabled plans
+                        List<Plan> enabledPlans = subscriptionManager.getEnabledPlans(jsonResponse.getSubscriptionPlans());
+                        if (enabledPlans != null) {
+                            Log.d("JSON_API", "Found " + enabledPlans.size() + " enabled subscription plans");
+                            for (Plan plan : enabledPlans) {
+                                Log.d("JSON_API", "Plan: " + plan.getTitle() + " - " + 
+                                          subscriptionManager.formatPrice(plan.getPrice(), plan.getCurrency()));
+                            }
+                        }
+                    } else {
+                        Log.d("JSON_API", "Subscription system is disabled");
+                    }
+                    
+                    Toasty.success(HomeActivity.this, "Subscription configuration updated", Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.w("JSON_API", "No subscription configuration found in JSON");
+                }
+            }
+            
+            @Override
+            public void onError(String error) {
+                Log.e("JSON_API", "Subscription config error: " + error);
+                Toasty.error(HomeActivity.this, "Subscription config error: " + error, Toast.LENGTH_SHORT).show();
             }
         });
     }
