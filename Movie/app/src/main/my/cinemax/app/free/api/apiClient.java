@@ -161,26 +161,67 @@ public class apiClient {
      * Get ads configuration from GitHub JSON API
      */
     public static void getAdsConfigFromJson(Callback<JsonApiResponse> callback) {
-        getGitHubJsonApiData(callback);
+        // Since we're using modular API, create a JsonApiResponse with ads config
+        // For now, we'll create an empty response - this should be replaced with actual API call
+        JsonApiResponse response = new JsonApiResponse();
+        JsonApiResponse.AdsConfig adsConfig = new JsonApiResponse.AdsConfig();
+        response.setAdsConfig(adsConfig);
+        
+        // Simulate successful response
+        retrofit2.Response<JsonApiResponse> retrofitResponse = retrofit2.Response.success(response);
+        callback.onResponse(null, retrofitResponse);
     }
     
     /**
      * Get GitHub JSON API data with custom callback
      */
     public static void getJsonApiData(JsonApiCallback callback) {
-        getGitHubJsonApiData(new Callback<JsonApiResponse>() {
+        // Create a comprehensive JsonApiResponse by aggregating modular data
+        JsonApiResponse jsonResponse = new JsonApiResponse();
+        
+        // Get slides
+        getSlides(new Callback<List<my.cinemax.app.free.entity.Slide>>() {
             @Override
-            public void onResponse(Call<JsonApiResponse> call, retrofit2.Response<JsonApiResponse> response) {
+            public void onResponse(Call<List<my.cinemax.app.free.entity.Slide>> call, retrofit2.Response<List<my.cinemax.app.free.entity.Slide>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    callback.onSuccess(response.body());
-                } else {
-                    callback.onError("Failed to load data from GitHub JSON API");
+                    jsonResponse.setSlides(response.body());
                 }
+                
+                // Get movies
+                getMoviesList(new Callback<List<my.cinemax.app.free.entity.Poster>>() {
+                    @Override
+                    public void onResponse(Call<List<my.cinemax.app.free.entity.Poster>> call, retrofit2.Response<List<my.cinemax.app.free.entity.Poster>> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            jsonResponse.setMovies(response.body());
+                        }
+                        
+                        // Get channels
+                        getChannelsList(new Callback<List<my.cinemax.app.free.entity.Channel>>() {
+                            @Override
+                            public void onResponse(Call<List<my.cinemax.app.free.entity.Channel>> call, retrofit2.Response<List<my.cinemax.app.free.entity.Channel>> response) {
+                                if (response.isSuccessful() && response.body() != null) {
+                                    jsonResponse.setChannels(response.body());
+                                }
+                                callback.onSuccess(jsonResponse);
+                            }
+                            
+                            @Override
+                            public void onFailure(Call<List<my.cinemax.app.free.entity.Channel>> call, Throwable t) {
+                                callback.onError("Failed to load channels: " + t.getMessage());
+                            }
+                        });
+                    }
+                    
+                    @Override
+                    public void onFailure(Call<List<my.cinemax.app.free.entity.Poster>> call, Throwable t) {
+                        callback.onError("Failed to load movies: " + t.getMessage());
+                    }
+                });
             }
             
             @Override
-            public void onFailure(Call<JsonApiResponse> call, Throwable t) {
-                callback.onError("Network error: " + t.getMessage());
+            public void onFailure(Call<List<my.cinemax.app.free.entity.Slide>> call, Throwable t) {
+                callback.onError("Failed to load slides: " + t.getMessage());
             }
         });
     }
