@@ -31,7 +31,7 @@ public class Plan implements Parcelable {
 
         @SerializedName("duration")
         @Expose
-        private int duration;
+        private String duration;
 
         @SerializedName("enabled")
         @Expose
@@ -63,7 +63,7 @@ public class Plan implements Parcelable {
         description = in.readString();
         discount = in.readString();
         price = in.readDouble();
-        duration = in.readInt();
+        duration = in.readString();
         enabled = in.readByte() != 0;
         billingType = in.readString();
         currency = in.readString();
@@ -102,7 +102,7 @@ public class Plan implements Parcelable {
             this.price = price;
         }
 
-        public void setDuration(int duration) {
+        public void setDuration(String duration) {
             this.duration = duration;
         }
 
@@ -126,7 +126,7 @@ public class Plan implements Parcelable {
             return price;
         }
 
-        public int getDuration() {
+        public String getDuration() {
             return duration;
         }
 
@@ -179,7 +179,7 @@ public class Plan implements Parcelable {
             dest.writeString(description);
                     dest.writeString(discount);
         dest.writeDouble(price);
-        dest.writeInt(duration);
+        dest.writeString(duration);
         dest.writeByte((byte) (enabled ? 1 : 0));
         dest.writeString(billingType);
         dest.writeString(currency);

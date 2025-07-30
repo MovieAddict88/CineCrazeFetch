@@ -960,7 +960,7 @@
       "description": "Perfect for casual viewers",
       "price": 9.99,
       "currency": "USD",
-      "duration": 30,
+      "duration": "30",
       "enabled": true,
       "billing_type": "monthly",
       "features": [
@@ -976,7 +976,7 @@
       "description": "Best value for movie lovers",
       "price": 19.99,
       "currency": "USD",
-      "duration": 30,
+      "duration": "30",
       "enabled": true,
       "billing_type": "monthly",
       "features": [
@@ -994,7 +994,7 @@
       "description": "Share with your family",
       "price": 29.99,
       "currency": "USD",
-      "duration": 30,
+      "duration": "30",
       "enabled": false,
       "billing_type": "monthly",
       "features": [

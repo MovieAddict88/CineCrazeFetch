@@ -153,6 +153,12 @@ public class SubscriptionManager {
             return false;
         }
         
+        // Check if duration is valid
+        if (plan.getDuration() == null || plan.getDuration().isEmpty()) {
+            Log.d(TAG, "Plan " + plan.getTitle() + " has invalid duration");
+            return false;
+        }
+        
         return true;
     }
 
