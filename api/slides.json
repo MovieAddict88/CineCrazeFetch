@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "title": "Big Buck Bunny",
+    "type": "movie",
+    "image": "https://peach.blender.org/wp-content/uploads/title_anouncement.jpg?x11217",
+    "detail_url": "api/movie_details/1.json"
+  },
+  {
+    "id": 2,
+    "title": "Sample News Channel",
+    "type": "channel",
+    "image": "https://example.com/news-channel.jpg",
+    "detail_url": "api/channel_details/1.json"
+  }
+]
